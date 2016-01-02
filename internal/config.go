@@ -1,10 +1,6 @@
-package palk
+package stns
 
 import "github.com/BurntSushi/toml"
-
-const filePath = "/etc/palk.conf"
-
-var AllConfig *Config
 
 type Config struct {
 	Users  map[string]*Attr
@@ -15,6 +11,9 @@ type UserAttr struct {
 	Group_Id  int
 	Directory string
 	Shell     string
+	Password  string
+	Gecos     string
+	Keys      []string
 }
 type GroupAttr struct {
 	Users []string
@@ -26,8 +25,10 @@ type Attr struct {
 	*GroupAttr
 }
 
-func LoadConfig() {
-	_, err := toml.DecodeFile(filePath, &AllConfig)
+var AllConfig *Config
+
+func LoadConfig(configFile string) {
+	_, err := toml.DecodeFile(configFile, &AllConfig)
 	if err != nil {
 		panic(err)
 	}
