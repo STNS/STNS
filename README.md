@@ -3,9 +3,9 @@ simple toml name service is Linux `/etc/passwd`,`/etc/group` name resolution fro
 > now support is x86 rhel linux server
 
 ## install
-donload page <https://github.com/pyama86/SimpleTomlNameService/releases>
+donload page <https://github.com/pyama86/STNS/releases>
 ```
-$ wget https://github.com/pyama86/SimpleTomlNameService/releases/download/<version>/stns-<version>.noarch.rpm
+$ wget https://github.com/pyama86/STNS/releases/download/<version>/stns-<version>.noarch.rpm
 $ rpm -ivh stns-0.1-1.noarch.rpm
 $ service stns start
 ```
@@ -13,6 +13,7 @@ $ service stns start
 ## config
 * /etc/stns/stns.conf
 ```
+port = 1104
 [users.example]
 id = 1001
 group_id = 1
