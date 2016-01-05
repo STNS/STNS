@@ -74,7 +74,7 @@ func startServer(pidFile string) {
 	}
 
 	api.SetApp(router)
-	log.Fatal(http.ListenAndServe(":1104", api.MakeHandler()))
+	log.Fatal(http.ListenAndServe(":"+strconv.Itoa(stns.AllConfig.Port), api.MakeHandler()))
 }
 
 func main() {

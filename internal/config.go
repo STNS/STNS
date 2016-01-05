@@ -3,6 +3,7 @@ package stns
 import "github.com/BurntSushi/toml"
 
 type Config struct {
+	Port   int
 	Users  map[string]*Attr
 	Groups map[string]*Attr
 }
@@ -28,8 +29,12 @@ type Attr struct {
 var AllConfig *Config
 
 func LoadConfig(configFile string) {
+	defaultConfig()
 	_, err := toml.DecodeFile(configFile, &AllConfig)
 	if err != nil {
 		panic(err)
 	}
+}
+func defaultConfig() {
+	AllConfig.Port = 1104
 }
