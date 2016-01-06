@@ -12,7 +12,6 @@ type UserAttr struct {
 	Group_Id  int
 	Directory string
 	Shell     string
-	Password  string
 	Gecos     string
 	Keys      []string
 }
@@ -29,6 +28,9 @@ type Attr struct {
 var AllConfig *Config
 
 func LoadConfig(configFile string) {
+	var config Config
+	AllConfig = &config
+
 	defaultConfig()
 	_, err := toml.DecodeFile(configFile, &AllConfig)
 	if err != nil {

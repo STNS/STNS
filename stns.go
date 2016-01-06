@@ -12,7 +12,7 @@ import (
 	"syscall"
 
 	"github.com/ant0ine/go-json-rest/rest"
-	"github.com/pyama86/SimpleTomlNameService/internal"
+	"github.com/pyama86/STNS/internal"
 )
 
 const (
