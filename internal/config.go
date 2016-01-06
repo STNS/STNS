@@ -1,11 +1,17 @@
 package stns
 
-import "github.com/BurntSushi/toml"
+import (
+	"fmt"
+	"path/filepath"
+
+	"github.com/BurntSushi/toml"
+)
 
 type Config struct {
-	Port   int
-	Users  map[string]*Attr
-	Groups map[string]*Attr
+	Port    int
+	Include string
+	Users   map[string]*Attr
+	Groups  map[string]*Attr
 }
 
 type UserAttr struct {
@@ -27,16 +33,58 @@ type Attr struct {
 
 var AllConfig *Config
 
-func LoadConfig(configFile string) {
+func LoadConfig(configFile string) error {
 	var config Config
-	AllConfig = &config
+	defaultConfig(&config)
 
-	defaultConfig()
-	_, err := toml.DecodeFile(configFile, &AllConfig)
+	_, err := toml.DecodeFile(configFile, &config)
 	if err != nil {
-		panic(err)
+		return err
 	}
+
+	if config.Include != "" {
+		if err := includeConfigFile(&config, config.Include); err != nil {
+			return err
+		}
+	}
+
+	AllConfig = &config
+	return nil
 }
-func defaultConfig() {
-	AllConfig.Port = 1104
+func defaultConfig(config *Config) {
+	config.Port = 1104
+}
+
+func includeConfigFile(config *Config, include string) error {
+	files, err := filepath.Glob(include)
+	if err != nil {
+		return err
+	}
+
+	for _, file := range files {
+		userSaved := config.Users
+		groupSaved := config.Groups
+		config.Users = nil
+		config.Groups = nil
+
+		_, err := toml.DecodeFile(file, &config)
+		if err != nil {
+			return fmt.Errorf("while loading included config file %s: %s", file, err)
+		}
+		config.Users = merge(config.Users, userSaved)
+		config.Groups = merge(config.Groups, groupSaved)
+	}
+	return nil
+}
+
+func merge(m1 map[string]*Attr, m2 map[string]*Attr) map[string]*Attr {
+	m := map[string]*Attr{}
+
+	for i, v := range m1 {
+		m[i] = v
+	}
+	for i, v := range m2 {
+		m[i] = v
+	}
+	return m
 }

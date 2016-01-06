@@ -47,7 +47,11 @@ func removePidFile(pidFile string) {
 	}
 }
 
-func startServer(pidFile string) {
+func startServer(pidFile string, configFile string) {
+	if err := stns.LoadConfig(configFile); err != nil {
+		log.Fatal(err)
+		os.Exit(1)
+	}
 
 	if err := createPidFile(pidFile); err != nil {
 		log.Fatal(err)
@@ -91,6 +95,5 @@ func main() {
 	pidFile := flag.String("pidfile", "/var/run/stns.pid", "File containing process PID")
 	flag.Parse()
 
-	stns.LoadConfig(*configFile)
-	startServer(*pidFile)
+	startServer(*pidFile, *configFile)
 }
