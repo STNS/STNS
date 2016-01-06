@@ -8,7 +8,7 @@ client library:https://github.com/pyama86/libnss_stns
 donload page <https://github.com/pyama86/STNS/releases>
 ```
 $ wget https://github.com/pyama86/STNS/releases/download/<version>/stns-<version>.noarch.rpm
-$ rpm -ivh stns-0.1-1.noarch.rpm
+$ rpm -ivh stns-<version>.noarch.rpm
 $ service stns start
 ```
 
