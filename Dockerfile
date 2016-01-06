@@ -8,12 +8,12 @@ ENV GOPATH /go
 ENV PATH $PATH:/usr/local/go/bin:$GOPATH/bin
 
 # rpm config
-ADD ./ /go/src/github.com/pyama86/SimpleTomlNameService
-RUN chown root:root -R /go/src/github.com/pyama86/SimpleTomlNameService/RPM
-RUN echo '%_topdir /go/src/github.com/pyama86/SimpleTomlNameService/RPM' > ~/.rpmmacros
+ADD ./ /go/src/github.com/pyama86/STNS
+RUN chown root:root -R /go/src/github.com/pyama86/STNS/RPM
+RUN echo '%_topdir /go/src/github.com/pyama86/STNS/RPM' > ~/.rpmmacros
 
 # rpm build
-WORKDIR /go/src/github.com/pyama86/SimpleTomlNameService
+WORKDIR /go/src/github.com/pyama86/STNS
 RUN go get github.com/tools/godep
 RUN godep restore
 RUN go build -o RPM/BUILD/stns
