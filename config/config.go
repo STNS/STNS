@@ -9,8 +9,8 @@ import (
 )
 
 type Config struct {
-	Port    int
-	Include string
+	Port    int    `toml:"port"`
+	Include string `toml:"include"`
 	Users   map[string]*attribute.All
 	Groups  map[string]*attribute.All
 }

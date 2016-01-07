@@ -24,9 +24,9 @@ func GetAttribute(w rest.ResponseWriter, r *rest.Request) {
 	}
 
 	if column == "id" {
-		attr = _GetById(value, resource)
+		attr = GetById(value, resource)
 	} else if column == "name" {
-		attr = _GetByName(value, resource)
+		attr = GetByName(value, resource)
 	}
 
 	if attr == nil || reflect.ValueOf(attr).IsNil() {
@@ -36,7 +36,7 @@ func GetAttribute(w rest.ResponseWriter, r *rest.Request) {
 	w.WriteJson(attr)
 }
 
-func _GetByName(name string, resource map[string]*attribute.All) *attribute.All {
+func GetByName(name string, resource map[string]*attribute.All) *attribute.All {
 	attr := resource[name]
 	if attr == nil || reflect.ValueOf(attr).IsNil() {
 		return nil
@@ -45,7 +45,7 @@ func _GetByName(name string, resource map[string]*attribute.All) *attribute.All 
 	return attr
 }
 
-func _GetById(_id string, resource map[string]*attribute.All) *attribute.All {
+func GetById(_id string, resource map[string]*attribute.All) *attribute.All {
 	id, _ := strconv.Atoi(_id)
 	for k, u := range resource {
 		if u.Id == id {
