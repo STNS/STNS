@@ -1,39 +1,23 @@
-package stns
+package config
 
 import (
 	"fmt"
 	"path/filepath"
 
 	"github.com/BurntSushi/toml"
+	"github.com/pyama86/STNS/attribute"
 )
 
 type Config struct {
 	Port    int
 	Include string
-	Users   map[string]*Attr
-	Groups  map[string]*Attr
+	Users   map[string]*attribute.All
+	Groups  map[string]*attribute.All
 }
 
-type UserAttr struct {
-	Group_Id  int
-	Directory string
-	Shell     string
-	Gecos     string
-	Keys      []string
-}
-type GroupAttr struct {
-	Users []string
-}
-type Attr struct {
-	Id   int
-	Name string
-	*UserAttr
-	*GroupAttr
-}
+var All *Config
 
-var AllConfig *Config
-
-func LoadConfig(configFile string) error {
+func Load(configFile string) error {
 	var config Config
 	defaultConfig(&config)
 
@@ -48,7 +32,7 @@ func LoadConfig(configFile string) error {
 		}
 	}
 
-	AllConfig = &config
+	All = &config
 	return nil
 }
 func defaultConfig(config *Config) {
@@ -77,8 +61,8 @@ func includeConfigFile(config *Config, include string) error {
 	return nil
 }
 
-func merge(m1 map[string]*Attr, m2 map[string]*Attr) map[string]*Attr {
-	m := map[string]*Attr{}
+func merge(m1 map[string]*attribute.All, m2 map[string]*attribute.All) map[string]*attribute.All {
+	m := map[string]*attribute.All{}
 
 	for i, v := range m1 {
 		m[i] = v

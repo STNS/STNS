@@ -12,12 +12,8 @@ import (
 	"syscall"
 
 	"github.com/ant0ine/go-json-rest/rest"
-	"github.com/pyama86/STNS/internal"
-)
-
-const (
-	exitStatusOK = iota
-	exitStatusError
+	"github.com/pyama86/STNS/api"
+	"github.com/pyama86/STNS/config"
 )
 
 func createPidFile(pidFile string) error {
@@ -48,7 +44,7 @@ func removePidFile(pidFile string) {
 }
 
 func startServer(pidFile string, configFile string) {
-	if err := stns.LoadConfig(configFile); err != nil {
+	if err := config.Load(configFile); err != nil {
 		log.Fatal(err)
 		os.Exit(1)
 	}
@@ -68,17 +64,17 @@ func startServer(pidFile string, configFile string) {
 		os.Exit(0)
 	}()
 
-	api := rest.NewApi()
-	api.Use(rest.DefaultDevStack...)
+	server := rest.NewApi()
+	server.Use(rest.DefaultDevStack...)
 	router, err := rest.MakeRouter(
-		rest.Get("/:resource_name/:column/:value", stns.GetAttr),
+		rest.Get("/:resource_name/:column/:value", api.GetAttribute),
 	)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	api.SetApp(router)
-	log.Fatal(http.ListenAndServe(":"+strconv.Itoa(stns.AllConfig.Port), api.MakeHandler()))
+	server.SetApp(router)
+	log.Fatal(http.ListenAndServe(":"+strconv.Itoa(config.All.Port), server.MakeHandler()))
 }
 
 func main() {
