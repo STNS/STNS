@@ -1,0 +1,11 @@
+Source: stns
+Section: admin
+Priority: extra
+Maintainer: pyama86
+Build-Depends: debhelper (>= 7.0.50~)
+Standards-Version: 3.8.4
+Homepage: https://github.com/pyama86/STNS
+
+Package: stns
+Architecture: all
+Description: simple toml name service
