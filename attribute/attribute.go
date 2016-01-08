@@ -11,8 +11,7 @@ type Group struct {
 	Users []string `toml:"users" json:"users"`
 }
 type All struct {
-	Id   int    `toml:"id" json:"id"`
-	Name string `toml:"name" json:"name"`
+	Id int `toml:"id" json:"id"`
 	*User
 	*Group
 }

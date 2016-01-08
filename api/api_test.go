@@ -9,19 +9,20 @@ import (
 func TestGetByName(t *testing.T) {
 	users := map[string]*attribute.All{
 		"test1": &attribute.All{
-			Id:   1,
-			Name: "test1",
+			Id: 1,
 		},
 	}
-	user := GetByName("test1", users)
-	if user.Id != 1 {
-		t.Error("ummatch user id")
-	}
+	_users := GetByName("test1", users)
 
-	if user.Name != "test1" {
-		t.Error("ummatch user name")
-	}
+	for n, u := range _users {
+		if u.Id != 1 {
+			t.Error("ummatch user id")
+		}
 
+		if n != "test1" {
+			t.Error("ummatch user name")
+		}
+	}
 	notfound := GetByName("test2", users)
 	if notfound != nil {
 		t.Error("ummatch user id")
@@ -30,17 +31,18 @@ func TestGetByName(t *testing.T) {
 func TestGetById(t *testing.T) {
 	users := map[string]*attribute.All{
 		"test1": &attribute.All{
-			Id:   1,
-			Name: "test1",
+			Id: 1,
 		},
 	}
-	user := GetById("1", users)
-	if user.Id != 1 {
-		t.Error("ummatch user id")
-	}
+	_users := GetById("1", users)
+	for n, u := range _users {
+		if u.Id != 1 {
+			t.Error("ummatch user id")
+		}
 
-	if user.Name != "test1" {
-		t.Error("ummatch user name")
+		if n != "test1" {
+			t.Error("ummatch user name")
+		}
 	}
 
 	notfound := GetByName("test2", users)

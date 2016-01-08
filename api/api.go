@@ -10,7 +10,7 @@ import (
 )
 
 func GetAttribute(w rest.ResponseWriter, r *rest.Request) {
-	var attr *attribute.All
+	var attr map[string]*attribute.All
 	var resource map[string]*attribute.All
 
 	value := r.PathParam("value")
@@ -35,22 +35,42 @@ func GetAttribute(w rest.ResponseWriter, r *rest.Request) {
 	}
 	w.WriteJson(attr)
 }
+func GetAttributeList(w rest.ResponseWriter, r *rest.Request) {
+	var resource map[string]*attribute.All
 
-func GetByName(name string, resource map[string]*attribute.All) *attribute.All {
+	resource_name := r.PathParam("resource_name")
+
+	if resource_name == "user" {
+		resource = config.All.Users
+	} else if resource_name == "group" {
+		resource = config.All.Groups
+	}
+
+	if resource == nil || reflect.ValueOf(resource).IsNil() {
+		rest.NotFound(w, r)
+		return
+	}
+
+	w.WriteJson(resource)
+}
+
+func GetByName(name string, resource map[string]*attribute.All) map[string]*attribute.All {
 	attr := resource[name]
 	if attr == nil || reflect.ValueOf(attr).IsNil() {
 		return nil
 	}
-	attr.Name = name
-	return attr
+	return map[string]*attribute.All{
+		name: attr,
+	}
 }
 
-func GetById(_id string, resource map[string]*attribute.All) *attribute.All {
+func GetById(_id string, resource map[string]*attribute.All) map[string]*attribute.All {
 	id, _ := strconv.Atoi(_id)
 	for k, u := range resource {
 		if u.Id == id {
-			u.Name = k
-			return u
+			return map[string]*attribute.All{
+				k: u,
+			}
 		}
 	}
 	return nil

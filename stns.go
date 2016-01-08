@@ -67,6 +67,7 @@ func startServer(pidFile string, configFile string) {
 	server := rest.NewApi()
 	server.Use(rest.DefaultDevStack...)
 	router, err := rest.MakeRouter(
+		rest.Get("/:resource_name/list", api.GetAttributeList),
 		rest.Get("/:resource_name/:column/:value", api.GetAttribute),
 	)
 	if err != nil {
