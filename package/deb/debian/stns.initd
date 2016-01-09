@@ -19,7 +19,6 @@ DAEMON=${DAEMON:="/usr/local/bin/$NAME"}
 SCRIPTNAME=/etc/init.d/$NAME
 LOGFILE=${LOGILE:="/var/log/$NAME.log"}
 PIDFILE=${PIDFILE:="/var/run/$NAME.pid"}
-ROOT=${ROOT:="/var/lib/$NAME"}
 
 # Exit if the package is not installed
 [ -x $DAEMON ] || exit 0
@@ -33,7 +32,7 @@ ROOT=${ROOT:="/var/lib/$NAME"}
 #
 do_start()
 {
-    $DAEMON --pidfile=$PIDFILE --root=$ROOT $OTHER_OPTS >>$LOGFILE 2>&1 &
+    $DAEMON --pidfile=$PIDFILE  $OTHER_OPTS >>$LOGFILE 2>&1 &
     sleep 3
     kill -0 $(cat $PIDFILE 2>/dev/null) >/dev/null 2>&1
     return $?
