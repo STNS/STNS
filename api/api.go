@@ -9,7 +9,7 @@ import (
 	"github.com/pyama86/STNS/config"
 )
 
-func GetAttribute(w rest.ResponseWriter, r *rest.Request) {
+func Get(w rest.ResponseWriter, r *rest.Request) {
 	var attr map[string]*attribute.All
 	var resource map[string]*attribute.All
 
@@ -35,7 +35,7 @@ func GetAttribute(w rest.ResponseWriter, r *rest.Request) {
 	}
 	w.WriteJson(attr)
 }
-func GetAttributeList(w rest.ResponseWriter, r *rest.Request) {
+func GetList(w rest.ResponseWriter, r *rest.Request) {
 	var resource map[string]*attribute.All
 
 	resource_name := r.PathParam("resource_name")

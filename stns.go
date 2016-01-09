@@ -2,8 +2,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -14,34 +12,8 @@ import (
 	"github.com/ant0ine/go-json-rest/rest"
 	"github.com/pyama86/STNS/api"
 	"github.com/pyama86/STNS/config"
+	"github.com/pyama86/STNS/pid"
 )
-
-func createPidFile(pidFile string) error {
-	if pidString, err := ioutil.ReadFile(pidFile); err == nil {
-		pid, err := strconv.Atoi(string(pidString))
-		if err == nil {
-			if _, err := os.Stat(fmt.Sprintf("/proc/%d/", pid)); err == nil {
-				return fmt.Errorf("pid file found, ensure stns  is not running or delete %s", pidFile)
-			}
-		}
-	}
-
-	file, err := os.Create(pidFile)
-	if err != nil {
-		return err
-	}
-
-	defer file.Close()
-
-	_, err = fmt.Fprintf(file, "%d", os.Getpid())
-	return err
-}
-
-func removePidFile(pidFile string) {
-	if err := os.Remove(pidFile); err != nil {
-		log.Fatal("Error removing %s: %s", pidFile, err)
-	}
-}
 
 func startServer(pidFile string, configFile string) {
 	if err := config.Load(configFile); err != nil {
@@ -49,26 +21,26 @@ func startServer(pidFile string, configFile string) {
 		os.Exit(1)
 	}
 
-	if err := createPidFile(pidFile); err != nil {
+	if err := pid.CreatePidFile(pidFile); err != nil {
 		log.Fatal(err)
 		os.Exit(1)
 	}
-	defer removePidFile(pidFile)
+	defer pid.RemovePidFile(pidFile)
 
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt, os.Kill, os.Signal(syscall.SIGTERM))
 	go func() {
 		sig := <-c
 		log.Printf("Received signal '%v', exiting\n", sig)
-		removePidFile(pidFile)
+		pid.RemovePidFile(pidFile)
 		os.Exit(0)
 	}()
 
 	server := rest.NewApi()
 	server.Use(rest.DefaultDevStack...)
 	router, err := rest.MakeRouter(
-		rest.Get("/:resource_name/list", api.GetAttributeList),
-		rest.Get("/:resource_name/:column/:value", api.GetAttribute),
+		rest.Get("/:resource_name/list", api.GetList),
+		rest.Get("/:resource_name/:column/:value", api.Get),
 	)
 	if err != nil {
 		log.Fatal(err)
