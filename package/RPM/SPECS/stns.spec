@@ -4,7 +4,7 @@ Summary: SimpleTomlNameService is Linux User,Group Name Service
 Name: stns
 Group: SipmleTomlNameService
 URL: https://github.com/pyama86/SimpleTomlNameService
-Version: 0.1
+Version: 0.0
 Release: 1
 License: MIT
 Source0:   %{name}.initd
