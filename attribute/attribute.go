@@ -7,11 +7,10 @@ type User struct {
 	Gecos     string   `toml:"gecos" json:"gecos"`
 	Keys      []string `toml:"keys" json:"keys"`
 }
-type Group struct {
-	Users []string `toml:"users" json:"users"`
-}
+
 type All struct {
 	Id int `toml:"id" json:"id"`
 	*User
-	*Group
+	// use group
+	Users []string `toml:"users" json:"users"`
 }
