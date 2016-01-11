@@ -125,7 +125,7 @@ reload() {
         return 1
     fi
 
-    killproc -p $PIDFILE -USR1
+    kill -USR1 $pid
     retval=$?
     echo
     return $retval
