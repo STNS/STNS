@@ -149,7 +149,6 @@ case "$1" in
         $1
         ;;
     reload)
-        rh_status_q || exit 0
         $1
         ;;
     restart)

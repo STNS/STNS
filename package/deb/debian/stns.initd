@@ -106,11 +106,7 @@ case "$1" in
             ;;
         esac
         ;;
-    *)
-        echo "Usage: $SCRIPTNAME {start|stop|restart|reload|status}" >&2
-        exit 3
-    ;;
-    reload)
+     reload)
       log_daemon_msg "Reload Config $NAME"
         do_reload
         retval=$?
@@ -119,6 +115,10 @@ case "$1" in
             *) log_end_msg 1; exit $retval ;;
         esac
         ;;
+    *)
+        echo "Usage: $SCRIPTNAME {start|stop|restart|reload|status}" >&2
+        exit 3
+    ;;
 esac
 
 :
