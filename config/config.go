@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	"path/filepath"
+	"sync"
 
 	"github.com/BurntSushi/toml"
 	"github.com/pyama86/STNS/attribute"
@@ -15,7 +16,10 @@ type Config struct {
 	Groups  map[string]*attribute.All
 }
 
-var All *Config
+var (
+	All        *Config
+	configLock = new(sync.RWMutex)
+)
 
 func Load(configFile string) error {
 	var config Config
@@ -31,8 +35,9 @@ func Load(configFile string) error {
 			return err
 		}
 	}
-
+	configLock.Lock()
 	All = &config
+	configLock.Unlock()
 	return nil
 }
 func defaultConfig(config *Config) {

@@ -28,12 +28,25 @@ func startServer(pidFile string, configFile string) {
 	defer pid.RemovePidFile(pidFile)
 
 	c := make(chan os.Signal, 1)
-	signal.Notify(c, os.Interrupt, os.Kill, os.Signal(syscall.SIGTERM))
+	signal.Notify(c, os.Interrupt, os.Kill, os.Signal(syscall.SIGTERM), os.Signal(syscall.SIGUSR1))
 	go func() {
-		sig := <-c
-		log.Printf("Received signal '%v', exiting\n", sig)
-		pid.RemovePidFile(pidFile)
-		os.Exit(0)
+		for {
+		Loop:
+			sig := <-c
+			if sig == os.Signal(syscall.SIGUSR1) {
+				log.Print("Received signal reload config")
+				if err := config.Load(configFile); err != nil {
+					log.Fatal(err)
+					os.Exit(1)
+				}
+				log.Printf("Complete reload config\n")
+				goto Loop
+			} else {
+				log.Printf("Received signal '%v', exiting\n", sig)
+				pid.RemovePidFile(pidFile)
+				os.Exit(0)
+			}
+		}
 	}()
 
 	server := rest.NewApi()
@@ -47,6 +60,7 @@ func startServer(pidFile string, configFile string) {
 	}
 
 	server.SetApp(router)
+	log.Printf("Start Server pid:%d", os.Getpid())
 	log.Fatal(http.ListenAndServe(":"+strconv.Itoa(config.All.Port), server.MakeHandler()))
 }
 

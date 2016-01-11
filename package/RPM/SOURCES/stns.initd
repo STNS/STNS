@@ -95,6 +95,41 @@ restart() {
     start
 }
 
+reload() {
+  echo -n $"Reload Config $prog: "
+
+    if [ ! -f $PIDFILE ]; then
+        echo
+        echo "pid file ($PIDFILE) not found" >&2
+
+        return 0
+    fi
+
+    pid=$(cat $PIDFILE)
+    process_name=$(ps -p $pid -o comm= )
+    if [ -z $process_name ]; then
+        failure
+        echo
+        echo "No such process (pid: $pid)" >&2
+
+        return 1
+    fi
+
+    prefix_match $prog $process_name
+    retval=$?
+    if [ $retval -eq 1 ]; then
+        failure
+        echo
+        echo "pid file ($PIDFILE) is invalid" >&2
+
+        return 1
+    fi
+
+    killproc -p $PIDFILE -USR1
+    retval=$?
+    echo
+    return $retval
+}
 
 rh_status() {
     status -p $PIDFILE $prog
@@ -112,9 +147,10 @@ case "$1" in
     stop)
         rh_status_q || exit 0
         $1
-        retval=$?
-        [ "$AUTO_RETIREMENT" != "" ] && [ "$AUTO_RETIREMENT" != "0" ] && retire
-        exit $retval
+        ;;
+    reload)
+        rh_status_q || exit 0
+        $1
         ;;
     restart)
         $1
@@ -123,7 +159,7 @@ case "$1" in
         rh_status
         ;;
     *)
-        echo $"Usage: $0 {start|stop|restart|status}"
+        echo $"Usage: $0 {start|stop|restart|reload|status}"
         exit 2
 esac
 
