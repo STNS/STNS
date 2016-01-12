@@ -7,7 +7,7 @@ simple toml name service is Linux `/etc/passwd`,`/etc/group`,`/etc/shadow` name 
 client library:https://github.com/pyama86/libnss_stns
 
 ## install
-donload page <https://github.com/pyama86/STNS/releases>
+download page <https://github.com/pyama86/STNS/releases>
 ```
 $ wget https://github.com/pyama86/STNS/releases/download/<version>/stns-<version>.noarch.rpm
 $ rpm -ivh stns-<version>.noarch.rpm
