@@ -20,7 +20,7 @@ $ service stns start
 port = 1104
 [users.example]
 id = 1001
-group_id = 1
+group_id = 1001
 directory = "/home/example"
 shell = "/bin/bash"
 keys = ["ssh-rsa XXXXX…"]
