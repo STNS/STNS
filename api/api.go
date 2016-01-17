@@ -2,7 +2,6 @@ package api
 
 import (
 	"reflect"
-	"strconv"
 
 	"github.com/ant0ine/go-json-rest/rest"
 	"github.com/pyama86/STNS/attribute"
@@ -24,9 +23,9 @@ func Get(w rest.ResponseWriter, r *rest.Request) {
 	}
 
 	if column == "id" {
-		attr = GetById(value, resource)
+		attr = resource.GetById(value)
 	} else if column == "name" {
-		attr = GetByName(value, resource)
+		attr = resource.GetByName(value)
 	}
 
 	if attr == nil || reflect.ValueOf(attr).IsNil() {
@@ -51,26 +50,4 @@ func GetList(w rest.ResponseWriter, r *rest.Request) {
 	}
 
 	w.WriteJson(resource)
-}
-
-func GetByName(name string, resource attribute.UserGroups) attribute.UserGroups {
-	attr := resource[name]
-	if attr == nil || reflect.ValueOf(attr).IsNil() {
-		return nil
-	}
-	return attribute.UserGroups{
-		name: attr,
-	}
-}
-
-func GetById(_id string, resource attribute.UserGroups) attribute.UserGroups {
-	id, _ := strconv.Atoi(_id)
-	for k, u := range resource {
-		if u.Id == id {
-			return attribute.UserGroups{
-				k: u,
-			}
-		}
-	}
-	return nil
 }

@@ -12,7 +12,7 @@ func TestGetByName(t *testing.T) {
 			Id: 1,
 		},
 	}
-	_users := GetByName("test1", users)
+	_users := users.GetByName("test1")
 
 	for n, u := range _users {
 		if u.Id != 1 {
@@ -23,7 +23,7 @@ func TestGetByName(t *testing.T) {
 			t.Error("ummatch user name")
 		}
 	}
-	notfound := GetByName("test2", users)
+	notfound := users.GetByName("test2")
 	if notfound != nil {
 		t.Error("ummatch user id")
 	}
@@ -34,7 +34,7 @@ func TestGetById(t *testing.T) {
 			Id: 1,
 		},
 	}
-	_users := GetById("1", users)
+	_users := users.GetById("1")
 	for n, u := range _users {
 		if u.Id != 1 {
 			t.Error("ummatch user id")
@@ -45,7 +45,7 @@ func TestGetById(t *testing.T) {
 		}
 	}
 
-	notfound := GetByName("test2", users)
+	notfound := users.GetByName("test2")
 	if notfound != nil {
 		t.Error("ummatch user id")
 	}
