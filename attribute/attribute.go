@@ -40,3 +40,9 @@ func (u UserGroups) GetById(_id string) UserGroups {
 	}
 	return nil
 }
+
+func (u UserGroups) Merge(m1 UserGroups) {
+	for i, v := range m1 {
+		u[i] = v
+	}
+}

@@ -53,27 +53,15 @@ func includeConfigFile(config *Config, include string) error {
 	for _, file := range files {
 		userSaved := config.Users
 		groupSaved := config.Groups
-		config.Users = nil
-		config.Groups = nil
+		config.Users = attribute.UserGroups{}
+		config.Groups = attribute.UserGroups{}
 
 		_, err := toml.DecodeFile(file, &config)
 		if err != nil {
 			return fmt.Errorf("while loading included config file %s: %s", file, err)
 		}
-		config.Users = merge(config.Users, userSaved)
-		config.Groups = merge(config.Groups, groupSaved)
+		config.Users.Merge(userSaved)
+		config.Groups.Merge(groupSaved)
 	}
 	return nil
-}
-
-func merge(m1 attribute.UserGroups, m2 attribute.UserGroups) attribute.UserGroups {
-	m := attribute.UserGroups{}
-
-	for i, v := range m1 {
-		m[i] = v
-	}
-	for i, v := range m2 {
-		m[i] = v
-	}
-	return m
 }

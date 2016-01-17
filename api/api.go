@@ -8,26 +8,37 @@ import (
 	"github.com/pyama86/STNS/config"
 )
 
-func Get(w rest.ResponseWriter, r *rest.Request) {
+type Query struct {
+	resource string
+	column   string
+}
+
+func (q Query) Get(value string) attribute.UserGroups {
 	var attr attribute.UserGroups
 	var resource attribute.UserGroups
 
+	if q.resource == "user" {
+		resource = config.All.Users
+	} else if q.resource == "group" {
+		resource = config.All.Groups
+	}
+	if q.column == "id" {
+		attr = resource.GetById(value)
+	} else if q.column == "name" {
+		attr = resource.GetByName(value)
+	} else if q.column == "list" {
+		attr = resource
+	}
+	return attr
+}
+
+func Get(w rest.ResponseWriter, r *rest.Request) {
 	value := r.PathParam("value")
 	column := r.PathParam("column")
 	resource_name := r.PathParam("resource_name")
+	query := Query{resource_name, column}
 
-	if resource_name == "user" {
-		resource = config.All.Users
-	} else if resource_name == "group" {
-		resource = config.All.Groups
-	}
-
-	if column == "id" {
-		attr = resource.GetById(value)
-	} else if column == "name" {
-		attr = resource.GetByName(value)
-	}
-
+	attr := query.Get(value)
 	if attr == nil || reflect.ValueOf(attr).IsNil() {
 		rest.NotFound(w, r)
 		return
@@ -35,14 +46,10 @@ func Get(w rest.ResponseWriter, r *rest.Request) {
 	w.WriteJson(attr)
 }
 func GetList(w rest.ResponseWriter, r *rest.Request) {
-	var resource attribute.UserGroups
 	resource_name := r.PathParam("resource_name")
 
-	if resource_name == "user" {
-		resource = config.All.Users
-	} else if resource_name == "group" {
-		resource = config.All.Groups
-	}
+	query := Query{resource_name, "list"}
+	resource := query.Get("")
 
 	if resource == nil || reflect.ValueOf(resource).IsNil() {
 		rest.NotFound(w, r)
