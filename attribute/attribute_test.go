@@ -1,14 +1,10 @@
-package api
+package attribute
 
-import (
-	"testing"
-
-	"github.com/pyama86/STNS/attribute"
-)
+import "testing"
 
 func TestGetByName(t *testing.T) {
-	users := attribute.UserGroups{
-		"test1": &attribute.All{
+	users := UserGroups{
+		"test1": &All{
 			Id: 1,
 		},
 	}
@@ -29,8 +25,8 @@ func TestGetByName(t *testing.T) {
 	}
 }
 func TestGetById(t *testing.T) {
-	users := attribute.UserGroups{
-		"test1": &attribute.All{
+	users := UserGroups{
+		"test1": &All{
 			Id: 1,
 		},
 	}
