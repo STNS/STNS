@@ -2,33 +2,43 @@ package api
 
 import (
 	"reflect"
-	"strconv"
 
 	"github.com/ant0ine/go-json-rest/rest"
 	"github.com/pyama86/STNS/attribute"
 	"github.com/pyama86/STNS/config"
 )
 
-func Get(w rest.ResponseWriter, r *rest.Request) {
-	var attr map[string]*attribute.All
-	var resource map[string]*attribute.All
+type Query struct {
+	resource string
+	column   string
+}
 
+func (q Query) Get(value string) attribute.UserGroups {
+	var attr attribute.UserGroups
+	var resource attribute.UserGroups
+
+	if q.resource == "user" {
+		resource = config.All.Users
+	} else if q.resource == "group" {
+		resource = config.All.Groups
+	}
+	if q.column == "id" {
+		attr = resource.GetById(value)
+	} else if q.column == "name" {
+		attr = resource.GetByName(value)
+	} else if q.column == "list" {
+		attr = resource
+	}
+	return attr
+}
+
+func Get(w rest.ResponseWriter, r *rest.Request) {
 	value := r.PathParam("value")
 	column := r.PathParam("column")
 	resource_name := r.PathParam("resource_name")
+	query := Query{resource_name, column}
 
-	if resource_name == "user" {
-		resource = config.All.Users
-	} else if resource_name == "group" {
-		resource = config.All.Groups
-	}
-
-	if column == "id" {
-		attr = GetById(value, resource)
-	} else if column == "name" {
-		attr = GetByName(value, resource)
-	}
-
+	attr := query.Get(value)
 	if attr == nil || reflect.ValueOf(attr).IsNil() {
 		rest.NotFound(w, r)
 		return
@@ -36,15 +46,10 @@ func Get(w rest.ResponseWriter, r *rest.Request) {
 	w.WriteJson(attr)
 }
 func GetList(w rest.ResponseWriter, r *rest.Request) {
-	var resource map[string]*attribute.All
-
 	resource_name := r.PathParam("resource_name")
 
-	if resource_name == "user" {
-		resource = config.All.Users
-	} else if resource_name == "group" {
-		resource = config.All.Groups
-	}
+	query := Query{resource_name, "list"}
+	resource := query.Get("")
 
 	if resource == nil || reflect.ValueOf(resource).IsNil() {
 		rest.NotFound(w, r)
@@ -52,26 +57,4 @@ func GetList(w rest.ResponseWriter, r *rest.Request) {
 	}
 
 	w.WriteJson(resource)
-}
-
-func GetByName(name string, resource map[string]*attribute.All) map[string]*attribute.All {
-	attr := resource[name]
-	if attr == nil || reflect.ValueOf(attr).IsNil() {
-		return nil
-	}
-	return map[string]*attribute.All{
-		name: attr,
-	}
-}
-
-func GetById(_id string, resource map[string]*attribute.All) map[string]*attribute.All {
-	id, _ := strconv.Atoi(_id)
-	for k, u := range resource {
-		if u.Id == id {
-			return map[string]*attribute.All{
-				k: u,
-			}
-		}
-	}
-	return nil
 }
