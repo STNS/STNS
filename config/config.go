@@ -12,8 +12,8 @@ import (
 type Config struct {
 	Port    int    `toml:"port"`
 	Include string `toml:"include"`
-	Users   map[string]*attribute.All
-	Groups  map[string]*attribute.All
+	Users   attribute.UserGroups
+	Groups  attribute.UserGroups
 }
 
 var (
@@ -66,8 +66,8 @@ func includeConfigFile(config *Config, include string) error {
 	return nil
 }
 
-func merge(m1 map[string]*attribute.All, m2 map[string]*attribute.All) map[string]*attribute.All {
-	m := map[string]*attribute.All{}
+func merge(m1 attribute.UserGroups, m2 attribute.UserGroups) attribute.UserGroups {
+	m := attribute.UserGroups{}
 
 	for i, v := range m1 {
 		m[i] = v

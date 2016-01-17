@@ -7,7 +7,7 @@ import (
 )
 
 func TestGetByName(t *testing.T) {
-	users := map[string]*attribute.All{
+	users := attribute.UserGroups{
 		"test1": &attribute.All{
 			Id: 1,
 		},
@@ -29,7 +29,7 @@ func TestGetByName(t *testing.T) {
 	}
 }
 func TestGetById(t *testing.T) {
-	users := map[string]*attribute.All{
+	users := attribute.UserGroups{
 		"test1": &attribute.All{
 			Id: 1,
 		},

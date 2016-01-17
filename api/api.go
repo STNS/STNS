@@ -10,8 +10,8 @@ import (
 )
 
 func Get(w rest.ResponseWriter, r *rest.Request) {
-	var attr map[string]*attribute.All
-	var resource map[string]*attribute.All
+	var attr attribute.UserGroups
+	var resource attribute.UserGroups
 
 	value := r.PathParam("value")
 	column := r.PathParam("column")
@@ -36,8 +36,7 @@ func Get(w rest.ResponseWriter, r *rest.Request) {
 	w.WriteJson(attr)
 }
 func GetList(w rest.ResponseWriter, r *rest.Request) {
-	var resource map[string]*attribute.All
-
+	var resource attribute.UserGroups
 	resource_name := r.PathParam("resource_name")
 
 	if resource_name == "user" {
@@ -54,21 +53,21 @@ func GetList(w rest.ResponseWriter, r *rest.Request) {
 	w.WriteJson(resource)
 }
 
-func GetByName(name string, resource map[string]*attribute.All) map[string]*attribute.All {
+func GetByName(name string, resource attribute.UserGroups) attribute.UserGroups {
 	attr := resource[name]
 	if attr == nil || reflect.ValueOf(attr).IsNil() {
 		return nil
 	}
-	return map[string]*attribute.All{
+	return attribute.UserGroups{
 		name: attr,
 	}
 }
 
-func GetById(_id string, resource map[string]*attribute.All) map[string]*attribute.All {
+func GetById(_id string, resource attribute.UserGroups) attribute.UserGroups {
 	id, _ := strconv.Atoi(_id)
 	for k, u := range resource {
 		if u.Id == id {
-			return map[string]*attribute.All{
+			return attribute.UserGroups{
 				k: u,
 			}
 		}

@@ -11,3 +11,5 @@ type All struct {
 	// use group
 	Users []string `toml:"users" json:"users"`
 }
+
+type UserGroups map[string]*All
