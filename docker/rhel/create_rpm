@@ -1,0 +1,32 @@
+FROM centos:latest
+
+# install go
+RUN yum install -y wget rpmdevtools make git gcc && wget https://storage.googleapis.com/golang/go1.5.2.linux-amd64.tar.gz -P /tmp;tar zxvf /tmp/go1.5.2.linux-amd64.tar.gz -C /usr/local
+ENV GOPATH /go
+ENV PATH $PATH:/usr/local/go/bin:$GOPATH/bin
+RUN go get github.com/tools/godep
+
+# build stns
+ADD STNS /go/src/github.com/STNS/STNS
+RUN chown root:root -R /go/src/github.com/STNS/STNS/package/RPM && echo '%_topdir /go/src/github.com/STNS/STNS/package/RPM' > ~/.rpmmacros
+WORKDIR /go/src/github.com/STNS/STNS
+RUN godep restore && go build -o "pkg/linux_amd64/stns" && \
+cp /go/src/github.com/STNS/STNS/pkg/linux_amd64/stns package/RPM/BUILD/ && rpmbuild --target x86_64 -ba package/RPM/SPECS/stns.spec
+
+# build ssh_stns_wrapper
+ADD ssh_stns_wrapper /go/src/github.com/STNS/ssh_stns_wrapper
+WORKDIR /go/src/github.com/STNS/ssh_stns_wrapper
+RUN godep restore && go build -o "pkg/linux_amd64/ssh_stns_wrapper"
+
+# build libnss_stns
+ADD libnss_stns /go/src/github.com/STNS/libnss_stns
+WORKDIR /go/src/github.com/STNS/libnss_stns
+RUN chown root:root -R /go/src/github.com/STNS/libnss_stns/package/RPM && echo '%_topdir /go/src/github.com/STNS/libnss_stns/package/RPM' > ~/.rpmmacros
+
+RUN godep restore && \
+GOARCH=amd64 go build -buildmode=c-shared -o package/RPM/BUILD/libnss_stns.so libnss_stns.go resource.go passwd.go shadow.go group.go && \
+cp /go/src/github.com/STNS/ssh_stns_wrapper/pkg/linux_amd64/ssh_stns_wrapper package/RPM/BUILD/ && \
+rpmbuild --target x86_64 -ba package/RPM/SPECS/libnss_stns.spec
+RUN mkdir /releases
+
+CMD cp -pr /go/src/github.com/STNS/libnss_stns/package/RPM/RPMS /releases && cp -pr /go/src/github.com/STNS/STNS/package/RPM/RPMS /releases

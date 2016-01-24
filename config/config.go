@@ -6,7 +6,7 @@ import (
 	"sync"
 
 	"github.com/BurntSushi/toml"
-	"github.com/pyama86/STNS/attribute"
+	"github.com/STNS/STNS/attribute"
 )
 
 type Config struct {

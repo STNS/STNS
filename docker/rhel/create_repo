@@ -1,0 +1,6 @@
+FROM centos:latest
+
+RUN yum install  -y createrepo
+RUN install -d -m 755 /centos/x86_64
+ADD releases /centos/x86_64/
+CMD /usr/bin/createrepo --checksum sha /centos/x86_64

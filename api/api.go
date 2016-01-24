@@ -3,9 +3,9 @@ package api
 import (
 	"reflect"
 
+	"github.com/STNS/STNS/attribute"
+	"github.com/STNS/STNS/config"
 	"github.com/ant0ine/go-json-rest/rest"
-	"github.com/pyama86/STNS/attribute"
-	"github.com/pyama86/STNS/config"
 )
 
 type Query struct {
