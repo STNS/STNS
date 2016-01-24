@@ -1,0 +1,39 @@
+FROM ubuntu:14.04
+
+# install go
+RUN apt-get update && apt-get install -y dh-make cdbs devscripts fakeroot lintian checkinstall dpatch quilt wget git reprepro && \
+wget https://storage.googleapis.com/golang/go1.5.2.linux-amd64.tar.gz -P /tmp && tar zxvf /tmp/go1.5.2.linux-amd64.tar.gz -C /usr/local
+ENV GOPATH /go
+ENV PATH $PATH:/usr/local/go/bin:$GOPATH/bin
+RUN go get github.com/tools/godep
+
+# build stns
+ADD STNS /go/src/github.com/STNS/STNS
+WORKDIR /go/src/github.com/STNS/STNS
+
+RUN godep restore && go build -o package/deb/debian/stns.bin
+WORKDIR /go/src/github.com/STNS/STNS/package/deb/
+RUN debuild --no-tgz-check -uc -us
+
+# build ssh_stns_wrapper
+ADD ssh_stns_wrapper/ /go/src/github.com/STNS/ssh_stns_wrapper
+WORKDIR /go/src/github.com/STNS/ssh_stns_wrapper
+RUN godep restore && go build -o ssh_stns_wrapper ssh_stns_wrapper.go
+
+# build libnss_stns
+ADD libnss_stns /go/src/github.com/STNS/libnss_stns
+WORKDIR /go/src/github.com/STNS/libnss_stns
+
+RUN godep restore && go build -buildmode=c-shared -o package/deb/debian/libnss-stns.so libnss_stns.go resource.go passwd.go shadow.go group.go && \
+cp /go/src/github.com/STNS/ssh_stns_wrapper/ssh_stns_wrapper package/deb/debian/ssh-stns-wrapper
+
+WORKDIR /go/src/github.com/STNS/libnss_stns/package/deb/
+RUN debuild --no-tgz-check -uc -us
+
+CMD cp /go/src/github.com/STNS/libnss_stns/package/*.deb /releases/debian/ && \
+cp /go/src/github.com/STNS/STNS/package/*.deb /releases/debian && \
+cd /releases/debian && \
+apt-ftparchive sources . > Sources && \
+apt-ftparchive packages . > Packages && \
+gzip -c Packages > Packages.gz && \
+gzip -c Sources > Sources.gz
