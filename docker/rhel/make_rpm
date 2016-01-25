@@ -10,7 +10,7 @@ RUN go get github.com/tools/godep
 ADD STNS /go/src/github.com/STNS/STNS
 RUN chown root:root -R /go/src/github.com/STNS/STNS/package/RPM && echo '%_topdir /go/src/github.com/STNS/STNS/package/RPM' > ~/.rpmmacros
 WORKDIR /go/src/github.com/STNS/STNS
-RUN godep restore && go build -o "pkg/linux_amd64/stns" && \
+RUN mkdir package/RPM/BUILD/ && godep restore && go build -o "pkg/linux_amd64/stns" && \
 cp /go/src/github.com/STNS/STNS/pkg/linux_amd64/stns package/RPM/BUILD/ && rpmbuild --target x86_64 -ba package/RPM/SPECS/stns.spec
 
 # build ssh_stns_wrapper
@@ -23,7 +23,7 @@ ADD libnss_stns /go/src/github.com/STNS/libnss_stns
 WORKDIR /go/src/github.com/STNS/libnss_stns
 RUN chown root:root -R /go/src/github.com/STNS/libnss_stns/package/RPM && echo '%_topdir /go/src/github.com/STNS/libnss_stns/package/RPM' > ~/.rpmmacros
 
-RUN godep restore && \
+RUN mkdir package/RPM/BUILD/ && godep restore && \
 GOARCH=amd64 go build -buildmode=c-shared -o package/RPM/BUILD/libnss_stns.so libnss_stns.go resource.go passwd.go shadow.go group.go && \
 cp /go/src/github.com/STNS/ssh_stns_wrapper/pkg/linux_amd64/ssh_stns_wrapper package/RPM/BUILD/ && \
 rpmbuild --target x86_64 -ba package/RPM/SPECS/libnss_stns.spec
