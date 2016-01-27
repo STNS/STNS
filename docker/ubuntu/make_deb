@@ -34,7 +34,5 @@ CMD mkdir -p /releases/debian && \
 cp /go/src/github.com/STNS/libnss_stns/package/*.deb /releases/debian/ && \
 cp /go/src/github.com/STNS/STNS/package/*.deb /releases/debian && \
 cd /releases/debian && \
-apt-ftparchive sources . > Sources && \
 apt-ftparchive packages . > Packages && \
 gzip -c Packages > Packages.gz && \
-gzip -c Sources > Sources.gz
