@@ -30,6 +30,7 @@ rpmbuild --target x86_64 -ba package/RPM/SPECS/libnss_stns.spec
 
 RUN install -d -m 755 /releases/centos/x86_64
 
-CMD cp -pr /go/src/github.com/STNS/libnss_stns/package/RPM/RPMS/x86_64/* /releases/centos/x86_64/ && \
+CMD mkdir -p /releases/centos/x86_64/ && \
+cp -pr /go/src/github.com/STNS/libnss_stns/package/RPM/RPMS/x86_64/* /releases/centos/x86_64/ && \
 cp -pr /go/src/github.com/STNS/STNS/package/RPM/RPMS/x86_64/* /releases/centos/x86_64/ && \
 /usr/bin/createrepo --checksum sha /releases/centos/x86_64

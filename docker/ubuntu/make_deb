@@ -30,7 +30,8 @@ cp /go/src/github.com/STNS/ssh_stns_wrapper/ssh_stns_wrapper package/deb/debian/
 WORKDIR /go/src/github.com/STNS/libnss_stns/package/deb/
 RUN debuild --no-tgz-check -uc -us
 
-CMD cp /go/src/github.com/STNS/libnss_stns/package/*.deb /releases/debian/ && \
+CMD mkdir -p /releases/debian && \
+cp /go/src/github.com/STNS/libnss_stns/package/*.deb /releases/debian/ && \
 cp /go/src/github.com/STNS/STNS/package/*.deb /releases/debian && \
 cd /releases/debian && \
 apt-ftparchive sources . > Sources && \
