@@ -32,7 +32,11 @@ RUN debuild --no-tgz-check -uc -us
 
 CMD mkdir -p /releases/debian && \
 cp /go/src/github.com/STNS/libnss_stns/package/*.deb /releases/debian/ && \
-cp /go/src/github.com/STNS/STNS/package/*.deb /releases/debian && \
 cd /releases/debian && \
+apt-ftparchive sources . > Sources && \
 apt-ftparchive packages . > Packages && \
-gzip -c Packages > Packages.gz && \
+apt-ftparchive contents . > Contents-$(dpkg --print-architecture) && \
+apt-ftparchive release . > Release && \
+gzip -c9 Sources > Sources.gz && \
+gzip -c9 Packages > Packages.gz && \
+gzip -c9 Contents-$(dpkg --print-architecture) > Contents-$(dpkg --print-architecture).gz
