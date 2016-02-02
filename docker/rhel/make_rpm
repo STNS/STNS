@@ -8,7 +8,10 @@ RUN go get github.com/tools/godep
 
 # build stns
 ADD STNS /go/src/github.com/STNS/STNS
-RUN chown root:root -R /go/src/github.com/STNS/STNS/package/RPM && echo '%_topdir /go/src/github.com/STNS/STNS/package/RPM' > ~/.rpmmacros
+RUN chown root:root -R /go/src/github.com/STNS/STNS/package/RPM && echo '%_topdir /go/src/github.com/STNS/STNS/package/RPM' > ~/.rpmmacros && \
+echo '%_signature gpg' >> ~/.rpmmacros && \
+echo '%_gpg_name stns-server' >> ~/.rpmmacros
+
 WORKDIR /go/src/github.com/STNS/STNS
 RUN mkdir package/RPM/BUILD/ && godep restore && go build -o "pkg/linux_amd64/stns" && \
 cp /go/src/github.com/STNS/STNS/pkg/linux_amd64/stns package/RPM/BUILD/ && rpmbuild --target x86_64 -ba package/RPM/SPECS/stns.spec
@@ -21,7 +24,9 @@ RUN godep restore && go build -o "pkg/linux_amd64/ssh_stns_wrapper"
 # build libnss_stns
 ADD libnss_stns /go/src/github.com/STNS/libnss_stns
 WORKDIR /go/src/github.com/STNS/libnss_stns
-RUN chown root:root -R /go/src/github.com/STNS/libnss_stns/package/RPM && echo '%_topdir /go/src/github.com/STNS/libnss_stns/package/RPM' > ~/.rpmmacros
+RUN chown root:root -R /go/src/github.com/STNS/libnss_stns/package/RPM && echo '%_topdir /go/src/github.com/STNS/libnss_stns/package/RPM' > ~/.rpmmacros && \
+echo '%_signature gpg' >> ~/.rpmmacros && \
+echo '%_gpg_name stns-server' >> ~/.rpmmacros
 
 RUN godep restore && \
 GOARCH=amd64 go build -buildmode=c-shared -o package/RPM/BUILD/libnss_stns.so libnss_stns.go resource.go passwd.go shadow.go group.go && \
@@ -32,5 +37,4 @@ RUN install -d -m 755 /releases/centos/x86_64
 
 CMD mkdir -p /releases/centos/x86_64/ && \
 cp -pr /go/src/github.com/STNS/libnss_stns/package/RPM/RPMS/x86_64/* /releases/centos/x86_64/ && \
-cp -pr /go/src/github.com/STNS/STNS/package/RPM/RPMS/x86_64/* /releases/centos/x86_64/ && \
-/usr/bin/createrepo --checksum sha /releases/centos/x86_64
+cp -pr /go/src/github.com/STNS/STNS/package/RPM/RPMS/x86_64/* /releases/centos/x86_64
