@@ -8,8 +8,8 @@ import (
 	"strconv"
 )
 
-func CreatePidFile(pidFile string) error {
-	if pidString, err := ioutil.ReadFile(pidFile); err == nil {
+func CreatePidFile(pidFile *string) error {
+	if pidString, err := ioutil.ReadFile(*pidFile); err == nil {
 		pid, err := strconv.Atoi(string(pidString))
 		if err == nil {
 			if _, err := os.Stat(fmt.Sprintf("/proc/%d/", pid)); err == nil {
@@ -18,7 +18,7 @@ func CreatePidFile(pidFile string) error {
 		}
 	}
 
-	file, err := os.Create(pidFile)
+	file, err := os.Create(*pidFile)
 	if err != nil {
 		return err
 	}
@@ -29,8 +29,8 @@ func CreatePidFile(pidFile string) error {
 	return err
 }
 
-func RemovePidFile(pidFile string) {
-	if err := os.Remove(pidFile); err != nil {
+func RemovePidFile(pidFile *string) {
+	if err := os.Remove(*pidFile); err != nil {
 		log.Fatal("Error removing %s: %s", pidFile, err)
 	}
 }

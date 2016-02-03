@@ -21,11 +21,11 @@ var (
 	configLock = new(sync.RWMutex)
 )
 
-func Load(configFile string) error {
+func Load(configFile *string) error {
 	var config Config
 	defaultConfig(&config)
 
-	_, err := toml.DecodeFile(configFile, &config)
+	_, err := toml.DecodeFile(*configFile, &config)
 	if err != nil {
 		return err
 	}
