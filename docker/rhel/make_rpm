@@ -1,18 +1,23 @@
 FROM centos:latest
 
 # install go
-RUN yum install -y wget rpmdevtools make git gcc createrepo && wget https://storage.googleapis.com/golang/go1.5.2.linux-amd64.tar.gz -P /tmp;tar zxvf /tmp/go1.5.2.linux-amd64.tar.gz -C /usr/local
+RUN yum install -y wget rpmdevtools make git gcc createrepo rpm-sign && \
+wget https://storage.googleapis.com/golang/go1.5.2.linux-amd64.tar.gz -P /tmp;tar zxvf /tmp/go1.5.2.linux-amd64.tar.gz -C /usr/local
+
 ENV GOPATH /go
 ENV PATH $PATH:/usr/local/go/bin:$GOPATH/bin
 RUN go get github.com/tools/godep
 
 # build stns
 ADD STNS /go/src/github.com/STNS/STNS
+
 RUN chown root:root -R /go/src/github.com/STNS/STNS/package/RPM && echo '%_topdir /go/src/github.com/STNS/STNS/package/RPM' > ~/.rpmmacros && \
 echo '%_signature gpg' >> ~/.rpmmacros && \
 echo '%_gpg_name stns-server' >> ~/.rpmmacros
 
 WORKDIR /go/src/github.com/STNS/STNS
+RUN gpg --import keys/pub.key;gpg --import --allow-secret-key-import keys/secret.key
+
 RUN mkdir package/RPM/BUILD/ && godep restore && go build -o "pkg/linux_amd64/stns" && \
 cp /go/src/github.com/STNS/STNS/pkg/linux_amd64/stns package/RPM/BUILD/ && rpmbuild --target x86_64 -ba package/RPM/SPECS/stns.spec
 
@@ -37,4 +42,6 @@ RUN install -d -m 755 /releases/centos/x86_64
 
 CMD mkdir -p /releases/centos/x86_64/ && \
 cp -pr /go/src/github.com/STNS/libnss_stns/package/RPM/RPMS/x86_64/* /releases/centos/x86_64/ && \
-cp -pr /go/src/github.com/STNS/STNS/package/RPM/RPMS/x86_64/* /releases/centos/x86_64
+cp -pr /go/src/github.com/STNS/STNS/package/RPM/RPMS/x86_64/* /releases/centos/x86_64 && \
+rpm --addsign /go/src/github.com/STNS/STNS/package/RPM/RPMS/x86_64/*.rpm &&\
+createrepo --checksum sha /releases/centos/x86_64

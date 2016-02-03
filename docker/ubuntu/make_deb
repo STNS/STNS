@@ -1,7 +1,7 @@
 FROM ubuntu:14.04
 
 # install go
-RUN apt-get update && apt-get install -y dh-make cdbs devscripts fakeroot lintian checkinstall dpatch quilt wget git reprepro && \
+RUN apt-get update && apt-get install -y dh-make cdbs devscripts fakeroot lintian checkinstall dpatch quilt wget git reprepro gnupg && \
 wget https://storage.googleapis.com/golang/go1.5.2.linux-amd64.tar.gz -P /tmp && tar zxvf /tmp/go1.5.2.linux-amd64.tar.gz -C /usr/local
 ENV GOPATH /go
 ENV PATH $PATH:/usr/local/go/bin:$GOPATH/bin
@@ -10,6 +10,8 @@ RUN go get github.com/tools/godep
 # build stns
 ADD STNS /go/src/github.com/STNS/STNS
 WORKDIR /go/src/github.com/STNS/STNS
+
+RUN gpg --import keys/pub.key;gpg --import --allow-secret-key-import keys/secret.key
 
 RUN godep restore && go build -o package/deb/debian/stns.bin
 WORKDIR /go/src/github.com/STNS/STNS/package/deb/
@@ -31,13 +33,8 @@ WORKDIR /go/src/github.com/STNS/libnss_stns/package/deb/
 RUN debuild --no-tgz-check -uc -us
 
 CMD mkdir -p /releases/debian && \
-cp /go/src/github.com/STNS/libnss_stns/package/*.deb /releases/debian/ && \
-cp /go/src/github.com/STNS/stns/package/*.deb /releases/debian/ && \
+cp /go/src/github.com/STNS/libnss_stns/package/*.deb /releases/debian && \
+cp /go/src/github.com/STNS/STNS/package/*.deb /releases/debian && \
+cp -pr /go/src/github.com/STNS/STNS/package/conf /releases/debian && \
 cd /releases/debian && \
-apt-ftparchive sources . > Sources && \
-apt-ftparchive packages . > Packages && \
-apt-ftparchive contents . > Contents-$(dpkg --print-architecture) && \
-apt-ftparchive release . > Release && \
-gzip -c9 Sources > Sources.gz && \
-gzip -c9 Packages > Packages.gz && \
-gzip -c9 Contents-$(dpkg --print-architecture) > Contents-$(dpkg --print-architecture).gz
+reprepro includedeb stns *.deb
