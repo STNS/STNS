@@ -11,7 +11,6 @@ Source0:   %{name}.initd
 Source2:   %{name}.logrotate
 Source3:   %{name}.conf
 Packager:  stns
-BuildArch: noarch
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 Requires(post): /sbin/chkconfig
 Requires(preun): /sbin/chkconfig, /sbin/service
@@ -38,7 +37,7 @@ install -d -m 755 %{buildroot}/%{_sysconfdir}/%{name}/
 install    -m 644 %{_sourcedir}/%{name}.conf %{buildroot}/%{_sysconfdir}/%{name}/%{name}.conf
 
 %clean
-rm -rf %{_builddir}
+rm -rf %{_builddir}/*
 rm -rf %{buildroot}
 
 %post

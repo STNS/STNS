@@ -9,10 +9,10 @@ import (
 	"strconv"
 	"syscall"
 
+	"github.com/STNS/STNS/api"
+	"github.com/STNS/STNS/config"
+	"github.com/STNS/STNS/pid"
 	"github.com/ant0ine/go-json-rest/rest"
-	"github.com/pyama86/STNS/api"
-	"github.com/pyama86/STNS/config"
-	"github.com/pyama86/STNS/pid"
 )
 
 func startServer(pidFile string, configFile string) {

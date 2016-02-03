@@ -4,3 +4,4 @@ RPM/BUILD/
 RPM/BUILDROOT/
 releases/*
 .DS_Store
+/keys

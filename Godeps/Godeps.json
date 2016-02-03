@@ -1,5 +1,5 @@
 {
-	"ImportPath": "github.com/pyama86/STNS",
+	"ImportPath": "github.com/STNS/STNS",
 	"GoVersion": "go1.5",
 	"Deps": [
 		{
