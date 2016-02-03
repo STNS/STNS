@@ -74,7 +74,7 @@ func main() {
 	}
 
 	if *configCheck {
-		fmt.Println("check ok!")
+		fmt.Println("check config success!")
 		os.Exit(0)
 	}
 
