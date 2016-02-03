@@ -65,6 +65,13 @@ do_reload()
     return $?
 }
 
+do_checkconf()
+{
+    $DAEMON --check-conf --pidfile=$PIDFILE $OTHER_OPTS >>$LOGFILE 2>&1
+    return $?
+}
+
+
 case "$1" in
     start)
         log_daemon_msg "Starting $NAME"
@@ -88,6 +95,7 @@ case "$1" in
         status_of_proc "$DAEMON" "$NAME" && exit 0 || exit $?
         ;;
     restart)
+        do_checkconf || exit $?
         log_daemon_msg "Restarting $DESC" "$NAME"
         do_stop
         retval=$?
@@ -107,16 +115,27 @@ case "$1" in
         esac
         ;;
      reload)
-      log_daemon_msg "Reload Config $NAME"
-        do_reload
+        do_checkconf || exit $?
+        log_daemon_msg "Reload Config $NAME"
+          do_reload
+          retval=$?
+          case "$retval" in
+              0) log_end_msg 0 ;;
+              *) log_end_msg 1; exit $retval ;;
+          esac
+          ;;
+    checkconf)
+        log_daemon_msg "Testing configuration of $NAME"
+        do_checkconf
         retval=$?
         case "$retval" in
             0) log_end_msg 0 ;;
             *) log_end_msg 1; exit $retval ;;
         esac
         ;;
+
     *)
-        echo "Usage: $SCRIPTNAME {start|stop|restart|reload|status}" >&2
+        echo "Usage: $SCRIPTNAME {start|stop|restart|reload|status|checkconf}" >&2
         exit 3
     ;;
 esac

@@ -131,6 +131,24 @@ reload() {
     return $retval
 }
 
+check_conf_q() {
+    $BIN --check-conf --pidfile=$PIDFILE $OTHER_OPTS >>$LOGFILE 2>&1
+}
+
+checkconf() {
+    echo -n $"Testing configuration of $prog: "
+
+   check_conf_q 
+    if [ "$?" -eq 0 ]; then
+        success
+        echo
+    else
+        failure
+        echo
+        return 1
+    fi
+}
+
 rh_status() {
     status -p $PIDFILE $prog
 }
@@ -149,16 +167,21 @@ case "$1" in
         $1
         ;;
     reload)
+        check_conf_q || exit 1
         $1
         ;;
     restart)
+        check_conf_q || exit 1
         $1
         ;;
     status)
         rh_status
         ;;
+    checkconf)
+        $1
+        ;;
     *)
-        echo $"Usage: $0 {start|stop|restart|reload|status}"
+        echo $"Usage: $0 {start|stop|restart|reload|status|checkconf}"
         exit 2
 esac
 
