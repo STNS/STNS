@@ -51,6 +51,7 @@ func startServer(pidFile *string, configFile *string) {
 	router, err := rest.MakeRouter(
 		rest.Get("/:resource_name/list", api.GetList),
 		rest.Get("/:resource_name/:column/:value", api.Get),
+		rest.Get("/healthcheck", api.HealthChech),
 	)
 	if err != nil {
 		log.Fatal(err)

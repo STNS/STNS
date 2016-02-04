@@ -58,3 +58,7 @@ func GetList(w rest.ResponseWriter, r *rest.Request) {
 
 	w.WriteJson(resource)
 }
+
+func HealthChech(w rest.ResponseWriter, r *rest.Request) {
+	w.WriteJson("success")
+}
