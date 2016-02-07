@@ -21,6 +21,7 @@ $ apt-get install stns
 * /etc/stns/stns.conf
 ```
 port = 1104
+include = "/etc/stns/conf.d/*"
 [users.example]
 id = 1001
 group_id = 1001
