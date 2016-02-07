@@ -6,11 +6,15 @@ simple toml name service is Linux `/etc/passwd`,`/etc/group`,`/etc/shadow` name 
 client library:https://github.com/pyama86/libnss_stns
 
 ## install
-download page <https://github.com/pyama86/STNS/releases>
+## redhat/centos
 ```
-$ wget https://github.com/pyama86/STNS/releases/download/<version>/stns-<version>.noarch.rpm
-$ rpm -ivh stns-<version>.noarch.rpm
-$ service stns start
+$ curl -fsSL https://repo.stns.jp/scripts/yum-repo.sh | sh
+$ yum install stns
+```
+## debian/ubuntu
+```
+$ curl -fsSL https://repo.stns.jp/scripts/apt-repo.sh | sh
+$ apt-get install stns
 ```
 
 ## config
@@ -20,8 +24,8 @@ port = 1104
 [users.example]
 id = 1001
 group_id = 1001
-directory = "/home/example"
-shell = "/bin/bash"
+directory = "/home/example"(default:/home/:user_name)
+shell = "/bin/bash"(default:/bin/bash)
 keys = ["ssh-rsa XXXXX…"]
 [groups.example]
 id = 1001
