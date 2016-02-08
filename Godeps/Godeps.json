@@ -1,27 +1,7 @@
 {
-	"ImportPath": "github.com/STNS/STNs",
+	"ImportPath": "github.com/STNS/STNS",
 	"GoVersion": "go1.5",
 	"Deps": [
-		{
-			"ImportPath": "github.com/STNS/STNS/api",
-			"Comment": "v0.0.1-40-ga3e9dfa",
-			"Rev": "a3e9dfa905f275697565b50854c52df7635f667d"
-		},
-		{
-			"ImportPath": "github.com/STNS/STNS/attribute",
-			"Comment": "v0.0.1-40-ga3e9dfa",
-			"Rev": "a3e9dfa905f275697565b50854c52df7635f667d"
-		},
-		{
-			"ImportPath": "github.com/STNS/STNS/config",
-			"Comment": "v0.0.1-40-ga3e9dfa",
-			"Rev": "a3e9dfa905f275697565b50854c52df7635f667d"
-		},
-		{
-			"ImportPath": "github.com/STNS/STNS/pid",
-			"Comment": "v0.0.1-40-ga3e9dfa",
-			"Rev": "a3e9dfa905f275697565b50854c52df7635f667d"
-		},
 		{
 			"ImportPath": "github.com/ant0ine/go-json-rest/rest",
 			"Comment": "v3.3.0-12-geab4809",
