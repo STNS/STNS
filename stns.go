@@ -48,6 +48,24 @@ func startServer(pidFile *string, configFile *string) {
 
 	server := rest.NewApi()
 	server.Use(rest.DefaultDevStack...)
+
+	// using basic auth
+	if config.All.User != "" && config.All.Password != "" {
+
+		var basicAuthMiddleware = &rest.AuthBasicMiddleware{
+			Realm: "stns",
+			Authenticator: func(user string, password string) bool {
+				return user == config.All.User && password == config.All.Password
+			},
+		}
+		server.Use(&rest.IfMiddleware{
+			Condition: func(request *rest.Request) bool {
+				return request.URL.Path != "/healthcheck"
+			},
+			IfTrue: basicAuthMiddleware,
+		})
+	}
+
 	router, err := rest.MakeRouter(
 		rest.Get("/:resource_name/list", api.GetList),
 		rest.Get("/:resource_name/:column/:value", api.Get),

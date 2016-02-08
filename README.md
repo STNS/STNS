@@ -21,12 +21,19 @@ $ apt-get install stns
 * /etc/stns/stns.conf
 ```
 port = 1104
+include = "/etc/stns/conf.d/*"
+
+# support basic auth
+user = "basic_user"
+password = "basic_password"
+
 [users.example]
 id = 1001
 group_id = 1001
 directory = "/home/example"(default:/home/:user_name)
 shell = "/bin/bash"(default:/bin/bash)
 keys = ["ssh-rsa XXXXX…"]
+
 [groups.example]
 id = 1001
 users = ["example"]

@@ -5,15 +5,17 @@ import (
 	"path/filepath"
 	"sync"
 
-	"github.com/pyama86/toml"
 	"github.com/STNS/STNS/attribute"
+	"github.com/pyama86/toml"
 )
 
 type Config struct {
-	Port    int    `toml:"port"`
-	Include string `toml:"include"`
-	Users   attribute.UserGroups
-	Groups  attribute.UserGroups
+	Port     int    `toml:"port"`
+	Include  string `toml:"include"`
+	User     string `toml:"user"`
+	Password string `toml:"password"`
+	Users    attribute.UserGroups
+	Groups   attribute.UserGroups
 }
 
 var (
