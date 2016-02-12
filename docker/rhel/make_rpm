@@ -2,7 +2,7 @@ FROM centos:latest
 
 # install go
 RUN yum install -y wget rpmdevtools make git gcc createrepo rpm-sign && \
-wget https://storage.googleapis.com/golang/go1.5.2.linux-amd64.tar.gz -P /tmp;tar zxvf /tmp/go1.5.2.linux-amd64.tar.gz -C /usr/local
+wget https://storage.googleapis.com/golang/go1.5.3.linux-amd64.tar.gz -P /tmp;tar zxvf /tmp/go1.5.3.linux-amd64.tar.gz -C /usr/local
 
 ENV GOPATH /go
 ENV PATH $PATH:/usr/local/go/bin:$GOPATH/bin
