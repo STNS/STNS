@@ -1,4 +1,4 @@
-FROM ubuntu:14.04
+FROM ubuntu:15.04
 
 # install go
 RUN apt-get update && apt-get install -y dh-make cdbs devscripts fakeroot lintian checkinstall dpatch quilt wget git reprepro gnupg && \
