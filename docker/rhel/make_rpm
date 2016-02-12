@@ -27,7 +27,7 @@ WORKDIR /go/src/github.com/STNS/ssh_stns_wrapper
 RUN godep restore && go build -o "pkg/linux_amd64/ssh_stns_wrapper"
 
 # build libnss_stns
-ADD libnss_stns /go/src/github.com/STNS/libnss_stns
+ADD  libnss_stns /go/src/github.com/STNS/libnss_stns
 WORKDIR /go/src/github.com/STNS/libnss_stns
 RUN chown root:root -R /go/src/github.com/STNS/libnss_stns/package/RPM && echo '%_topdir /go/src/github.com/STNS/libnss_stns/package/RPM' > ~/.rpmmacros && \
 echo '%_signature gpg' >> ~/.rpmmacros && \
