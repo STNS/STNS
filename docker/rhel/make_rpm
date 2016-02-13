@@ -1,12 +1,12 @@
-FROM centos:latest
+FROM pyama/stns:centos_build
 
 # install go
-RUN yum install -y wget rpmdevtools make git gcc createrepo rpm-sign && \
-wget https://storage.googleapis.com/golang/go1.5.3.linux-amd64.tar.gz -P /tmp;tar zxvf /tmp/go1.5.3.linux-amd64.tar.gz -C /usr/local
-
-ENV GOPATH /go
-ENV PATH $PATH:/usr/local/go/bin:$GOPATH/bin
-RUN go get github.com/tools/godep
+#RUN yum install -y wget rpmdevtools make git gcc createrepo rpm-sign && \
+#wget https://storage.googleapis.com/golang/go1.5.3.linux-amd64.tar.gz -P /tmp;tar zxvf /tmp/go1.5.3.linux-amd64.tar.gz -C /usr/local
+#
+#ENV GOPATH /go
+#ENV PATH $PATH:/usr/local/go/bin:$GOPATH/bin
+#RUN go get github.com/tools/godep
 
 # build stns
 ADD STNS /go/src/github.com/STNS/STNS

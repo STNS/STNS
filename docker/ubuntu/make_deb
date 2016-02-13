@@ -1,11 +1,11 @@
-FROM ubuntu:15.04
+FROM pyama/stns:ubuntu_build
 
 # install go
-RUN apt-get update && apt-get install -y dh-make cdbs devscripts fakeroot lintian checkinstall dpatch quilt wget git reprepro gnupg && \
-wget https://storage.googleapis.com/golang/go1.5.3.linux-amd64.tar.gz -P /tmp && tar zxvf /tmp/go1.5.3.linux-amd64.tar.gz -C /usr/local
-ENV GOPATH /go
-ENV PATH $PATH:/usr/local/go/bin:$GOPATH/bin
-RUN go get github.com/tools/godep
+#RUN apt-get update && apt-get install -y dh-make cdbs devscripts fakeroot lintian checkinstall dpatch quilt wget git reprepro gnupg && \
+#wget https://storage.googleapis.com/golang/go1.5.3.linux-amd64.tar.gz -P /tmp && tar zxvf /tmp/go1.5.3.linux-amd64.tar.gz -C /usr/local
+#ENV GOPATH /go
+#ENV PATH $PATH:/usr/local/go/bin:$GOPATH/bin
+#RUN go get github.com/tools/godep
 
 # build stns
 ADD STNS /go/src/github.com/STNS/STNS
