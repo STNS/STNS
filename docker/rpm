@@ -1,0 +1,10 @@
+FROM pyama/stns:centos_build
+ADD ./ /go/src/github.com/STNS/STNS
+WORKDIR /go/src/github.com/STNS/STNS
+RUN chown root:root -R /go/src/github.com/STNS/STNS/package/RPM && \
+mkdir -p package/RPM/BUILD/ && \
+echo '%_topdir /go/src/github.com/STNS/STNS/package/RPM' > ~/.rpmmacros && \
+echo '%_signature gpg' >> ~/.rpmmacros && \
+echo '%_gpg_name stns-server' >> ~/.rpmmacros && \
+cp binary/stns.bin  package/RPM/BUILD/stns
+CMD rpmbuild --target x86_64 -ba package/RPM/SPECS/stns.spec && cp package/RPM/RPMS/x86_64/* binary/
