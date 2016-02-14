@@ -5,3 +5,6 @@ RPM/BUILDROOT/
 releases/*
 .DS_Store
 /keys
+/binary/*
+package/deb/debian/*
+package/stns*.*

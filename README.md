@@ -1,5 +1,5 @@
 # Simple Toml Name Service
-[![Build Status](https://travis-ci.org/pyama86/STNS.svg?branch=master)](https://travis-ci.org/pyama86/STNS)
+[![Build Status](https://travis-ci.org/STNS/STNS.svg?branch=master)](https://travis-ci.org/STNS/STNS)
 
 simple toml name service is Linux `/etc/passwd`,`/etc/group`,`/etc/shadow` name resolution from toml format config
 

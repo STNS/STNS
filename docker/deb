@@ -1,0 +1,6 @@
+FROM pyama/stns:ubuntu_build
+ADD ./ /go/src/github.com/STNS/STNS
+WORKDIR /go/src/github.com/STNS/STNS
+RUN cp binary/stns.bin package/deb/debian/
+WORKDIR /go/src/github.com/STNS/STNS/package/deb/
+CMD debuild --no-tgz-check -uc -us && cp ../*.deb ../../binary/

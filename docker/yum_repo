@@ -1,0 +1,14 @@
+FROM pyama/stns:centos_build
+
+ADD . /go/src/github.com/STNS/STNS
+WORKDIR /go/src/github.com/STNS/STNS
+RUN gpg --import keys/pub.key;gpg --import --allow-secret-key-import keys/secret.key && \
+echo '%_signature gpg' >> ~/.rpmmacros && \
+echo '%_gpg_name stns-server' >> ~/.rpmmacros
+
+RUN install -d -m 755 releases/centos/x86_64
+
+CMD mkdir -p releases/centos/x86_64/ && \
+cp -pr binary/*.rpm releases/centos/x86_64/ && \
+rpm --addsign releases/centos/x86_64/*.rpm && \
+createrepo --checksum sha releases/centos/x86_64
