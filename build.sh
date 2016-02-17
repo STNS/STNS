@@ -1,7 +1,5 @@
 #!/bin/bash
 eval $(docker-machine env dev)
-rm -rf ./binary/*
-rm -rf ./releases/*
 
 docker build --no-cache --rm -t stns:stns .
 docker run -v "$(pwd)"/binary:/go/src/github.com/STNS/STNS/binary -t stns:stns
