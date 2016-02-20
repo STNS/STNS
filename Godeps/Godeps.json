@@ -1,6 +1,6 @@
 {
 	"ImportPath": "github.com/STNS/STNS",
-	"GoVersion": "go1.5",
+	"GoVersion": "go1.6",
 	"Deps": [
 		{
 			"ImportPath": "github.com/ant0ine/go-json-rest/rest",
