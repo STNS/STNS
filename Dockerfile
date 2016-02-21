@@ -1,4 +1,4 @@
-FROM pyama/go:1.6
+FROM golang:latest
 ADD . /go/src/github.com/STNS/STNS
 WORKDIR /go/src/github.com/STNS/STNS
 RUN go get github.com/tools/godep && godep restore && go get github.com/BurntSushi/toml
