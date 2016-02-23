@@ -1,6 +1,9 @@
 package attribute
 
-import "testing"
+import (
+	"reflect"
+	"testing"
+)
 
 func TestGetByName(t *testing.T) {
 	users := UserGroups{
@@ -16,7 +19,7 @@ func TestGetByName(t *testing.T) {
 			t.Error("ummatch user id")
 		}
 
-		if u.LinkUser != []string{"foo", "bar"} {
+		if !reflect.DeepEqual(u.LinkUser, []string{"foo", "bar"}) {
 			t.Error("ummatch link user")
 		}
 
