@@ -11,6 +11,7 @@ import (
 type Query struct {
 	resource string
 	column   string
+	value    string
 }
 
 func (q Query) Get(value string) attribute.UserGroups {
@@ -23,9 +24,9 @@ func (q Query) Get(value string) attribute.UserGroups {
 		resource = config.All.Groups
 	}
 	if q.column == "id" {
-		attr = resource.GetById(value)
+		attr = resource.GetById(q.value)
 	} else if q.column == "name" {
-		attr = resource.GetByName(value)
+		attr = resource.GetByName(q.value)
 	} else if q.column == "list" {
 		attr = resource
 	}
@@ -36,26 +37,21 @@ func Get(w rest.ResponseWriter, r *rest.Request) {
 	value := r.PathParam("value")
 	column := r.PathParam("column")
 	resource_name := r.PathParam("resource_name")
-	query := Query{resource_name, column}
-
-	attr := query.Get(value)
-	if attr == nil || reflect.ValueOf(attr).IsNil() {
-		rest.NotFound(w, r)
-		return
-	}
-	w.WriteJson(attr)
+	query := Query{resource_name, column, value}
+	query.Response(w, r)
 }
 func GetList(w rest.ResponseWriter, r *rest.Request) {
 	resource_name := r.PathParam("resource_name")
+	query := Query{resource_name, "list", ""}
+	query.Response(w, r)
+}
 
-	query := Query{resource_name, "list"}
-	resource := query.Get("")
-
+func (q Query) Response(w rest.ResponseWriter, r *rest.Request) {
+	resource := query.Get()
 	if resource == nil || reflect.ValueOf(resource).IsNil() {
 		rest.NotFound(w, r)
 		return
 	}
-
 	w.WriteJson(resource)
 }
 
