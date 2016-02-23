@@ -5,6 +5,8 @@ simple toml name service is Linux `/etc/passwd`,`/etc/group`,`/etc/shadow` name 
 
 client library:https://github.com/pyama86/libnss_stns
 
+blog:[Linuxユーザーと公開鍵を統合管理するサーバ&クライアントを書いた](https://ten-snapon.com/archives/1228)
+
 ## install
 ## redhat/centos
 ```
