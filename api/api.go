@@ -39,11 +39,11 @@ func (q Query) mergeKey(attr attribute.UserGroups) {
 	// merge user keys
 	for k, u := range attr {
 		merge_keys := []string{}
-		if u.LinkUser != nil || !reflect.ValueOf(u.LinkUser).IsNil() {
-			for _, link_user_name := range u.LinkUser {
+		if u.LinkUsers != nil || !reflect.ValueOf(u.LinkUsers).IsNil() {
+			for _, link_users_name := range u.LinkUsers {
 				link_keys := map[string][]string{k: u.Keys}
 
-				q.recursiveSetLinkKey(link_user_name, link_keys)
+				q.recursiveSetLinkKey(link_users_name, link_keys)
 				for _, user_keys := range link_keys {
 					merge_keys = append(merge_keys, user_keys...)
 				}
@@ -82,8 +82,8 @@ func (q Query) recursiveSetLinkKey(name string, result map[string][]string) {
 	user := config.All.Users.GetByName(name)
 	if user != nil && len(user[name].Keys) > 0 {
 		result[name] = user[name].Keys
-		if user[name].LinkUser != nil || !reflect.ValueOf(user[name].LinkUser).IsNil() {
-			for _, nest_user_name := range user[name].LinkUser {
+		if user[name].LinkUsers != nil || !reflect.ValueOf(user[name].LinkUsers).IsNil() {
+			for _, nest_user_name := range user[name].LinkUsers {
 				q.recursiveSetLinkKey(nest_user_name, result)
 			}
 		}

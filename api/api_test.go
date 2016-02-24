@@ -60,7 +60,7 @@ group_id = 2001
 directory = "/home/pyama1"
 shell = "/bin/bash"
 keys = ["ssh-rsa aaa"]
-link_user = ["pyama2"]
+link_users = ["pyama2"]
 
 [users.pyama2]
 id = 1002
@@ -68,7 +68,7 @@ group_id = 2001
 directory = "/home/pyama2"
 shell = "/bin/bash"
 keys = ["ssh-rsa bbb"]
-link_user = ["pyama3"]
+link_users = ["pyama3"]
 
 [users.pyama3]
 id = 1003
@@ -76,7 +76,7 @@ group_id = 2001
 directory = "/home/pyama3"
 shell = "/bin/bash"
 keys = ["ssh-rsa ccc"]
-link_user = ["pyama1"]
+link_users = ["pyama1"]
 
 [users.pyama4]
 id = 1004
@@ -84,7 +84,7 @@ group_id = 2001
 directory = "/home/pyama4"
 shell = "/bin/bash"
 keys = ["ssh-rsa ddd"]
-link_user = ["pyama5"]
+link_users = ["pyama5"]
 
 [users.pyama5]
 id = 1005
@@ -92,7 +92,7 @@ group_id = 2001
 directory = "/home/pyama5"
 shell = "/bin/bash"
 keys = ["ssh-rsa eee"]
-link_user = ["pyama4"]
+link_users = ["pyama4"]
 
 [groups.pepabo]
 id = 3001

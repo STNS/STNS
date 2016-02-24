@@ -35,7 +35,7 @@ group_id = 1001
 directory = "/home/example"(default:/home/:user_name)
 shell = "/bin/bash"(default:/bin/bash)
 keys = ["ssh-rsa XXXXX…"]
-link_user = ["foo"]
+link_users = ["foo"]
 
 [groups.example]
 id = 1001
@@ -43,13 +43,13 @@ users = ["example"]
 ```
 support format /etc/passwd,/etc/groups,/etc/shadow
 
-### link_user
-link_user params is merge public key from the specified user
+### link_users
+link_users params is merge public key from the specified user
 
 ```toml
 [users.pyama1]
 keys = ["ssh-rsa aaa"]
-link_user = ["pyama2"] ←
+link_users = ["pyama2"] ←
 
 [users.pyama2]
 keys = ["ssh-rsa bbb"]
