@@ -9,7 +9,7 @@ func TestGetByName(t *testing.T) {
 	users := UserGroups{
 		"test1": &All{
 			Id:       1,
-			LinkUser: []string{"foo", "bar"},
+			LinkUsers: []string{"foo", "bar"},
 		},
 	}
 	_users := users.GetByName("test1")
@@ -19,7 +19,7 @@ func TestGetByName(t *testing.T) {
 			t.Error("ummatch user id")
 		}
 
-		if !reflect.DeepEqual(u.LinkUser, []string{"foo", "bar"}) {
+		if !reflect.DeepEqual(u.LinkUsers, []string{"foo", "bar"}) {
 			t.Error("ummatch link user")
 		}
 

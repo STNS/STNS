@@ -13,7 +13,7 @@ type All struct {
 	Shell     string   `toml:"shell" json:"shell"`
 	Gecos     string   `toml:"gecos" json:"gecos"`
 	Keys      []string `toml:"keys" json:"keys"`
-	LinkUser  []string `toml:"link_user" json:"link_user"`
+	LinkUsers  []string `toml:"link_users" json:"link_users"`
 	// use group
 	Users []string `toml:"users" json:"users"`
 }
