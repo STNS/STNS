@@ -1,3 +1,9 @@
+stns (0.0.2) STABLE; urgency=low
+
+  * add link user(https://github.com/STNS/STNS/pull/4)
+
+ -- pyama86 <www.kazu.com@gmail.com>  Wed, 24 Feb 2016 12:54:00 +0000
+
 stns (0.0.1) UNSTABLE; urgency=low
 
   * Initial release. 
