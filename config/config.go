@@ -5,8 +5,8 @@ import (
 	"path/filepath"
 	"sync"
 
+	"github.com/BurntSushi/toml"
 	"github.com/STNS/STNS/attribute"
-	"github.com/pyama86/toml"
 )
 
 type Config struct {

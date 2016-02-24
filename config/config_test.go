@@ -28,6 +28,7 @@ group_id = 2001
 directory = "/home/pyama"
 shell = "/bin/bash"
 keys = ["ssh-rsa aaa"]
+link_user = ["pyama2", "pyama3"]
 `, tomlQuotedReplacer.Replace(configDir))
 
 	includedContent := `
@@ -54,6 +55,8 @@ users = ["pyama"]
 	assert(t, All.Users["pyama"].Directory == "/home/pyama", "unmatch directory")
 	assert(t, All.Users["pyama"].Shell == "/bin/bash", "unmatch shell")
 	assert(t, All.Users["pyama"].Keys[0] == "ssh-rsa aaa", "unmatch key")
+	assert(t, All.Users["pyama"].LinkUser[0] == "pyama2", "unmach link_user")
+	assert(t, All.Users["pyama"].LinkUser[1] == "pyama3", "unmach link_user")
 	assert(t, All.Groups["pepabo"].Id == 3001, "unmatch group id")
 	assert(t, All.Groups["pepabo"].Users[0] == "pyama", "unmatch group users")
 }

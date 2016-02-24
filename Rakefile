@@ -13,7 +13,7 @@ task "pkg" => [:build] do
 end
 
 desc "make repo data"
-task "yum-repo" => [:pkg] do
+task "repo" => [:pkg] do
   sh "cp -pr ../libnss_stns/binary/*.rpm binary"
   sh "cp -pr ../libnss_stns/binary/*.deb binary"
   docker_run("yum_repo", "releases")
@@ -22,5 +22,5 @@ end
 
 def docker_run(file, dir="binary")
   sh "docker build --no-cache --rm -f docker/#{file} -t stns:stns ."
-  sh "docker run -it -v \"$(pwd)\"/binary:/go/src/github.com/STNS/STNS/#{dir} -t stns:stns"
+  sh "docker run -it -v \"$(pwd)\"/#{dir}:/go/src/github.com/STNS/STNS/#{dir} -t stns:stns"
 end

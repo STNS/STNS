@@ -11,9 +11,10 @@ import (
 type Query struct {
 	resource string
 	column   string
+	value    string
 }
 
-func (q Query) Get(value string) attribute.UserGroups {
+func (q Query) Get() attribute.UserGroups {
 	var attr attribute.UserGroups
 	var resource attribute.UserGroups
 
@@ -23,40 +24,93 @@ func (q Query) Get(value string) attribute.UserGroups {
 		resource = config.All.Groups
 	}
 	if q.column == "id" {
-		attr = resource.GetById(value)
+		attr = resource.GetById(q.value)
 	} else if q.column == "name" {
-		attr = resource.GetByName(value)
+		attr = resource.GetByName(q.value)
 	} else if q.column == "list" {
 		attr = resource
 	}
+
+	// merge user keys
+	q.mergeKey(attr)
 	return attr
+}
+func (q Query) mergeKey(attr attribute.UserGroups) {
+	// merge user keys
+	for k, u := range attr {
+		merge_keys := []string{}
+		if u.LinkUser != nil || !reflect.ValueOf(u.LinkUser).IsNil() {
+			for _, link_user_name := range u.LinkUser {
+				link_keys := map[string][]string{k: u.Keys}
+
+				q.recursiveSetLinkKey(link_user_name, link_keys)
+				for _, user_keys := range link_keys {
+					merge_keys = append(merge_keys, user_keys...)
+				}
+
+				u.Keys = RemoveDuplicates(merge_keys)
+			}
+		}
+	}
+}
+
+// ref:http://qiita.com/yukitomo/items/2e6be0f26905d8e3dd22
+func member(n string, xs []string) bool {
+	for _, x := range xs {
+		if n == x {
+			return true
+		}
+	}
+	return false
+}
+
+func RemoveDuplicates(xs []string) []string {
+	ys := make([]string, 0, len(xs))
+	for _, x := range xs {
+		if !member(x, ys) {
+			ys = append(ys, x)
+		}
+	}
+	return ys
+}
+
+func (q Query) recursiveSetLinkKey(name string, result map[string][]string) {
+	if result[name] != nil {
+		return
+	}
+
+	user := config.All.Users.GetByName(name)
+	if user != nil && len(user[name].Keys) > 0 {
+		result[name] = user[name].Keys
+		if user[name].LinkUser != nil || !reflect.ValueOf(user[name].LinkUser).IsNil() {
+			for _, nest_user_name := range user[name].LinkUser {
+				q.recursiveSetLinkKey(nest_user_name, result)
+			}
+		}
+	}
 }
 
 func Get(w rest.ResponseWriter, r *rest.Request) {
 	value := r.PathParam("value")
 	column := r.PathParam("column")
 	resource_name := r.PathParam("resource_name")
-	query := Query{resource_name, column}
+	query := Query{resource_name, column, value}
+	query.Response(w, r)
+}
+func GetList(w rest.ResponseWriter, r *rest.Request) {
+	resource_name := r.PathParam("resource_name")
+	query := Query{resource_name, "list", ""}
+	query.Response(w, r)
+}
 
-	attr := query.Get(value)
+func (q Query) Response(w rest.ResponseWriter, r *rest.Request) {
+	attr := q.Get()
 	if attr == nil || reflect.ValueOf(attr).IsNil() {
 		rest.NotFound(w, r)
 		return
 	}
+
 	w.WriteJson(attr)
-}
-func GetList(w rest.ResponseWriter, r *rest.Request) {
-	resource_name := r.PathParam("resource_name")
-
-	query := Query{resource_name, "list"}
-	resource := query.Get("")
-
-	if resource == nil || reflect.ValueOf(resource).IsNil() {
-		rest.NotFound(w, r)
-		return
-	}
-
-	w.WriteJson(resource)
 }
 
 func HealthChech(w rest.ResponseWriter, r *rest.Request) {
