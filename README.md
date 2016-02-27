@@ -6,7 +6,8 @@ STNS is used by sshd to access keys and user resolver provided
 client library:https://github.com/pyama86/libnss_stns
 
 ```
-$ ssh pyama@example.jp                                                                                                                                                   $ id pyama
+$ ssh pyama@example.jp
+$ id pyama
 uid=1001(pyama) gid=1001(pyama) groups=1001(pyama)
 ```
 
