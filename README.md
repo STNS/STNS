@@ -13,7 +13,7 @@ uid=1001(pyama) gid=1001(pyama) groups=1001(pyama)
 
 diagram
 
-![diagram](https://cloud.githubusercontent.com/assets/8022082/13373739/362ca2c8-ddb3-11e5-97e2-13ea1269c26e.png)
+![diagram](https://cloud.githubusercontent.com/assets/8022082/13373974/250a8b16-ddba-11e5-994d-b1bbc81a6b94.png)
 
 blog
 * [Linuxユーザーと公開鍵を統合管理するサーバ&クライアントを書いた](https://ten-snapon.com/archives/1228)
