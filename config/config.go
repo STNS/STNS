@@ -6,14 +6,16 @@ import (
 	"sync"
 
 	"github.com/BurntSushi/toml"
-	"github.com/pyama86/STNS/attribute"
+	"github.com/STNS/STNS/attribute"
 )
 
 type Config struct {
-	Port    int    `toml:"port"`
-	Include string `toml:"include"`
-	Users   attribute.UserGroups
-	Groups  attribute.UserGroups
+	Port     int    `toml:"port"`
+	Include  string `toml:"include"`
+	User     string `toml:"user"`
+	Password string `toml:"password"`
+	Users    attribute.UserGroups
+	Groups   attribute.UserGroups
 }
 
 var (
@@ -21,11 +23,11 @@ var (
 	configLock = new(sync.RWMutex)
 )
 
-func Load(configFile string) error {
+func Load(configFile *string) error {
 	var config Config
 	defaultConfig(&config)
 
-	_, err := toml.DecodeFile(configFile, &config)
+	_, err := toml.DecodeFile(*configFile, &config)
 	if err != nil {
 		return err
 	}

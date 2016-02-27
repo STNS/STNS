@@ -1,11 +1,11 @@
 {
-	"ImportPath": "github.com/pyama86/STNS",
-	"GoVersion": "go1.5",
+	"ImportPath": "github.com/STNS/STNS",
+	"GoVersion": "go1.6",
 	"Deps": [
 		{
 			"ImportPath": "github.com/BurntSushi/toml",
-			"Comment": "v0.1.0-21-g056c9bc",
-			"Rev": "056c9bc7be7190eaa7715723883caffa5f8fa3e4"
+			"Comment": "v0.1.0-39-ga4eecd4",
+			"Rev": "a4eecd407cf4129fc902ece859a0114e4cf1a7f4"
 		},
 		{
 			"ImportPath": "github.com/ant0ine/go-json-rest/rest",
