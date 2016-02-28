@@ -69,6 +69,7 @@ users = ["example"]
 |group_id|id of the group they belong|
 |directory|home directory path|
 |shell|default shell path|
+|gecos|description|
 |keys|public key list|
 |link_users|merge public key from the specified user|
 
