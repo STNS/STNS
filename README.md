@@ -32,7 +32,8 @@ $ apt-get install stns
 
 ## config
 * /etc/stns/stns.conf
-```
+
+```toml
 port = 1104
 include = "/etc/stns/conf.d/*"
 
@@ -52,9 +53,26 @@ link_users = ["foo"]
 id = 1001
 users = ["example"]
 ```
-support format /etc/passwd,/etc/groups,/etc/shadow
 
-### link_users
+### General
+|Name|Description|
+|---|---|
+|port|listen port|
+|include|include config directory|
+|user| basic authentication user|
+|password| basic authentication password|
+
+### Users
+|Name|Description|
+|---|---|
+|id| unique user id|
+|group_id|id of the group they belong|
+|directory|home directory path|
+|shell|default shell path|
+|keys|public key list|
+|link_users|merge public key from the specified user|
+
+#### link_users
 link_users params is merge public key from the specified user
 
 ```toml
@@ -70,6 +88,14 @@ $ /user/local/bin/stns-key-wrapper pyama1
 ssh-rsa aaa
 ssh-rsa bbb
 ```
+
+### Groups
+|Name|Description|
+|---|---|
+|id| unique group id|
+|users|user id of the members|
+
+
 
 ## author
 * pyama86
