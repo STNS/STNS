@@ -16,39 +16,9 @@ import (
 	"github.com/ant0ine/go-json-rest/rest"
 )
 
-func startServer(pidFile *string, configFile *string) {
-
-	if err := pid.CreatePidFile(pidFile); err != nil {
-		log.Fatal(err)
-		os.Exit(1)
-	}
-	defer pid.RemovePidFile(pidFile)
-
-	c := make(chan os.Signal, 1)
-	signal.Notify(c, os.Interrupt, os.Kill, os.Signal(syscall.SIGTERM), os.Signal(syscall.SIGUSR1))
-	go func() {
-		for {
-		Loop:
-			sig := <-c
-			if sig == os.Signal(syscall.SIGUSR1) {
-				log.Print("Received signal reload config")
-				if err := config.Load(configFile); err != nil {
-					log.Fatal(err)
-					os.Exit(1)
-				}
-				log.Printf("Complete reload config\n")
-				goto Loop
-			} else {
-				log.Printf("Received signal '%v', exiting\n", sig)
-				pid.RemovePidFile(pidFile)
-				os.Exit(0)
-			}
-		}
-	}()
-
+func getHandler() http.Handler {
 	server := rest.NewApi()
 	server.Use(rest.DefaultDevStack...)
-
 	// using basic auth
 	if config.All.User != "" && config.All.Password != "" {
 
@@ -76,8 +46,7 @@ func startServer(pidFile *string, configFile *string) {
 	}
 
 	server.SetApp(router)
-	log.Printf("Start Server pid:%d", os.Getpid())
-	log.Fatal(http.ListenAndServe(":"+strconv.Itoa(config.All.Port), server.MakeHandler()))
+	return server.MakeHandler()
 }
 
 func main() {
@@ -97,11 +66,43 @@ func main() {
 		os.Exit(0)
 	}
 
+	// set log
 	f, err := os.OpenFile("/var/log/stns.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
 	if err != nil {
 		log.Fatal("error opening file :", err.Error())
 	}
-
 	log.SetOutput(f)
-	startServer(pidFile, configFile)
+
+	// wait signal
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt, os.Kill, os.Signal(syscall.SIGTERM), os.Signal(syscall.SIGUSR1))
+	go func() {
+		for {
+		Loop:
+			sig := <-c
+			if sig == os.Signal(syscall.SIGUSR1) {
+				log.Print("Received signal reload config")
+				if err := config.Load(configFile); err != nil {
+					log.Fatal(err)
+					os.Exit(1)
+				}
+				log.Printf("Complete reload config\n")
+				goto Loop
+			} else {
+				log.Printf("Received signal '%v', exiting\n", sig)
+				pid.RemovePidFile(pidFile)
+				os.Exit(0)
+			}
+		}
+	}()
+
+	// make pid
+	if err := pid.CreatePidFile(pidFile); err != nil {
+		log.Fatal(err)
+		os.Exit(1)
+	}
+	defer pid.RemovePidFile(pidFile)
+	log.Printf("Start Server pid:%d", os.Getpid())
+
+	log.Fatal(http.ListenAndServe(":"+strconv.Itoa(config.All.Port), getHandler()))
 }
