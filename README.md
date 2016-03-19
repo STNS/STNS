@@ -77,15 +77,15 @@ users = ["example"]
 link_users params is merge public key from the specified user
 
 ```toml
-[users.pyama1]
+[users.example1]
 keys = ["ssh-rsa aaa"]
-link_users = ["pyama2"] ←
+link_users = ["example2"] ←
 
-[users.pyama2]
+[users.example2]
 keys = ["ssh-rsa bbb"]
 ```
 ```
-$ /user/local/bin/stns-key-wrapper pyama1
+$ /user/local/bin/stns-key-wrapper example1
 ssh-rsa aaa
 ssh-rsa bbb
 ```
@@ -94,8 +94,26 @@ ssh-rsa bbb
 |Name|Description|
 |---|---|
 |id| unique group id|
-|users|user id of the members|
+|users|user name of the members|
+|link_groups|merge from belong to the other group users|
 
+
+#### link_groups
+```toml
+[group.example1]
+users = ["user_example1"]
+link_groups = ["example2"]
+
+[users.example2]
+users = ["user_example2"]
+```
+```
+$ /user/local/bin/stns-query-wrapper /group/name/example1
+{
+  …
+  "users": ["user_example1", "user_example2"]
+}
+```
 
 
 ## author

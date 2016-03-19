@@ -10,8 +10,6 @@ func TestPid(t *testing.T) {
 	err := CreatePidFile(&pidFile)
 	defer os.Remove(pidFile)
 	assert(t, err == nil, "err create pid file")
-	err = CreatePidFile(&pidFile)
-	assert(t, err != nil, "err create pid file")
 
 	assert(t, Exists(pidFile), "can't create pid file")
 	RemovePidFile(&pidFile)

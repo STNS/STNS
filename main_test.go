@@ -26,8 +26,7 @@ func TestHandler(t *testing.T) {
     "keys": [
       "ssh-rsa aaa"
     ],
-    "link_users": null,
-    "users": null
+    "link_users": null
   }
 }`)
 	recorded = test.RunRequest(t, getHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/user/name/example3", nil))
@@ -46,8 +45,7 @@ func TestHandler(t *testing.T) {
     "keys": [
       "ssh-rsa aaa"
     ],
-    "link_users": null,
-    "users": null
+    "link_users": null
   }
 }`)
 	recorded = test.RunRequest(t, getHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/user/id/1001", nil))
@@ -59,15 +57,10 @@ func TestHandler(t *testing.T) {
 	recorded.BodyIs(`{
   "example_group": {
     "id": 3000,
-    "group_id": 0,
-    "directory": "",
-    "shell": "",
-    "gecos": "",
-    "keys": null,
-    "link_users": null,
     "users": [
       "example"
-    ]
+    ],
+    "link_groups": null
   }
 }`)
 	recorded = test.RunRequest(t, getHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/group/name/example_group3", nil))
@@ -79,15 +72,10 @@ func TestHandler(t *testing.T) {
 	recorded.BodyIs(`{
   "example_group": {
     "id": 3000,
-    "group_id": 0,
-    "directory": "",
-    "shell": "",
-    "gecos": "",
-    "keys": null,
-    "link_users": null,
     "users": [
       "example"
-    ]
+    ],
+    "link_groups": null
   }
 }`)
 

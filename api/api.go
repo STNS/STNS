@@ -8,53 +8,100 @@ import (
 	"github.com/ant0ine/go-json-rest/rest"
 )
 
+func Get(w rest.ResponseWriter, r *rest.Request) {
+	value := r.PathParam("value")
+	column := r.PathParam("column")
+	resource_name := r.PathParam("resource_name")
+	query := Query{resource_name, column, value}
+	query.Response(w, r)
+}
+
+func GetList(w rest.ResponseWriter, r *rest.Request) {
+	resource_name := r.PathParam("resource_name")
+	query := Query{resource_name, "list", ""}
+	query.Response(w, r)
+}
+
 type Query struct {
 	resource string
 	column   string
 	value    string
 }
 
-func (q Query) Get() attribute.UserGroups {
-	var attr attribute.UserGroups
-	var resource attribute.UserGroups
-
+func (q *Query) getConfigByType() attribute.UserGroups {
 	if q.resource == "user" {
-		resource = config.All.Users
+		return config.All.Users
 	} else if q.resource == "group" {
-		resource = config.All.Groups
+		return config.All.Groups
 	}
-	if q.column == "id" {
-		attr = resource.GetById(q.value)
-	} else if q.column == "name" {
-		attr = resource.GetByName(q.value)
-	} else if q.column == "list" {
-		attr = resource
-	}
+	return nil
+}
 
-	// merge user keys
-	q.mergeKey(attr)
+func (q *Query) getAttribute() attribute.UserGroups {
+	resource := q.getConfigByType()
+	if q.column == "id" {
+		return resource.GetById(q.value)
+	} else if q.column == "name" {
+		return resource.GetByName(q.value)
+	} else if q.column == "list" {
+		return resource
+	}
+	return nil
+}
+
+func (q *Query) Get() attribute.UserGroups {
+	attr := q.getAttribute()
+	q.mergeLinkValue(attr)
 	return attr
 }
-func (q Query) mergeKey(attr attribute.UserGroups) {
-	// merge user keys
-	for k, u := range attr {
-		merge_keys := []string{}
-		if u.LinkUsers != nil || !reflect.ValueOf(u.LinkUsers).IsNil() {
-			for _, link_users_name := range u.LinkUsers {
-				link_keys := map[string][]string{k: u.Keys}
 
-				q.recursiveSetLinkKey(link_users_name, link_keys)
-				for _, user_keys := range link_keys {
-					merge_keys = append(merge_keys, user_keys...)
+func (q *Query) mergeLinkValue(attr attribute.UserGroups) {
+
+	for k, v := range attr {
+		linker := q.getLinker(v)
+		mergeValue := []string{}
+		if linker != nil && !reflect.ValueOf(linker).IsNil() &&
+			linker.LinkTargetColumnValue() != nil && !reflect.ValueOf(linker.LinkTargetColumnValue()).IsNil() {
+			for _, linkValue := range linker.LinkTargetColumnValue() {
+				linkValues := map[string][]string{k: linker.LinkValues()}
+
+				q.recursiveSetLinkValue(linkValue, linkValues)
+				for _, val := range linkValues {
+					mergeValue = append(mergeValue, val...)
 				}
-
-				u.Keys = RemoveDuplicates(merge_keys)
+				linker.SetLinkValue(RemoveDuplicates(mergeValue))
 			}
 		}
 	}
 }
 
-// ref:http://qiita.com/yukitomo/items/2e6be0f26905d8e3dd22
+func (q *Query) getLinker(attr *attribute.All) attribute.Linker {
+	if q.resource == "user" {
+		return attr.User
+	} else if q.resource == "group" {
+		return attr.Group
+	}
+	return nil
+}
+
+func (q *Query) recursiveSetLinkValue(name string, result map[string][]string) {
+	if result[name] != nil {
+		return
+	}
+
+	config := q.getConfigByType()
+	linker := q.getLinker(config.GetByName(name)[name])
+
+	if linker != nil && len(linker.LinkValues()) > 0 {
+		result[name] = linker.LinkValues()
+		if linker.LinkTargetColumnValue() != nil || !reflect.ValueOf(linker.LinkTargetColumnValue()).IsNil() {
+			for _, next_name := range linker.LinkTargetColumnValue() {
+				q.recursiveSetLinkValue(next_name, result)
+			}
+		}
+	}
+}
+
 func member(n string, xs []string) bool {
 	for _, x := range xs {
 		if n == x {
@@ -74,42 +121,12 @@ func RemoveDuplicates(xs []string) []string {
 	return ys
 }
 
-func (q Query) recursiveSetLinkKey(name string, result map[string][]string) {
-	if result[name] != nil {
-		return
-	}
-
-	user := config.All.Users.GetByName(name)
-	if user != nil && len(user[name].Keys) > 0 {
-		result[name] = user[name].Keys
-		if user[name].LinkUsers != nil || !reflect.ValueOf(user[name].LinkUsers).IsNil() {
-			for _, nest_user_name := range user[name].LinkUsers {
-				q.recursiveSetLinkKey(nest_user_name, result)
-			}
-		}
-	}
-}
-
-func Get(w rest.ResponseWriter, r *rest.Request) {
-	value := r.PathParam("value")
-	column := r.PathParam("column")
-	resource_name := r.PathParam("resource_name")
-	query := Query{resource_name, column, value}
-	query.Response(w, r)
-}
-func GetList(w rest.ResponseWriter, r *rest.Request) {
-	resource_name := r.PathParam("resource_name")
-	query := Query{resource_name, "list", ""}
-	query.Response(w, r)
-}
-
-func (q Query) Response(w rest.ResponseWriter, r *rest.Request) {
+func (q *Query) Response(w rest.ResponseWriter, r *rest.Request) {
 	attr := q.Get()
 	if attr == nil || reflect.ValueOf(attr).IsNil() {
 		rest.NotFound(w, r)
 		return
 	}
-
 	w.WriteJson(attr)
 }
 
