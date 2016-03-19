@@ -39,19 +39,24 @@ func (q *Query) getConfigByType() attribute.UserGroups {
 
 func (q *Query) getAttribute() attribute.UserGroups {
 	resource := q.getConfigByType()
-	if q.column == "id" {
-		return resource.GetById(q.value)
-	} else if q.column == "name" {
-		return resource.GetByName(q.value)
-	} else if q.column == "list" {
-		return resource
+	if resource != nil && !reflect.ValueOf(resource).IsNil() {
+
+		if q.column == "id" {
+			return resource.GetById(q.value)
+		} else if q.column == "name" {
+			return resource.GetByName(q.value)
+		} else if q.column == "list" {
+			return resource
+		}
 	}
 	return nil
 }
 
 func (q *Query) Get() attribute.UserGroups {
 	attr := q.getAttribute()
-	q.mergeLinkValue(attr)
+	if attr != nil && !reflect.ValueOf(attr).IsNil() {
+		q.mergeLinkValue(attr)
+	}
 	return attr
 }
 
@@ -76,10 +81,12 @@ func (q *Query) mergeLinkValue(attr attribute.UserGroups) {
 }
 
 func (q *Query) getLinker(attr *attribute.All) attribute.Linker {
-	if q.resource == "user" {
-		return attr.User
-	} else if q.resource == "group" {
-		return attr.Group
+	if attr != nil && !reflect.ValueOf(attr).IsNil() {
+		if q.resource == "user" {
+			return attr.User
+		} else if q.resource == "group" {
+			return attr.Group
+		}
 	}
 	return nil
 }
@@ -92,7 +99,7 @@ func (q *Query) recursiveSetLinkValue(name string, result map[string][]string) {
 	config := q.getConfigByType()
 	linker := q.getLinker(config.GetByName(name)[name])
 
-	if linker != nil && len(linker.LinkValues()) > 0 {
+	if linker != nil && !reflect.ValueOf(linker).IsNil() && len(linker.LinkValues()) > 0 {
 		result[name] = linker.LinkValues()
 		if linker.LinkTargetColumnValue() != nil || !reflect.ValueOf(linker.LinkTargetColumnValue()).IsNil() {
 			for _, next_name := range linker.LinkTargetColumnValue() {
