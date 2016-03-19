@@ -4,8 +4,8 @@
 	"Deps": [
 		{
 			"ImportPath": "github.com/BurntSushi/toml",
-			"Comment": "v0.1.0-39-ga4eecd4",
-			"Rev": "a4eecd407cf4129fc902ece859a0114e4cf1a7f4"
+			"Comment": "v0.1.0-46-gbbd5bb6",
+			"Rev": "bbd5bb678321a0d6e58f1099321dfa73391c1b6f"
 		},
 		{
 			"ImportPath": "github.com/ant0ine/go-json-rest/rest",

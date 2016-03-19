@@ -83,6 +83,7 @@ func TestGetList(t *testing.T) {
 	assert(t, len(resource) == 2, "unmatch group resource count")
 	assert(t, resource["example_group1"].Id == 3001, "unmatch group id")
 	assert(t, len(resource["example_group1"].Users) == 3, "unmatch user count")
+	sort.Strings(resource["example_group1"].Users)
 	assert(t, resource["example_group1"].Users[0] == "example", "unmatch group user1")
 	assert(t, resource["example_group1"].Users[1] == "example1", "unmatch group user2")
 	assert(t, resource["example_group1"].Users[2] == "example2", "unmatch group user3")
