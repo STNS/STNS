@@ -44,6 +44,10 @@ func TestNull(t *testing.T) {
 	resource = query.Get()
 	assert(t, len(resource) == 1, "unmatch resource count null2")
 
+	query = Query{"user", "list", ""}
+	resource = query.Get()
+	assert(t, len(resource) == 3, "unmatch resource count list")
+
 	query = Query{"group", "name", "example1"}
 	resource = query.Get()
 	assert(t, len(resource) == 1, "unmatch resource count null3")
@@ -55,6 +59,10 @@ func TestNull(t *testing.T) {
 	query = Query{"group", "name", "example3"}
 	resource = query.Get()
 	assert(t, len(resource) == 1, "unmatch resource count null4")
+
+	query = Query{"group", "list", ""}
+	resource = query.Get()
+	assert(t, len(resource) == 3, "unmatch resource count list")
 }
 
 func assertUserGet(t *testing.T, resource attribute.UserGroups) {
