@@ -30,6 +30,41 @@ func TestGet(t *testing.T) {
 	assertGroupGet(t, resource)
 }
 
+func TestNull(t *testing.T) {
+	nullErrorConfig()
+	query := Query{"user", "name", "example1"}
+	resource := query.Get()
+	assert(t, len(resource) == 1, "unmatch resource count null1")
+
+	query = Query{"user", "name", "example2"}
+	resource = query.Get()
+	assert(t, len(resource) == 1, "unmatch resource count null2")
+
+	query = Query{"user", "name", "example3"}
+	resource = query.Get()
+	assert(t, len(resource) == 1, "unmatch resource count null2")
+
+	query = Query{"user", "list", ""}
+	resource = query.Get()
+	assert(t, len(resource) == 3, "unmatch resource count list")
+
+	query = Query{"group", "name", "example1"}
+	resource = query.Get()
+	assert(t, len(resource) == 1, "unmatch resource count null3")
+
+	query = Query{"group", "name", "example2"}
+	resource = query.Get()
+	assert(t, len(resource) == 1, "unmatch resource count null4")
+
+	query = Query{"group", "name", "example3"}
+	resource = query.Get()
+	assert(t, len(resource) == 1, "unmatch resource count null4")
+
+	query = Query{"group", "list", ""}
+	resource = query.Get()
+	assert(t, len(resource) == 3, "unmatch resource count list")
+}
+
 func assertUserGet(t *testing.T, resource attribute.UserGroups) {
 	assert(t, len(resource) == 1, "unmatch resource count")
 	assert(t, resource["example1"].Id == 1001, "unmatch id")
@@ -152,6 +187,33 @@ users = ["example2"]
 	config.Load(&name)
 
 }
+
+func nullErrorConfig() {
+	configFile, _ := ioutil.TempFile("", "stns-config-test")
+	configContent := `port = 9999
+[users.example1]
+link_users = ["none"]
+
+[users.example2]
+id = 1001
+
+[users.example3]
+
+[groups.example1]
+link_groups = ["none"]
+
+[groups.example2]
+id = 1001
+
+[groups.example3]
+`
+	_, _ = configFile.WriteString(configContent)
+	configFile.Close()
+	defer os.Remove(configFile.Name())
+	name := configFile.Name()
+	config.Load(&name)
+}
+
 func assertNoError(t *testing.T, err error) {
 	if err != nil {
 		t.Error(err)
