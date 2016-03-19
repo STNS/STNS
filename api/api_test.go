@@ -33,6 +33,9 @@ func TestGet(t *testing.T) {
 func assertUserGet(t *testing.T, resource attribute.UserGroups) {
 	assert(t, len(resource) == 1, "unmach resource count")
 	assert(t, resource["example1"].Id == 1001, "unmach id")
+	assert(t, resource["example1"].Directory == "/home/example1", "unmach directory")
+	assert(t, resource["example1"].Shell == "/bin/bash", "unmach shell")
+
 	assert(t, len(resource["example1"].Keys) == 3, "unmatch key length")
 	sort.Strings(resource["example1"].Keys)
 	assert(t, resource["example1"].Keys[0] == "ssh-rsa aaa", "unmach key1")
