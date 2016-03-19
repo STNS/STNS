@@ -63,8 +63,8 @@ func (q *Query) Get() attribute.UserGroups {
 func (q *Query) mergeLinkValue(attr attribute.UserGroups) {
 
 	for k, v := range attr {
-		linker := q.getLinker(v)
 		mergeValue := []string{}
+		linker := q.getLinker(v)
 		if linker != nil && !reflect.ValueOf(linker).IsNil() &&
 			linker.LinkTargetColumnValue() != nil && !reflect.ValueOf(linker.LinkTargetColumnValue()).IsNil() {
 			for _, linkValue := range linker.LinkTargetColumnValue() {
@@ -96,14 +96,17 @@ func (q *Query) recursiveSetLinkValue(name string, result map[string][]string) {
 		return
 	}
 
-	config := q.getConfigByType()
-	linker := q.getLinker(config.GetByName(name)[name])
+	c := q.getConfigByType()
 
-	if linker != nil && !reflect.ValueOf(linker).IsNil() && len(linker.LinkValues()) > 0 {
-		result[name] = linker.LinkValues()
-		if linker.LinkTargetColumnValue() != nil || !reflect.ValueOf(linker.LinkTargetColumnValue()).IsNil() {
-			for _, next_name := range linker.LinkTargetColumnValue() {
-				q.recursiveSetLinkValue(next_name, result)
+	if c != nil && !reflect.ValueOf(c).IsNil() {
+		linker := q.getLinker(c.GetByName(name)[name])
+
+		if linker != nil && !reflect.ValueOf(linker).IsNil() && len(linker.LinkValues()) > 0 {
+			result[name] = linker.LinkValues()
+			if linker.LinkTargetColumnValue() != nil || !reflect.ValueOf(linker.LinkTargetColumnValue()).IsNil() {
+				for _, next_name := range linker.LinkTargetColumnValue() {
+					q.recursiveSetLinkValue(next_name, result)
+				}
 			}
 		}
 	}
