@@ -1,3 +1,11 @@
+stns (0.0.3) STABLE; urgency=low
+
+  * Add a link group
+  * fix Panic in the case to which the user is not exist
+
+ -- pyama86 <www.kazu.com@gmail.com>  Fri, 19 Mar 2016 00:00:00 +0000
+
+
 stns (0.0.2) STABLE; urgency=low
 
   * add link user(https://github.com/STNS/STNS/pull/4)
