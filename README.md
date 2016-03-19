@@ -65,8 +65,8 @@ users = ["example"]
 ### Users
 |Name|Description|
 |---|---|
-|id| unique user id|
-|group_id|id of the group they belong|
+|id(※)| unique user id|
+|group_id(※)|id of the group they belong|
 |directory|home directory path|
 |shell|default shell path|
 |gecos|description|
@@ -93,7 +93,7 @@ ssh-rsa bbb
 ### Groups
 |Name|Description|
 |---|---|
-|id| unique group id|
+|id(※)| unique group id|
 |users|user name of the members|
 |link_groups|merge from belong to the other group users|
 
@@ -115,6 +115,6 @@ $ /user/local/bin/stns-query-wrapper /group/name/example1
 }
 ```
 
-
+※: required parameter
 ## author
 * pyama86
