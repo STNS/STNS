@@ -1,5 +1,5 @@
-FROM golang:latest
+FROM pyama/go:32bit
 ADD . /go/src/github.com/STNS/STNS
 WORKDIR /go/src/github.com/STNS/STNS
 RUN go get github.com/tools/godep && godep restore
-CMD go test ./... && GOARCH=amd64 go build -o binary/stns.bin
+CMD go test ./... && GOARCH=386 go build -o binary/stns.bin
