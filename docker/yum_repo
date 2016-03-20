@@ -7,8 +7,13 @@ echo '%_signature gpg' >> ~/.rpmmacros && \
 echo '%_gpg_name stns-server' >> ~/.rpmmacros
 
 RUN install -d -m 755 releases/centos/x86_64
+RUN install -d -m 755 releases/centos/i386
 
 CMD mkdir -p releases/centos/x86_64/ && \
-cp -pr binary/*.rpm releases/centos/x86_64/ && \
+mkdir -p releases/centos/i386/ && \
+cp -pr binary/*x86_64.rpm releases/centos/x86_64/ && \
+cp -pr binary/*i386.rpm releases/centos/i386/ && \
 rpm --addsign releases/centos/x86_64/*.rpm && \
-createrepo --checksum sha releases/centos/x86_64
+rpm --addsign releases/centos/i386/*.rpm && \
+createrepo --checksum sha releases/centos/x86_64/ && \
+createrepo --checksum sha releases/centos/i386/

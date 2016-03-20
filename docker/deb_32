@@ -1,4 +1,5 @@
-FROM pyama/stns:ubuntu_build
+FROM pyama/go:32bit
+RUN apt-get update && apt-get install -yq --force-yes build-essential devscripts debhelper fakeroot --no-install-recommends
 ADD ./ /go/src/github.com/STNS/STNS
 WORKDIR /go/src/github.com/STNS/STNS
 RUN cp binary/stns.bin package/deb/debian/
