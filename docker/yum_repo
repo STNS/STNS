@@ -15,4 +15,5 @@ cp -pr binary/*x86_64.rpm releases/centos/x86_64/ && \
 cp -pr binary/*i386.rpm releases/centos/i386/ && \
 rpm --addsign releases/centos/x86_64/*.rpm && \
 rpm --addsign releases/centos/i386/*.rpm && \
-createrepo --checksum sha releases/centos/
+createrepo --checksum sha releases/centos/x86_64/ && \
+createrepo --checksum sha releases/centos/i386/
