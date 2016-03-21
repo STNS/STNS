@@ -1,5 +1,5 @@
-FROM pyama/go:32bit
+FROM stns:ubuntu-i386
 ADD . /go/src/github.com/STNS/STNS
 WORKDIR /go/src/github.com/STNS/STNS
-RUN go get github.com/tools/godep && godep restore
+RUN godep restore
 CMD go test ./... && GOARCH=386 go build -o binary/stns.bin

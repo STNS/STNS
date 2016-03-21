@@ -1,4 +1,4 @@
-FROM pyama/stns:centos_build
+FROM stns:centos-x86
 
 ADD . /go/src/github.com/STNS/STNS
 WORKDIR /go/src/github.com/STNS/STNS

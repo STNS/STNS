@@ -1,4 +1,4 @@
-FROM pyama/stns:ubuntu_build
+FROM stns:ubuntu-x86
 ADD ./ /go/src/github.com/STNS/STNS
 WORKDIR /go/src/github.com/STNS/STNS
 RUN cp binary/stns.bin package/deb/debian/
