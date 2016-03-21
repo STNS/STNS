@@ -3,11 +3,15 @@ task :default => "repo"
 desc "clean tmp directory"
 task "clean" do
   sh "rm -rf binary/*"
-  sh "rm -rf release/*"
+  sh "rm -rf releases/*"
+end
+
+task "clean_bin" do
+  sh "ls -d binary/* | grep -v -e 'rpm$' -e 'deb$' | xargs rm -rf"
 end
 
 desc "make binary 64bit"
-task "build_64" => [:clean] do
+task "build_64" => [:clean_bin] do
   sh "docker build --no-cache --rm -t stns:stns ."
   sh "docker run -v \"$(pwd)\"/binary:/go/src/github.com/STNS/STNS/binary -t stns:stns"
 end
@@ -20,7 +24,7 @@ end
 
 
 desc "make binary 32bit"
-task "build_32" => [:clean] do
+task "build_32" => [:clean_bin] do
   docker_run "build_32"
 end
 
