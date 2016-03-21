@@ -1,7 +1,6 @@
 task :default => "repo"
 
-desc "clean tmp directory"
-task "clean" do
+task "clean_all" do
   sh "rm -rf binary/*"
   sh "rm -rf releases/*"
 end
@@ -10,39 +9,36 @@ task "clean_bin" do
   sh "ls -d binary/* | grep -v -e 'rpm$' -e 'deb$' | xargs rm -rf"
 end
 
-desc "make binary 64bit"
-task "build_64" => [:clean_bin] do
-  sh "docker build --no-cache --rm -t stns:stns ."
-  sh "docker run -v \"$(pwd)\"/binary:/go/src/github.com/STNS/STNS/binary -t stns:stns"
+[
+  %w(x86 x86_64 amd64),
+  %w(i386 i386 i386)
+].each do |r|
+  task "build_#{r[0]}" => [:clean_bin]  do
+    docker_run "ubuntu-#{r[0]}-build"
+  end
+
+  task "pkg_#{r[0]}" => ["build_#{r[0]}".to_sym] do
+    sh "ls -d binary/* | grep -e '#{r[1]}.rpm$' -e '#{r[2]}.deb$'| xargs rm -rf"
+    docker_run("centos-#{r[0]}-rpm", r[1])
+    docker_run("ubuntu-#{r[0]}-deb", r[2])
+
+    # check package
+    sh "test -e binary/*#{r[1]}.rpm"
+    sh "test -e binary/*#{r[2]}.deb"
+  end
 end
 
-desc "make package 64bit"
-task "pkg_64" => [:build_64] do
-  docker_run("rpm", "x86_64")
-  docker_run("deb", "amd64")
+task "make_client" do
+  sh "cd ../libnss_stns && bundle exec rake make"
 end
 
-
-desc "make binary 32bit"
-task "build_32" => [:clean_bin] do
-  docker_run "build_32"
-end
-
-desc "make package 32bit"
-task "pkg_32" => [:build_32] do
-  docker_run("rpm", "i386")
-  docker_run("deb_32", "i386")
-end
-
-desc "make repo data"
-task "repo" => [:clean, :pkg_32, :pkg_64] do
+task "repo" => [:clean_all, :make_client, :pkg_i386, :pkg_x86] do
   sh "cp -pr ../libnss_stns/binary/*.rpm binary"
   sh "cp -pr ../libnss_stns/binary/*.deb binary"
-  docker_run("yum_repo", "", "releases")
-  docker_run("apt_repo", "", "releases")
+  %w(centos ubuntu).all? {|o| docker_run("#{o}-x86-repo", "", "releases") }
 end
 
 def docker_run(file, arch="x86_64", dir="binary")
   sh "docker build --no-cache --rm -f docker/#{file} -t stns:stns ."
-  sh "docker run  -e TARGET=#{arch} -it -v \"$(pwd)\"/#{dir}:/go/src/github.com/STNS/STNS/#{dir} -t stns:stns"
+  sh "docker run  -e ARCH=#{arch} -it -v \"$(pwd)\"/#{dir}:/go/src/github.com/STNS/STNS/#{dir} -t stns:stns"
 end
