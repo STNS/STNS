@@ -35,7 +35,15 @@ end
 task "repo" => [:clean_all, :make_client, :pkg_i386, :pkg_x86] do
   sh "cp -pr ../libnss_stns/binary/*.rpm binary"
   sh "cp -pr ../libnss_stns/binary/*.deb binary"
-  %w(centos ubuntu).all? {|o| docker_run("#{o}-x86-repo", "", "releases") }
+
+  raise 'package not found' unless %w(stns libnss-stns).all? do |f|
+    sh "test -e binary/#{f}*x86_64.rpm"
+    sh "test -e binary/#{f}*amd64.deb"
+    sh "test -e binary/#{f}*i386.rpm"
+    sh "test -e binary/#{f}*i386.deb"
+  end
+
+  raise "can't create repo" unless %w(centos ubuntu).all? {|o| docker_run("#{o}-x86-repo", "", "releases") }
 end
 
 def docker_run(file, arch="x86_64", dir="binary")
