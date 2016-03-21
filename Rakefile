@@ -1,7 +1,13 @@
-task :default => "build"
+task :default => "repo"
+
+desc "clean tmp directory"
+task "clean" do
+  sh "rm -rf binary/*"
+  sh "rm -rf release/*"
+end
 
 desc "make binary 64bit"
-task "build_64" do
+task "build_64" => [:clean] do
   sh "docker build --no-cache --rm -t stns:stns ."
   sh "docker run -v \"$(pwd)\"/binary:/go/src/github.com/STNS/STNS/binary -t stns:stns"
 end
@@ -14,7 +20,7 @@ end
 
 
 desc "make binary 32bit"
-task "build_32" do
+task "build_32" => [:clean] do
   docker_run "build_32"
 end
 
@@ -25,7 +31,7 @@ task "pkg_32" => [:build_32] do
 end
 
 desc "make repo data"
-task "repo" => [:pkg_32, :pkg_64] do
+task "repo" => [:clean, :pkg_32, :pkg_64] do
   sh "cp -pr ../libnss_stns/binary/*.rpm binary"
   sh "cp -pr ../libnss_stns/binary/*.deb binary"
   docker_run("yum_repo", "", "releases")
