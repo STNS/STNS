@@ -35,6 +35,8 @@ link_users = ["pyama2", "pyama3"]
 [groups.pepabo]
 id = 3001
 users = ["pyama"]
+[sudoers.example]
+password = "p@ssword"
 `
 	_, err = configFile.WriteString(configContent)
 	assertNoError(t, err)
@@ -59,6 +61,7 @@ users = ["pyama"]
 	assert(t, All.Users["pyama"].LinkUsers[1] == "pyama3", "unmach link_users")
 	assert(t, All.Groups["pepabo"].Id == 3001, "unmatch group id")
 	assert(t, All.Groups["pepabo"].Users[0] == "pyama", "unmatch group users")
+	assert(t, All.Sudoers["example"].Password == "p@ssword", "unmatch password")
 }
 
 func assertNoError(t *testing.T, err error) {

@@ -6,11 +6,12 @@ import (
 )
 
 func TestGetByName(t *testing.T) {
-	users := UserGroups{
+	users := AllAttribute{
 		"test1": &All{
 			Id:    1,
 			User:  &User{LinkUsers: []string{"foo", "bar"}},
 			Group: &Group{Users: []string{"foo", "bar"}},
+			Sudo:  &Sudo{Password: "foo"},
 		},
 	}
 	_users := users.GetByName("test1")
@@ -28,6 +29,10 @@ func TestGetByName(t *testing.T) {
 			t.Error("ummatch link user")
 		}
 
+		if u.Password != "foo" {
+			t.Error("ummatch password")
+		}
+
 		if n != "test1" {
 			t.Error("ummatch user name")
 		}
@@ -38,7 +43,7 @@ func TestGetByName(t *testing.T) {
 	}
 }
 func TestGetById(t *testing.T) {
-	users := UserGroups{
+	users := AllAttribute{
 		"test1": &All{
 			Id: 1,
 		},

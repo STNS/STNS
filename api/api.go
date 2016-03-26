@@ -28,16 +28,18 @@ type Query struct {
 	value    string
 }
 
-func (q *Query) getConfigByType() attribute.UserGroups {
+func (q *Query) getConfigByType() attribute.AllAttribute {
 	if q.resource == "user" {
 		return config.All.Users
 	} else if q.resource == "group" {
 		return config.All.Groups
+	} else if q.resource == "sudo" {
+		return config.All.Sudoers
 	}
 	return nil
 }
 
-func (q *Query) getAttribute() attribute.UserGroups {
+func (q *Query) getAttribute() attribute.AllAttribute {
 	resource := q.getConfigByType()
 	if resource != nil && !reflect.ValueOf(resource).IsNil() {
 
@@ -52,7 +54,7 @@ func (q *Query) getAttribute() attribute.UserGroups {
 	return nil
 }
 
-func (q *Query) Get() attribute.UserGroups {
+func (q *Query) Get() attribute.AllAttribute {
 	attr := q.getAttribute()
 	if attr != nil && !reflect.ValueOf(attr).IsNil() {
 		q.mergeLinkValue(attr)
@@ -60,7 +62,7 @@ func (q *Query) Get() attribute.UserGroups {
 	return attr
 }
 
-func (q *Query) mergeLinkValue(attr attribute.UserGroups) {
+func (q *Query) mergeLinkValue(attr attribute.AllAttribute) {
 
 	for k, v := range attr {
 		mergeValue := []string{}

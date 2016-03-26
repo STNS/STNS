@@ -81,6 +81,21 @@ func TestHandler(t *testing.T) {
 
 	recorded = test.RunRequest(t, getHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/group/id/3001", nil))
 	recorded.CodeIs(404)
+
+	recorded = test.RunRequest(t, getHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/sudo/name/example_sudo", nil))
+	recorded.CodeIs(200)
+	recorded.ContentTypeIsJson()
+	recorded.BodyIs(`{
+  "example_sudo": {
+    "id": 0,
+    "password": "p@ssword"
+  }
+}`)
+	recorded = test.RunRequest(t, getHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/sudo/name/example_notfound", nil))
+	recorded.CodeIs(404)
+
+	recorded = test.RunRequest(t, getHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/sudo/id/1001", nil))
+	recorded.CodeIs(404)
 }
 
 func TestBasicAuth(t *testing.T) {
@@ -117,6 +132,9 @@ keys = ["ssh-rsa aaa"]
 [groups.example_group]
 id = 3000
 users = ["example"]
+
+[sudoers.example_sudo]
+password = "p@ssword"
 `
 	_, _ = configFile.WriteString(configContent)
 	configFile.Close()

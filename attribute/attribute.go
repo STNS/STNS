@@ -9,6 +9,7 @@ type All struct {
 	Id int `toml:"id" json:"id"`
 	*User
 	*Group
+	*Sudo
 }
 
 type User struct {
@@ -25,7 +26,11 @@ type Group struct {
 	LinkGroups []string `toml:"link_groups" json:"link_groups"`
 }
 
-type UserGroups map[string]*All
+type Sudo struct {
+	Password string `toml:"password" json:"password"`
+}
+
+type AllAttribute map[string]*All
 
 type Linker interface {
 	LinkTargetColumnValue() []string
@@ -57,21 +62,21 @@ func (g *Group) SetLinkValue(v []string) {
 	g.Users = v
 }
 
-func (u UserGroups) GetByName(name string) UserGroups {
+func (u AllAttribute) GetByName(name string) AllAttribute {
 	attr := u[name]
 	if attr == nil || reflect.ValueOf(attr).IsNil() {
 		return nil
 	}
-	return UserGroups{
+	return AllAttribute{
 		name: attr,
 	}
 }
 
-func (u UserGroups) GetById(_id string) UserGroups {
+func (u AllAttribute) GetById(_id string) AllAttribute {
 	id, _ := strconv.Atoi(_id)
 	for k, u := range u {
 		if u.Id == id {
-			return UserGroups{
+			return AllAttribute{
 				k: u,
 			}
 		}
@@ -79,7 +84,7 @@ func (u UserGroups) GetById(_id string) UserGroups {
 	return nil
 }
 
-func (u UserGroups) Merge(m1 UserGroups) {
+func (u AllAttribute) Merge(m1 AllAttribute) {
 	for i, v := range m1 {
 		u[i] = v
 	}
