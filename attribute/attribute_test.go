@@ -11,6 +11,7 @@ func TestGetByName(t *testing.T) {
 			Id:    1,
 			User:  &User{LinkUsers: []string{"foo", "bar"}},
 			Group: &Group{Users: []string{"foo", "bar"}},
+			Sudo:  &Sudo{Password: "foo"},
 		},
 	}
 	_users := users.GetByName("test1")
@@ -26,6 +27,10 @@ func TestGetByName(t *testing.T) {
 
 		if !reflect.DeepEqual(u.Users, []string{"foo", "bar"}) {
 			t.Error("ummatch link user")
+		}
+
+		if u.Password != "foo" {
+			t.Error("ummatch password")
 		}
 
 		if n != "test1" {
