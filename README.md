@@ -106,7 +106,9 @@ link_groups = ["example2"]
 
 [users.example2]
 users = ["user_example2"]
+
 ```
+
 ```
 $ /user/local/bin/stns-query-wrapper /group/name/example1
 {
@@ -114,6 +116,11 @@ $ /user/local/bin/stns-query-wrapper /group/name/example1
   "users": ["user_example1", "user_example2"]
 }
 ```
+
+### Sudoers
+|Name|Description|
+|---|---|
+|password(※)| sha256 password token|
 
 ※: required parameter
 ## author
