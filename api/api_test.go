@@ -28,6 +28,11 @@ func TestGet(t *testing.T) {
 	query = Query{"group", "id", "3001"}
 	resource = query.Get()
 	assertGroupGet(t, resource)
+
+	query = Query{"sudo", "name", "example1"}
+	resource = query.Get()
+	assertSudoGet(t, resource)
+
 }
 
 func TestNull(t *testing.T) {
@@ -63,6 +68,10 @@ func TestNull(t *testing.T) {
 	query = Query{"group", "list", ""}
 	resource = query.Get()
 	assert(t, len(resource) == 3, "unmatch resource count list")
+
+	query = Query{"sudo", "name", "example1"}
+	resource = query.Get()
+	assert(t, len(resource) == 1, "unmatch resource count null5")
 }
 
 func assertUserGet(t *testing.T, resource attribute.UserGroups) {
@@ -88,11 +97,16 @@ func assertGroupGet(t *testing.T, resource attribute.UserGroups) {
 	assert(t, resource["example_group1"].Users[2] == "example2", "unmatch group user3")
 }
 
+func assertSudoGet(t *testing.T, resource attribute.UserGroups) {
+	assert(t, len(resource) == 1, "unmatch resource count")
+	assert(t, resource["example1"].Password == "p@ssword1", "unmatch password")
+}
+
 func TestGetList(t *testing.T) {
 	loadConfig()
 	query := Query{"user", "list", ""}
 	resource := query.Get()
-	assert(t, len(resource) == 5, "unmatch resource count")
+	assert(t, len(resource) == 3, "unmatch resource count")
 
 	assert(t, resource["example1"].Id == 1001, "unmatch id1")
 	assert(t, len(resource["example1"].Keys) == 3, "unmatch key length1")
@@ -107,12 +121,6 @@ func TestGetList(t *testing.T) {
 	assert(t, resource["example3"].Id == 1003, "unmatch id3")
 	assert(t, len(resource["example3"].Keys) == 3, "unmatch key length3")
 
-	assert(t, resource["example4"].Id == 1004, "unmatch id4")
-	assert(t, len(resource["example4"].Keys) == 2, "unmatch key length4")
-	sort.Strings(resource["example4"].Keys)
-	assert(t, resource["example4"].Keys[0] == "ssh-rsa ddd", "unmatch key1")
-	assert(t, resource["example4"].Keys[1] == "ssh-rsa eee", "unmatch key2")
-
 	query = Query{"group", "list", ""}
 	resource = query.Get()
 	assert(t, len(resource) == 2, "unmatch group resource count")
@@ -126,6 +134,10 @@ func TestGetList(t *testing.T) {
 	assert(t, resource["example_group2"].Id == 3002, "unmatch group  id")
 	assert(t, len(resource["example_group2"].Users) == 1, "unmatch group  user count")
 	assert(t, resource["example_group2"].Users[0] == "example2", "unmatch group user1")
+
+	query = Query{"sudo", "list", ""}
+	resource = query.Get()
+	assert(t, len(resource) == 2, "unmatch sudo resource count")
 }
 
 func loadConfig() {
@@ -155,22 +167,6 @@ shell = "/bin/bash"
 keys = ["ssh-rsa ccc"]
 link_users = ["example1"]
 
-[users.example4]
-id = 1004
-group_id = 2001
-directory = "/home/example4"
-shell = "/bin/bash"
-keys = ["ssh-rsa ddd"]
-link_users = ["example5"]
-
-[users.example5]
-id = 1005
-group_id = 2001
-directory = "/home/example5"
-shell = "/bin/bash"
-keys = ["ssh-rsa eee"]
-link_users = ["example4"]
-
 [groups.example_group1]
 id = 3001
 users = ["example", "example1"]
@@ -179,6 +175,12 @@ link_groups = ["example_group2"]
 [groups.example_group2]
 id = 3002
 users = ["example2"]
+
+[sudoers.example1]
+password = "p@ssword1"
+
+[sudoers.example2]
+password = "p@ssword2"
 `
 	_, _ = configFile.WriteString(configContent)
 	configFile.Close()
@@ -206,6 +208,8 @@ link_groups = ["none"]
 id = 1001
 
 [groups.example3]
+
+[sudoers.example1]
 `
 	_, _ = configFile.WriteString(configContent)
 	configFile.Close()

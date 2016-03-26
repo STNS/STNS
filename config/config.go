@@ -16,6 +16,7 @@ type Config struct {
 	Password string `toml:"password"`
 	Users    attribute.UserGroups
 	Groups   attribute.UserGroups
+	Sudoers  attribute.UserGroups
 }
 
 var (

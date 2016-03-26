@@ -33,6 +33,8 @@ func (q *Query) getConfigByType() attribute.UserGroups {
 		return config.All.Users
 	} else if q.resource == "group" {
 		return config.All.Groups
+	} else if q.resource == "sudo" {
+		return config.All.Sudoers
 	}
 	return nil
 }

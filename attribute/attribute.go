@@ -9,6 +9,7 @@ type All struct {
 	Id int `toml:"id" json:"id"`
 	*User
 	*Group
+	*Sudo
 }
 
 type User struct {
@@ -23,6 +24,10 @@ type User struct {
 type Group struct {
 	Users      []string `toml:"users" json:"users"`
 	LinkGroups []string `toml:"link_groups" json:"link_groups"`
+}
+
+type Sudo struct {
+	Password string `toml:"password" json:"password"`
 }
 
 type UserGroups map[string]*All
