@@ -6,7 +6,7 @@ import (
 )
 
 func TestGetByName(t *testing.T) {
-	users := UserGroups{
+	users := AllAttribute{
 		"test1": &All{
 			Id:    1,
 			User:  &User{LinkUsers: []string{"foo", "bar"}},
@@ -38,7 +38,7 @@ func TestGetByName(t *testing.T) {
 	}
 }
 func TestGetById(t *testing.T) {
-	users := UserGroups{
+	users := AllAttribute{
 		"test1": &All{
 			Id: 1,
 		},

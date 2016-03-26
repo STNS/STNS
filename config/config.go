@@ -14,9 +14,9 @@ type Config struct {
 	Include  string `toml:"include"`
 	User     string `toml:"user"`
 	Password string `toml:"password"`
-	Users    attribute.UserGroups
-	Groups   attribute.UserGroups
-	Sudoers  attribute.UserGroups
+	Users    attribute.AllAttribute
+	Groups   attribute.AllAttribute
+	Sudoers  attribute.AllAttribute
 }
 
 var (
@@ -56,8 +56,8 @@ func includeConfigFile(config *Config, include string) error {
 	for _, file := range files {
 		userSaved := config.Users
 		groupSaved := config.Groups
-		config.Users = attribute.UserGroups{}
-		config.Groups = attribute.UserGroups{}
+		config.Users = attribute.AllAttribute{}
+		config.Groups = attribute.AllAttribute{}
 
 		_, err := toml.DecodeFile(file, &config)
 		if err != nil {

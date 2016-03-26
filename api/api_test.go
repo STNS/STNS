@@ -74,7 +74,7 @@ func TestNull(t *testing.T) {
 	assert(t, len(resource) == 1, "unmatch resource count null5")
 }
 
-func assertUserGet(t *testing.T, resource attribute.UserGroups) {
+func assertUserGet(t *testing.T, resource attribute.AllAttribute) {
 	assert(t, len(resource) == 1, "unmatch resource count")
 	assert(t, resource["example1"].Id == 1001, "unmatch id")
 	assert(t, resource["example1"].Directory == "/home/example1", "unmatch directory")
@@ -87,7 +87,7 @@ func assertUserGet(t *testing.T, resource attribute.UserGroups) {
 	assert(t, resource["example1"].Keys[2] == "ssh-rsa ccc", "unmatch key3")
 }
 
-func assertGroupGet(t *testing.T, resource attribute.UserGroups) {
+func assertGroupGet(t *testing.T, resource attribute.AllAttribute) {
 	assert(t, len(resource) == 1, "unmatch resource count")
 	assert(t, resource["example_group1"].Id == 3001, "unmatch id")
 	assert(t, len(resource["example_group1"].Users) == 3, "unmatch group user count")
@@ -97,7 +97,7 @@ func assertGroupGet(t *testing.T, resource attribute.UserGroups) {
 	assert(t, resource["example_group1"].Users[2] == "example2", "unmatch group user3")
 }
 
-func assertSudoGet(t *testing.T, resource attribute.UserGroups) {
+func assertSudoGet(t *testing.T, resource attribute.AllAttribute) {
 	assert(t, len(resource) == 1, "unmatch resource count")
 	assert(t, resource["example1"].Password == "p@ssword1", "unmatch password")
 }
