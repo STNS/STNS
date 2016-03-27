@@ -68,7 +68,7 @@ users = ["example"]
 |id(※)| unique user id|
 |group_id(※)|id of the group they belong|
 |password| password token|
-|hash_type| hash algorithm(sha256,sha512) |
+|hash_type| hash algorithm default sha256(sha256,sha512) |
 |directory|home directory path|
 |shell|default shell path|
 |gecos|description|
@@ -122,8 +122,8 @@ $ /user/local/bin/stns-query-wrapper /group/name/example1
 ### Sudoers
 |Name|Description|
 |---|---|
-|password(※)| password token default sha256|
-|hash_type| hash algorithm(sha256,sha512) |
+|password(※)| password token|
+|hash_type| hash algorithm default sha256(sha256,sha512) |
 
 ※: required parameter
 ## author
