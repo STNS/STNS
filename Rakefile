@@ -29,14 +29,14 @@ end
 end
 
 task "make_client" do
-  sh "cd ../libnss_stns && bundle exec rake make"
+  sh "cd ../lib-stns && bundle exec rake make"
 end
 
 task "repo" => [:clean_all, :make_client, :pkg_i386, :pkg_x86] do
-  sh "cp -pr ../libnss_stns/binary/*.rpm binary"
-  sh "cp -pr ../libnss_stns/binary/*.deb binary"
+  sh "cp -pr ../lib-stns/binary/*.rpm binary"
+  sh "cp -pr ../lib-stns/binary/*.deb binary"
 
-  raise 'package not found' unless %w(stns libnss-stns).all? do |f|
+  raise 'package not found' unless %w(stns lib-stns).all? do |f|
     sh "test -e binary/#{f}*x86_64.rpm"
     sh "test -e binary/#{f}*amd64.deb"
     sh "test -e binary/#{f}*i386.rpm"
