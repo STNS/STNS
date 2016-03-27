@@ -9,10 +9,11 @@ type All struct {
 	Id int `toml:"id" json:"id"`
 	*User
 	*Group
-	*Sudo
 }
 
 type User struct {
+	Password  string   `toml:"password" json:"password"`
+	HashType  string   `toml:"hash_type" json:"hash_type"`
 	GroupId   int      `toml:"group_id" json:"group_id"`
 	Directory string   `toml:"directory" json:"directory"`
 	Shell     string   `toml:"shell" json:"shell"`
@@ -24,10 +25,6 @@ type User struct {
 type Group struct {
 	Users      []string `toml:"users" json:"users"`
 	LinkGroups []string `toml:"link_groups" json:"link_groups"`
-}
-
-type Sudo struct {
-	Password string `toml:"password" json:"password"`
 }
 
 type AllAttribute map[string]*All
