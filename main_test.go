@@ -19,6 +19,8 @@ func TestHandler(t *testing.T) {
 	recorded.BodyIs(`{
   "example": {
     "id": 1000,
+    "password": "p@ssword",
+    "hash_type": "sha256",
     "group_id": 2000,
     "directory": "/home/example",
     "shell": "/bin/bash",
@@ -38,6 +40,8 @@ func TestHandler(t *testing.T) {
 	recorded.BodyIs(`{
   "example": {
     "id": 1000,
+    "password": "p@ssword",
+    "hash_type": "sha256",
     "group_id": 2000,
     "directory": "/home/example",
     "shell": "/bin/bash",
@@ -88,9 +92,17 @@ func TestHandler(t *testing.T) {
 	recorded.BodyIs(`{
   "example_sudo": {
     "id": 0,
-    "password": "p@ssword"
+    "password": "p@ssword",
+    "hash_type": "sha512",
+    "group_id": 0,
+    "directory": "",
+    "shell": "",
+    "gecos": "",
+    "keys": null,
+    "link_users": null
   }
 }`)
+
 	recorded = test.RunRequest(t, getHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/sudo/name/example_notfound", nil))
 	recorded.CodeIs(404)
 
@@ -124,6 +136,8 @@ func createHandlerTestConfig() {
 	configContent := `port = 9999
 [users.example]
 id = 1000
+password = "p@ssword"
+hash_type = "sha256"
 group_id = 2000
 directory = "/home/example"
 shell = "/bin/bash"
@@ -135,6 +149,7 @@ users = ["example"]
 
 [sudoers.example_sudo]
 password = "p@ssword"
+hash_type = "sha512"
 `
 	_, _ = configFile.WriteString(configContent)
 	configFile.Close()

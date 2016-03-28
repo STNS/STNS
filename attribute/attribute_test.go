@@ -8,10 +8,11 @@ import (
 func TestGetByName(t *testing.T) {
 	users := AllAttribute{
 		"test1": &All{
-			Id:    1,
-			User:  &User{LinkUsers: []string{"foo", "bar"}},
+			Id: 1,
+			User: &User{LinkUsers: []string{"foo", "bar"},
+				Password: "foo",
+			},
 			Group: &Group{Users: []string{"foo", "bar"}},
-			Sudo:  &Sudo{Password: "foo"},
 		},
 	}
 	_users := users.GetByName("test1")
