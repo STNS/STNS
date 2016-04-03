@@ -1,3 +1,10 @@
+stns (0.0.4) STABLE; urgency=low
+
+  * Add sudoers password
+  * Add user password
+
+ -- pyama86 <www.kazu.com@gmail.com>  Fri, 19 Mar 2016 00:00:00 +0000
+
 stns (0.0.3) STABLE; urgency=low
 
   * Add a link group
