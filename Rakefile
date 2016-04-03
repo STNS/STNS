@@ -7,7 +7,7 @@ task "clean_all" do
 end
 
 task "clean_bin" do
-  sh "find binary | grep -v -e 'rpm$' -e 'deb$' | xargs rm -rf"
+  sh "find binary/* | grep -v -e 'rpm$' -e 'deb$' | xargs rm -rf"
 end
 
 [
@@ -36,7 +36,7 @@ end
         |f| f.write(content)
       }
 
-      sh "find binary | grep -e '#{o[1]}.#{o[2]}$' | xargs rm -rf"
+      sh "find binary/* | grep -e '#{o[1]}.#{o[2]}$' | xargs rm -rf"
 
       docker_run("tmp/#{o[0]}-#{arch}-pkg", o[1])
       # check package
