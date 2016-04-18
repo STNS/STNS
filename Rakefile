@@ -36,7 +36,6 @@ task "test_pkg" => %W(
   test_pkg_i386
 )
 
-
 %w(x86 i386).each do |arch|
   desc "make package #{arch}"
   task "make_pkg_#{arch}" => %W(
@@ -65,18 +64,15 @@ end
     pkg_arch: %w(amd64 i386)
   }
 ].each do |h|
-
   h[:arch].each_with_index do |arch,index|
     task "#{h[:os]}_build_#{arch}" do
       docker_run(h[:os], arch, "build")
     end unless h[:os] == "centos"
 
-    task "#{h[:os]}_pkg_#{arch}" do
-      docker_run(h[:os], arch, "pkg", h[:pkg_arch][index])
-    end
-
-    task "#{h[:os]}_ci_#{arch}" do
-      docker_run(h[:os], arch, "ci", h[:pkg_arch][index])
+    %w(pkg ci).each do |t|
+      task "#{h[:os]}_#{t}_#{arch}" do
+        docker_run(h[:os], arch, t, h[:pkg_arch][index])
+      end
     end
   end
 end
@@ -112,7 +108,7 @@ def docker_run(os, arch, task, pkg_arch=nil, dir="binary")
   }
 
   sh "docker build --rm -f docker/tmp/#{os}-#{arch}-#{task} -t stns:stns ."
-  sh "docker run --rm -e ARCH=#{pkg_arch} --rm -it -v \"$(pwd)\"/#{dir}:/go/src/github.com/STNS/STNS/#{dir} -t stns:stns"
+  sh "docker run --rm -it -v \"$(pwd)\"/#{dir}:/go/src/github.com/STNS/STNS/#{dir} -t stns:stns"
 end
 
 namespace :spec do

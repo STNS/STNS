@@ -7,4 +7,4 @@ echo '%_topdir /go/src/github.com/STNS/STNS/package/RPM' > ~/.rpmmacros && \
 echo '%_signature gpg' >> ~/.rpmmacros && \
 echo '%_gpg_name stns-server' >> ~/.rpmmacros && \
 cp binary/stns.bin  package/RPM/BUILD/stns
-CMD rpmbuild --target ${ARCH} -ba package/RPM/SPECS/stns.spec && cp package/RPM/RPMS/${ARCH}/* binary/
+CMD rpmbuild --target <%= pkg_arch %> -ba package/RPM/SPECS/stns.spec && cp package/RPM/RPMS/<%= pkg_arch %>/* binary/

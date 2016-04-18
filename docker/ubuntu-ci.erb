@@ -5,5 +5,5 @@ WORKDIR /go/src/github.com/STNS/STNS
 ENV PATH /root/.rbenv/shims/:$PATH
 RUN bundle install --path=vendor/bundle --binstubs --jobs 4
 
-CMD dpkg -i binary/stns*${ARCH}.deb && \
+CMD dpkg -i binary/stns*<%= pkg_arch %>.deb && \
 bin/rake spec

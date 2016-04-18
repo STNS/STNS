@@ -7,5 +7,5 @@ RUN sed -i 's/Defaults    requiretty//g' /etc/sudoers
 RUN sed -i 's/Defaults    secure_path.*//g' /etc/sudoers
 RUN bundle install --path=vendor/bundle --binstubs --jobs 4
 
-CMD rpm -ivh binary/stns*${ARCH}.rpm && \
+CMD rpm -ivh binary/stns*<%= pkg_arch %>.rpm && \
 bin/rake spec
