@@ -1,4 +1,4 @@
-FROM stns:ubuntu-x86
+FROM pyama/stns:ubuntu-x86
 ADD . /go/src/github.com/STNS/STNS
 WORKDIR /go/src/github.com/STNS/STNS
 RUN gpg --import keys/pub.key;gpg --import --allow-secret-key-import keys/secret.key

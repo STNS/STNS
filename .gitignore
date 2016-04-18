@@ -11,3 +11,4 @@ package/deb/debian/*
 package/stns*.*
 .rake_tasks
 docker/tmp
+bin/*
