@@ -1,5 +1,5 @@
 language: go
-sudo: true
+sudo: required
 services:
   - docker
 before_install:
