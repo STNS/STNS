@@ -1,5 +1,12 @@
 language: go
-sudo: false
+sudo: true
+services:
+  - docker
+before_install:
+- sudo apt-get -qq update
+- bundle install
+- mkdir docker/tmp
+script:
+- bundle exec rake test_pkg
 go:
-    - 1.6
-    - tip
+  - 1.6
