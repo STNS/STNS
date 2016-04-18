@@ -112,7 +112,7 @@ def docker_run(os, arch, task, pkg_arch=nil, dir="binary")
   }
 
   sh "docker build --rm -f docker/tmp/#{os}-#{arch}-#{task} -t stns:stns ."
-  sh "docker run --rm -e ARCH=#{pkg_arch} --rm -it -v \"$(pwd)\"/binary:/go/src/github.com/STNS/STNS/#{dir} -t stns:stns"
+  sh "docker run --rm -e ARCH=#{pkg_arch} --rm -it -v \"$(pwd)\"/releases:/go/src/github.com/STNS/STNS/#{dir} -t stns:stns"
 end
 
 namespace :spec do

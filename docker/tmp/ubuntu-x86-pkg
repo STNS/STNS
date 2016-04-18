@@ -1,6 +1,0 @@
-FROM stns:ubuntu-x86
-ADD ./ /go/src/github.com/STNS/STNS
-WORKDIR /go/src/github.com/STNS/STNS
-RUN cp binary/stns.bin package/deb/debian/
-WORKDIR /go/src/github.com/STNS/STNS/package/deb/
-CMD debuild -a${TARGET} -uc -us && cp ../*.deb ../../binary/
