@@ -82,7 +82,7 @@ end
 end
 
 task "make_client" do
-  sh "cd ../libnss_stns && bundle exec rake make_pkg"
+  sh "cd ../libnss_stns && bundle exec rake clean_all && bundle exec rake make_pkg"
 end
 
 desc "make repositry"
