@@ -1,3 +1,9 @@
+stns (0.0.5) STABLE; urgency=low
+
+  * go 1.6.1
+
+ -- pyama86 <www.kazu.com@gmail.com>  Mon, 18 Apr 2016 15:00:00 +0000
+
 stns (0.0.4) STABLE; urgency=low
 
   * Add sudoers password
