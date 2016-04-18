@@ -1,4 +1,4 @@
-FROM stns:ubuntu-<%= arch %>
+FROM pyama/stns:ubuntu-<%= arch %>
 ADD ./ /go/src/github.com/STNS/STNS
 WORKDIR /go/src/github.com/STNS/STNS
 RUN cp binary/stns.bin package/deb/debian/

@@ -1,4 +1,4 @@
-FROM stns:centos-<%= arch %>
+FROM pyama/stns:centos-<%= arch %>
 ADD ./ /go/src/github.com/STNS/STNS
 WORKDIR /go/src/github.com/STNS/STNS
 RUN chown root:root -R /go/src/github.com/STNS/STNS/package/RPM && \
