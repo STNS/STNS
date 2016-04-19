@@ -1,4 +1,4 @@
-package attribute
+package stns
 
 import (
 	"reflect"
@@ -6,8 +6,8 @@ import (
 )
 
 func TestGetByName(t *testing.T) {
-	users := AllAttribute{
-		"test1": &All{
+	users := Attributes{
+		"test1": &Attribute{
 			Id: 1,
 			User: &User{LinkUsers: []string{"foo", "bar"},
 				Password: "foo",
@@ -44,8 +44,8 @@ func TestGetByName(t *testing.T) {
 	}
 }
 func TestGetById(t *testing.T) {
-	users := AllAttribute{
-		"test1": &All{
+	users := Attributes{
+		"test1": &Attribute{
 			Id: 1,
 		},
 	}

@@ -1,4 +1,4 @@
-package config
+package stns
 
 import (
 	"fmt"
@@ -22,19 +22,19 @@ func TestLoadConfig(t *testing.T) {
 port = 9999
 include = "%s/*.conf"
 
-[users.pyama]
+[users.example]
 id = 1001
 group_id = 2001
-directory = "/home/pyama"
+directory = "/home/example"
 shell = "/bin/bash"
 keys = ["ssh-rsa aaa"]
-link_users = ["pyama2", "pyama3"]
+link_users = ["example2", "example3"]
 `, tomlQuotedReplacer.Replace(configDir))
 
 	includedContent := `
 [groups.pepabo]
 id = 3001
-users = ["pyama"]
+users = ["example"]
 [sudoers.example]
 password = "p@ssword"
 `
@@ -49,19 +49,20 @@ password = "p@ssword"
 	defer os.Remove(configFile.Name())
 	defer os.Remove(includedFile.Name())
 	name := configFile.Name()
-	err = Load(&name)
+
+	config, err := LoadConfig(name)
 	assertNoError(t, err)
-	assert(t, All.Port == 9999, "not over write port")
-	assert(t, All.Users["pyama"].Id == 1001, "unmatch id")
-	assert(t, All.Users["pyama"].GroupId == 2001, "unmatch group id")
-	assert(t, All.Users["pyama"].Directory == "/home/pyama", "unmatch directory")
-	assert(t, All.Users["pyama"].Shell == "/bin/bash", "unmatch shell")
-	assert(t, All.Users["pyama"].Keys[0] == "ssh-rsa aaa", "unmatch key")
-	assert(t, All.Users["pyama"].LinkUsers[0] == "pyama2", "unmach link_users")
-	assert(t, All.Users["pyama"].LinkUsers[1] == "pyama3", "unmach link_users")
-	assert(t, All.Groups["pepabo"].Id == 3001, "unmatch group id")
-	assert(t, All.Groups["pepabo"].Users[0] == "pyama", "unmatch group users")
-	assert(t, All.Sudoers["example"].Password == "p@ssword", "unmatch password")
+	assert(t, config.Port == 9999, "not over write port")
+	assert(t, config.Users["example"].Id == 1001, "unmatch id")
+	assert(t, config.Users["example"].GroupId == 2001, "unmatch group id")
+	assert(t, config.Users["example"].Directory == "/home/example", "unmatch directory")
+	assert(t, config.Users["example"].Shell == "/bin/bash", "unmatch shell")
+	assert(t, config.Users["example"].Keys[0] == "ssh-rsa aaa", "unmatch key")
+	assert(t, config.Users["example"].LinkUsers[0] == "example2", "unmach link_users")
+	assert(t, config.Users["example"].LinkUsers[1] == "example3", "unmach link_users")
+	assert(t, config.Groups["pepabo"].Id == 3001, "unmatch group id")
+	assert(t, config.Groups["pepabo"].Users[0] == "example", "unmatch group users")
+	assert(t, config.Sudoers["example"].Password == "p@ssword", "unmatch password")
 }
 
 func assertNoError(t *testing.T, err error) {

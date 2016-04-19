@@ -1,48 +1,32 @@
-package api
+package stns
 
 import (
 	"reflect"
 
-	"github.com/STNS/STNS/attribute"
-	"github.com/STNS/STNS/config"
 	"github.com/ant0ine/go-json-rest/rest"
 )
 
-func Get(w rest.ResponseWriter, r *rest.Request) {
-	value := r.PathParam("value")
-	column := r.PathParam("column")
-	resource_name := r.PathParam("resource_name")
-	query := Query{resource_name, column, value}
-	query.Response(w, r)
-}
-
-func GetList(w rest.ResponseWriter, r *rest.Request) {
-	resource_name := r.PathParam("resource_name")
-	query := Query{resource_name, "list", ""}
-	query.Response(w, r)
-}
-
 type Query struct {
+	config   *Config
 	resource string
 	column   string
 	value    string
 }
 
-func (q *Query) getConfigByType() attribute.AllAttribute {
+func (q *Query) getConfigByType() Attributes {
 	if q.resource == "user" {
-		return config.All.Users
+		return q.config.Users
 	} else if q.resource == "group" {
-		return config.All.Groups
+		return q.config.Groups
 	} else if q.resource == "sudo" {
-		return config.All.Sudoers
+		return q.config.Sudoers
 	}
 	return nil
 }
 
-func (q *Query) getAttribute() attribute.AllAttribute {
+func (q *Query) getAttribute() Attributes {
 	resource := q.getConfigByType()
 	if resource != nil && !reflect.ValueOf(resource).IsNil() {
-
 		if q.column == "id" {
 			return resource.GetById(q.value)
 		} else if q.column == "name" {
@@ -54,7 +38,7 @@ func (q *Query) getAttribute() attribute.AllAttribute {
 	return nil
 }
 
-func (q *Query) Get() attribute.AllAttribute {
+func (q *Query) Get() Attributes {
 	attr := q.getAttribute()
 	if attr != nil && !reflect.ValueOf(attr).IsNil() {
 		q.mergeLinkValue(attr)
@@ -62,8 +46,7 @@ func (q *Query) Get() attribute.AllAttribute {
 	return attr
 }
 
-func (q *Query) mergeLinkValue(attr attribute.AllAttribute) {
-
+func (q *Query) mergeLinkValue(attr Attributes) {
 	for k, v := range attr {
 		mergeValue := []string{}
 		linker := q.getLinker(v)
@@ -82,7 +65,7 @@ func (q *Query) mergeLinkValue(attr attribute.AllAttribute) {
 	}
 }
 
-func (q *Query) getLinker(attr *attribute.All) attribute.Linker {
+func (q *Query) getLinker(attr *Attribute) Linker {
 	if attr != nil && !reflect.ValueOf(attr).IsNil() {
 		if q.resource == "user" {
 			return attr.User
@@ -140,8 +123,4 @@ func (q *Query) Response(w rest.ResponseWriter, r *rest.Request) {
 		return
 	}
 	w.WriteJson(attr)
-}
-
-func HealthChech(w rest.ResponseWriter, r *rest.Request) {
-	w.WriteJson("success")
 }
