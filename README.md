@@ -3,7 +3,7 @@
 
 STNS is used by sshd to access keys and user resolver provided
 
-client library:https://github.com/pyama86/libnss_stns
+client library:https://github.com/STNS/libnss_stns
 
 ```
 $ ssh pyama@example.jp
@@ -94,6 +94,8 @@ keys = ["ssh-rsa bbb"]
 $ /user/local/bin/stns-key-wrapper example1
 ssh-rsa aaa
 ssh-rsa bbb
+$ /user/local/bin/stns-key-wrapper example2
+ssh-rsa bbb
 ```
 
 ### Groups
@@ -103,23 +105,29 @@ ssh-rsa bbb
 |users|user name of the members|
 |link_groups|merge from belong to the other group users|
 
-
 #### link_groups
+It can be used to represent the organizational structure
+
 ```toml
-[group.example1]
-users = ["user_example1"]
-link_groups = ["example2"]
+[groups.department]
+users = ["user1"]
+link_groups = ["division"]
 
-[users.example2]
-users = ["user_example2"]
-
-```
+[groups.division]
+users = ["user2"]
 
 ```
-$ /user/local/bin/stns-query-wrapper /group/name/example1
+
+```
+$ /user/local/bin/stns-query-wrapper /group/name/department
 {
   …
-  "users": ["user_example1", "user_example2"]
+  "users": ["user1", "user2"]
+}
+$ /user/local/bin/stns-query-wrapper /group/name/division
+{
+  …
+  "users": ["user2"]
 }
 ```
 
@@ -130,5 +138,13 @@ $ /user/local/bin/stns-query-wrapper /group/name/example1
 |hash_type| hash algorithm default sha256(sha256,sha512) |
 
 ※: required parameter
+
+# VS
+## LDAP
+LDAP is used convenient and very well
+However, sometimes it becomes complicated and versatile too.
+STNS function is small compared with the LDAP, but it is management that much simple.
+And, In many cases, meet the required functionality.
+
 ## author
 * pyama86

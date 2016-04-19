@@ -1,11 +1,11 @@
-package attribute
+package stns
 
 import (
 	"reflect"
 	"strconv"
 )
 
-type All struct {
+type Attribute struct {
 	Id int `toml:"id" json:"id"`
 	*User
 	*Group
@@ -27,7 +27,7 @@ type Group struct {
 	LinkGroups []string `toml:"link_groups" json:"link_groups"`
 }
 
-type AllAttribute map[string]*All
+type Attributes map[string]*Attribute
 
 type Linker interface {
 	LinkTargetColumnValue() []string
@@ -59,21 +59,21 @@ func (g *Group) SetLinkValue(v []string) {
 	g.Users = v
 }
 
-func (u AllAttribute) GetByName(name string) AllAttribute {
+func (u Attributes) GetByName(name string) Attributes {
 	attr := u[name]
 	if attr == nil || reflect.ValueOf(attr).IsNil() {
 		return nil
 	}
-	return AllAttribute{
+	return Attributes{
 		name: attr,
 	}
 }
 
-func (u AllAttribute) GetById(_id string) AllAttribute {
+func (u Attributes) GetById(_id string) Attributes {
 	id, _ := strconv.Atoi(_id)
 	for k, u := range u {
 		if u.Id == id {
-			return AllAttribute{
+			return Attributes{
 				k: u,
 			}
 		}
@@ -81,7 +81,7 @@ func (u AllAttribute) GetById(_id string) AllAttribute {
 	return nil
 }
 
-func (u AllAttribute) Merge(m1 AllAttribute) {
+func (u Attributes) Merge(m1 Attributes) {
 	for i, v := range m1 {
 		u[i] = v
 	}
