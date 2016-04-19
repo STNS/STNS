@@ -94,6 +94,8 @@ keys = ["ssh-rsa bbb"]
 $ /user/local/bin/stns-key-wrapper example1
 ssh-rsa aaa
 ssh-rsa bbb
+$ /user/local/bin/stns-key-wrapper example2
+ssh-rsa bbb
 ```
 
 ### Groups
@@ -103,23 +105,29 @@ ssh-rsa bbb
 |users|user name of the members|
 |link_groups|merge from belong to the other group users|
 
-
 #### link_groups
+It can be used to represent the organizational structure
+
 ```toml
-[group.example1]
-users = ["user_example1"]
-link_groups = ["example2"]
+[groups.department]
+users = ["user1"]
+link_groups = ["division"]
 
-[users.example2]
-users = ["user_example2"]
-
-```
+[groups.division]
+users = ["user2"]
 
 ```
-$ /user/local/bin/stns-query-wrapper /group/name/example1
+
+```
+$ /user/local/bin/stns-query-wrapper /group/name/department
 {
   …
-  "users": ["user_example1", "user_example2"]
+  "users": ["user1", "user2"]
+}
+$ /user/local/bin/stns-query-wrapper /group/name/division
+{
+  …
+  "users": ["user2"]
 }
 ```
 
