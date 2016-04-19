@@ -138,5 +138,13 @@ $ /user/local/bin/stns-query-wrapper /group/name/division
 |hash_type| hash algorithm default sha256(sha256,sha512) |
 
 ※: required parameter
+
+# VS
+## LDAP
+LDAP is used convenient and very well
+However, sometimes it becomes complicated and versatile too.
+STNS function is small compared with the LDAP, but it is management that much simple.
+And, In many cases, meet the required functionality.
+
 ## author
 * pyama86
