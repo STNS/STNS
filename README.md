@@ -3,7 +3,7 @@
 
 STNS is used by sshd to access keys and user resolver provided
 
-client library:https://github.com/STNS/libnss_stns
+client modules:https://github.com/STNS/libnss_stns
 
 ```
 $ ssh pyama@example.jp
