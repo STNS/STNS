@@ -3,7 +3,7 @@
 
 STNS is used by sshd to access keys and user resolver provided
 
-client library:https://github.com/STNS/libnss_stns
+client modules:https://github.com/STNS/libnss_stns
 
 ```
 $ ssh pyama@example.jp
@@ -11,12 +11,17 @@ $ id pyama
 uid=1001(pyama) gid=1001(pyama) groups=1001(pyama)
 ```
 
-diagram
+![overview](https://cloud.githubusercontent.com/assets/8022082/13373974/250a8b16-ddba-11e5-994d-b1bbc81a6b94.png)
 
-![diagram](https://cloud.githubusercontent.com/assets/8022082/13373974/250a8b16-ddba-11e5-994d-b1bbc81a6b94.png)
+## manual
+1. [インストールガイド](/docs/install_ja.md)
+1. [アドバンスドガイド](/docs/advanced_ja.md)
 
-blog
+## blog
 * [Linuxユーザーと公開鍵を統合管理するサーバ&クライアントを書いた](https://ten-snapon.com/archives/1228)
+* [デプロイユーザーをSTNSで管理する](https://ten-snapon.com/archives/1330)
+* [STNSに組織体系を管理するLinkGroup機能を追加しi386に対応しました](https://ten-snapon.com/archives/1346)
+* [STNSでSudoパスワードをサポートした](https://ten-snapon.com/archives/1355)
 
 ## install
 ## redhat/centos
@@ -71,13 +76,13 @@ hash_type = "sha256"
 |---|---|
 |id(※)| unique user id|
 |group_id(※)|id of the group they belong|
-|password| password token|
-|hash_type| hash algorithm default sha256(sha256,sha512) |
 |directory|home directory path|
 |shell|default shell path|
 |gecos|description|
 |keys|public key list|
 |link_users|merge public key from the specified user|
+|password| password token|
+|hash_type| hash algorithm default sha256(sha256,sha512) |
 
 #### link_users
 link_users params is merge public key from the specified user
