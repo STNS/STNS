@@ -76,13 +76,13 @@ hash_type = "sha256"
 |---|---|
 |id(※)| unique user id|
 |group_id(※)|id of the group they belong|
-|password| password token|
-|hash_type| hash algorithm default sha256(sha256,sha512) |
 |directory|home directory path|
 |shell|default shell path|
 |gecos|description|
 |keys|public key list|
 |link_users|merge public key from the specified user|
+|password| password token|
+|hash_type| hash algorithm default sha256(sha256,sha512) |
 
 #### link_users
 link_users params is merge public key from the specified user
