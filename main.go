@@ -9,11 +9,19 @@ import (
 	"github.com/STNS/STNS/stns"
 )
 
+const VERSION = "0.0.5"
+
 func main() {
 	configFile := flag.String("conf", "/etc/stns/stns.conf", "config file path")
 	pidFile := flag.String("pidfile", "/var/run/stns.pid", "File containing process PID")
 	configCheck := flag.Bool("check-conf", false, "config check flag")
+	version := flag.Bool("version", false, "Print version")
 	flag.Parse()
+
+	if *version {
+		fmt.Println("STNS version " + VERSION)
+		os.Exit(0)
+	}
 
 	config, err := stns.LoadConfig(*configFile)
 	if err != nil {
