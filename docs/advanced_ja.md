@@ -61,6 +61,7 @@ STNSでは2種類の方法でsudoのパスワードを管理することが出�
 STNSにsudo用のアカウントを設け、パスワードを管理することが出来ます。イメージとしては第2のrootパスワードです。
 
 下記のようにサーバにsudo用の定義を行います。
+* /etc/stns/stns.conf
 ```toml
 [sudoers.example]
 password = "f2ca1bb6c7e907d06dafe4687e579fce76b37e4e93b7605022da52e6ccc26fd2"
