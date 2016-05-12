@@ -45,17 +45,10 @@ func includeConfigFile(config *Config, include string) error {
 	}
 
 	for _, file := range files {
-		userSaved := config.Users
-		groupSaved := config.Groups
-		config.Users = Attributes{}
-		config.Groups = Attributes{}
-
 		_, err := toml.DecodeFile(file, &config)
 		if err != nil {
 			return fmt.Errorf("while loading included config file %s: %s", file, err)
 		}
-		config.Users.Merge(userSaved)
-		config.Groups.Merge(groupSaved)
 	}
 	return nil
 }

@@ -40,9 +40,3 @@ func (u Attributes) GetById(_id string) Attributes {
 	}
 	return nil
 }
-
-func (u Attributes) Merge(m1 Attributes) {
-	for i, v := range m1 {
-		u[i] = v
-	}
-}
