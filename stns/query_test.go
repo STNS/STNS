@@ -1,8 +1,6 @@
 package stns
 
 import (
-	"io/ioutil"
-	"os"
 	"sort"
 	"testing"
 
@@ -10,7 +8,7 @@ import (
 )
 
 func TestGet(t *testing.T) {
-	config := fullConfig()
+	config, _ := LoadConfig("./fixtures/query_01.conf")
 	query := Query{config, "user", "name", "example1"}
 	resource := query.Get()
 	assertUserGet(t, resource)
@@ -34,7 +32,7 @@ func TestGet(t *testing.T) {
 }
 
 func TestNull(t *testing.T) {
-	config := nullErrorConfig()
+	config, _ := LoadConfig("./fixtures/query_02.conf")
 	query := Query{config, "user", "name", "example1"}
 	resource := query.Get()
 	test.Assert(t, len(resource) == 1, "unmatch resource count null1")
@@ -101,7 +99,7 @@ func assertSudoGet(t *testing.T, resource Attributes) {
 }
 
 func TestGetList(t *testing.T) {
-	config := fullConfig()
+	config, _ := LoadConfig("./fixtures/query_01.conf")
 	query := Query{config, "user", "list", ""}
 	resource := query.Get()
 	test.Assert(t, len(resource) == 3, "unmatch resource count")
@@ -136,83 +134,4 @@ func TestGetList(t *testing.T) {
 	query = Query{config, "sudo", "list", ""}
 	resource = query.Get()
 	test.Assert(t, len(resource) == 2, "unmatch sudo resource count")
-}
-
-func fullConfig() *Config {
-	configFile, _ := ioutil.TempFile("", "stns-config-test")
-	configContent := `port = 9999
-[users.example1]
-id = 1001
-group_id = 2001
-directory = "/home/example1"
-shell = "/bin/bash"
-keys = ["ssh-rsa aaa"]
-link_users = ["example2"]
-
-[users.example2]
-id = 1002
-group_id = 2001
-directory = "/home/example2"
-shell = "/bin/bash"
-keys = ["ssh-rsa bbb"]
-link_users = ["example3"]
-
-[users.example3]
-id = 1003
-group_id = 2001
-directory = "/home/example3"
-shell = "/bin/bash"
-keys = ["ssh-rsa ccc"]
-link_users = ["example1"]
-
-[groups.example_group1]
-id = 3001
-users = ["example", "example1"]
-link_groups = ["example_group2"]
-
-[groups.example_group2]
-id = 3002
-users = ["example2"]
-
-[sudoers.example1]
-password = "p@ssword1"
-
-[sudoers.example2]
-password = "p@ssword2"
-`
-	_, _ = configFile.WriteString(configContent)
-	configFile.Close()
-	defer os.Remove(configFile.Name())
-	name := configFile.Name()
-	config, _ := LoadConfig(name)
-	return config
-}
-
-func nullErrorConfig() *Config {
-	configFile, _ := ioutil.TempFile("", "stns-config-test")
-	configContent := `port = 9999
-[users.example1]
-link_users = ["none"]
-
-[users.example2]
-id = 1001
-
-[users.example3]
-
-[groups.example1]
-link_groups = ["none"]
-
-[groups.example2]
-id = 1001
-
-[groups.example3]
-
-[sudoers.example1]
-`
-	_, _ = configFile.WriteString(configContent)
-	configFile.Close()
-	defer os.Remove(configFile.Name())
-	name := configFile.Name()
-	config, _ := LoadConfig(name)
-	return config
 }

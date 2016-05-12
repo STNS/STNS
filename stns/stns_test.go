@@ -2,15 +2,13 @@ package stns
 
 import (
 	"encoding/base64"
-	"io/ioutil"
-	"os"
 	"testing"
 
 	"github.com/ant0ine/go-json-rest/rest/test"
 )
 
-func TestHandler(t *testing.T) {
-	config := createHandlerTestConfig()
+func TestHandlerV1(t *testing.T) {
+	config, _ := LoadConfig("./fixtures/stns_01.conf")
 	s := Create(config, "", "")
 
 	recorded := test.RunRequest(t, s.Handler(), test.MakeSimpleRequest("GET", "http://localhost:9999/user/name/example", nil))
@@ -110,8 +108,143 @@ func TestHandler(t *testing.T) {
 	recorded.CodeIs(404)
 }
 
+func TestHandlerV2(t *testing.T) {
+	config, _ := LoadConfig("./fixtures/stns_01.conf")
+	s := Create(config, "", "")
+
+	recorded := test.RunRequest(t, s.Handler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v2/user/name/example", nil))
+	recorded.CodeIs(200)
+	recorded.ContentTypeIsJson()
+	recorded.BodyIs(`{
+  "metadata": {
+    "api_version": 2,
+    "salt_enable": false,
+    "stretching_count": 0
+  },
+  "items": {
+    "example": {
+      "id": 1000,
+      "password": "p@ssword",
+      "hash_type": "sha256",
+      "group_id": 2000,
+      "directory": "/home/example",
+      "shell": "/bin/bash",
+      "gecos": "",
+      "keys": [
+        "ssh-rsa aaa"
+      ],
+      "link_users": null
+    }
+  }
+}`)
+	recorded = test.RunRequest(t, s.Handler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v2/user/name/example3", nil))
+	recorded.CodeIs(404)
+
+	recorded = test.RunRequest(t, s.Handler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v2/user/id/1000", nil))
+	recorded.CodeIs(200)
+	recorded.ContentTypeIsJson()
+	recorded.BodyIs(`{
+  "metadata": {
+    "api_version": 2,
+    "salt_enable": false,
+    "stretching_count": 0
+  },
+  "items": {
+    "example": {
+      "id": 1000,
+      "password": "p@ssword",
+      "hash_type": "sha256",
+      "group_id": 2000,
+      "directory": "/home/example",
+      "shell": "/bin/bash",
+      "gecos": "",
+      "keys": [
+        "ssh-rsa aaa"
+      ],
+      "link_users": null
+    }
+  }
+}`)
+	recorded = test.RunRequest(t, s.Handler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v2/user/id/1001", nil))
+	recorded.CodeIs(404)
+
+	recorded = test.RunRequest(t, s.Handler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v2/group/name/example_group", nil))
+	recorded.CodeIs(200)
+	recorded.ContentTypeIsJson()
+	recorded.BodyIs(`{
+  "metadata": {
+    "api_version": 2,
+    "salt_enable": false,
+    "stretching_count": 0
+  },
+  "items": {
+    "example_group": {
+      "id": 3000,
+      "users": [
+        "example"
+      ],
+      "link_groups": null
+    }
+  }
+}`)
+	recorded = test.RunRequest(t, s.Handler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v2/group/name/example_group3", nil))
+	recorded.CodeIs(404)
+
+	recorded = test.RunRequest(t, s.Handler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v2/group/id/3000", nil))
+	recorded.CodeIs(200)
+	recorded.ContentTypeIsJson()
+	recorded.BodyIs(`{
+  "metadata": {
+    "api_version": 2,
+    "salt_enable": false,
+    "stretching_count": 0
+  },
+  "items": {
+    "example_group": {
+      "id": 3000,
+      "users": [
+        "example"
+      ],
+      "link_groups": null
+    }
+  }
+}`)
+
+	recorded = test.RunRequest(t, s.Handler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v2/group/id/3001", nil))
+	recorded.CodeIs(404)
+
+	recorded = test.RunRequest(t, s.Handler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v2/sudo/name/example_sudo", nil))
+	recorded.CodeIs(200)
+	recorded.ContentTypeIsJson()
+	recorded.BodyIs(`{
+  "metadata": {
+    "api_version": 2,
+    "salt_enable": false,
+    "stretching_count": 0
+  },
+  "items": {
+    "example_sudo": {
+      "id": 0,
+      "password": "p@ssword",
+      "hash_type": "sha512",
+      "group_id": 0,
+      "directory": "",
+      "shell": "",
+      "gecos": "",
+      "keys": null,
+      "link_users": null
+    }
+  }
+}`)
+
+	recorded = test.RunRequest(t, s.Handler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v2/sudo/name/example_notfound", nil))
+	recorded.CodeIs(404)
+
+	recorded = test.RunRequest(t, s.Handler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v2/sudo/id/1001", nil))
+	recorded.CodeIs(404)
+}
 func TestBasicAuth(t *testing.T) {
-	config := createAuthTestConfig()
+	config, _ := LoadConfig("./fixtures/stns_02.conf")
 	s := Create(config, "", "")
 
 	// simple request fails
@@ -131,48 +264,4 @@ func TestBasicAuth(t *testing.T) {
 	recorded = test.RunRequest(t, s.Handler(), rightCredReq)
 	recorded.CodeIs(200)
 
-}
-
-func createHandlerTestConfig() *Config {
-	configFile, _ := ioutil.TempFile("", "stns-config-handler")
-	configContent := `port = 9999
-[users.example]
-id = 1000
-password = "p@ssword"
-hash_type = "sha256"
-group_id = 2000
-directory = "/home/example"
-shell = "/bin/bash"
-keys = ["ssh-rsa aaa"]
-
-[groups.example_group]
-id = 3000
-users = ["example"]
-
-[sudoers.example_sudo]
-password = "p@ssword"
-hash_type = "sha512"
-`
-	_, _ = configFile.WriteString(configContent)
-	configFile.Close()
-	name := configFile.Name()
-	defer os.Remove(name)
-	config, _ := LoadConfig(name)
-	return config
-}
-
-func createAuthTestConfig() *Config {
-	configFile, _ := ioutil.TempFile("", "stns-config-auth")
-	configContent := `port = 9999
-user = "admin"
-password = "Admin"
-[users.example]
-id = 1000
-`
-	_, _ = configFile.WriteString(configContent)
-	configFile.Close()
-	name := configFile.Name()
-	defer os.Remove(name)
-	config, _ := LoadConfig(name)
-	return config
 }

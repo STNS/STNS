@@ -7,7 +7,6 @@ import (
 
 func TestLoadConfig(t *testing.T) {
 	config, err := LoadConfig("./fixtures/base.conf")
-
 	assertNoError(t, err)
 	assert(t, config.Port == 9999, "not over write port")
 	assert(t, config.Salt == true, "not ovver write salt")
