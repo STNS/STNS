@@ -19,7 +19,7 @@ func main() {
 	flag.Parse()
 
 	if *version {
-		fmt.Println("STNS version " + strconv.FormatFloat(settings.ApiVersion, 'f', 1, 64))
+		fmt.Println("STNS version " + strconv.FormatFloat(settings.API_VERSION, 'f', 1, 64))
 		os.Exit(0)
 	}
 

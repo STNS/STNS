@@ -62,7 +62,7 @@ func (h *Handler) Response(q *Query, w rest.ResponseWriter, r *rest.Request) {
 	if v2.MatchString(r.URL.Path) {
 		response := ResponseFormat{
 			&MetaData{
-				settings.ApiVersion,
+				settings.API_VERSION,
 				h.config.Salt,
 				h.config.Stretching,
 				settings.SUCCESS,
@@ -86,7 +86,7 @@ func (h *Handler) AuthResponse(q *Query, w rest.ResponseWriter, r *rest.Request)
 		if params.Password == r.PathParam("hash") {
 			response := ResponseFormat{
 				&MetaData{
-					settings.ApiVersion,
+					settings.API_VERSION,
 					h.config.Salt,
 					h.config.Stretching,
 					settings.SUCCESS,
