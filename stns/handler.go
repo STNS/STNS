@@ -13,9 +13,10 @@ type Handler struct {
 }
 
 type Metadata struct {
-	ApiVersion float32 `json:"api_version"`
+	ApiVersion float64 `json:"api_version"`
 	Salt       bool    `json:"salt_enable"`
 	Stretching int     `json:"stretching_count"`
+	Result     string  `json:"result""`
 }
 
 type ResponseFormat struct {
@@ -40,6 +41,11 @@ func (h *Handler) Get(w rest.ResponseWriter, r *rest.Request) {
 	h.Response(query, w, r)
 }
 
+func (h *Handler) Auth(w rest.ResponseWriter, r *rest.Request) {
+	query := h.getQuery(r)
+	h.AuthResponse(query, w, r)
+}
+
 func (h *Handler) GetList(w rest.ResponseWriter, r *rest.Request) {
 	query := h.getListQuery(r)
 	h.Response(query, w, r)
@@ -59,6 +65,7 @@ func (h *Handler) Response(q *Query, w rest.ResponseWriter, r *rest.Request) {
 				settings.ApiVersion,
 				h.config.Salt,
 				h.config.Stretching,
+				settings.SUCCESS,
 			},
 			&attr,
 		}
@@ -66,4 +73,29 @@ func (h *Handler) Response(q *Query, w rest.ResponseWriter, r *rest.Request) {
 	} else {
 		w.WriteJson(attr)
 	}
+}
+
+func (h *Handler) AuthResponse(q *Query, w rest.ResponseWriter, r *rest.Request) {
+	attr := q.Get()
+	if attr == nil || reflect.ValueOf(attr).IsNil() {
+		rest.NotFound(w, r)
+		return
+	}
+
+	for _, params := range attr {
+		if params.Password == r.PathParam("hash") {
+			response := ResponseFormat{
+				&Metadata{
+					settings.ApiVersion,
+					h.config.Salt,
+					h.config.Stretching,
+					settings.SUCCESS,
+				},
+				&Attributes{},
+			}
+			w.WriteJson(response)
+			return
+		}
+	}
+	rest.NotFound(w, r)
 }

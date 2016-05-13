@@ -119,7 +119,8 @@ func TestHandlerV2(t *testing.T) {
   "metadata": {
     "api_version": 2,
     "salt_enable": false,
-    "stretching_count": 0
+    "stretching_count": 0,
+    "result": "success"
   },
   "items": {
     "example": {
@@ -147,7 +148,8 @@ func TestHandlerV2(t *testing.T) {
   "metadata": {
     "api_version": 2,
     "salt_enable": false,
-    "stretching_count": 0
+    "stretching_count": 0,
+    "result": "success"
   },
   "items": {
     "example": {
@@ -175,7 +177,8 @@ func TestHandlerV2(t *testing.T) {
   "metadata": {
     "api_version": 2,
     "salt_enable": false,
-    "stretching_count": 0
+    "stretching_count": 0,
+    "result": "success"
   },
   "items": {
     "example_group": {
@@ -197,7 +200,8 @@ func TestHandlerV2(t *testing.T) {
   "metadata": {
     "api_version": 2,
     "salt_enable": false,
-    "stretching_count": 0
+    "stretching_count": 0,
+    "result": "success"
   },
   "items": {
     "example_group": {
@@ -220,7 +224,8 @@ func TestHandlerV2(t *testing.T) {
   "metadata": {
     "api_version": 2,
     "salt_enable": false,
-    "stretching_count": 0
+    "stretching_count": 0,
+    "result": "success"
   },
   "items": {
     "example_sudo": {
@@ -242,6 +247,19 @@ func TestHandlerV2(t *testing.T) {
 
 	recorded = test.RunRequest(t, s.Handler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v2/sudo/id/1001", nil))
 	recorded.CodeIs(404)
+
+	recorded = test.RunRequest(t, s.Handler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v2/auth/sudo/name/example_sudo/p@ssword", nil))
+	recorded.CodeIs(200)
+	recorded.ContentTypeIsJson()
+	recorded.BodyIs(`{
+  "metadata": {
+    "api_version": 2,
+    "salt_enable": false,
+    "stretching_count": 0,
+    "result": "success"
+  },
+  "items": {}
+}`)
 }
 func TestBasicAuth(t *testing.T) {
 	config, _ := LoadConfig("./fixtures/stns_02.conf")
