@@ -12,7 +12,7 @@ type Handler struct {
 	config *Config
 }
 
-type Metadata struct {
+type MetaData struct {
 	ApiVersion float64 `json:"api_version"`
 	Salt       bool    `json:"salt_enable"`
 	Stretching int     `json:"stretching_count"`
@@ -20,7 +20,7 @@ type Metadata struct {
 }
 
 type ResponseFormat struct {
-	Metadata *Metadata   `json:"metadata"`
+	MetaData *MetaData   `json:"metadata"`
 	Items    *Attributes `json:"items"`
 }
 
@@ -61,7 +61,7 @@ func (h *Handler) Response(q *Query, w rest.ResponseWriter, r *rest.Request) {
 	v2 := regexp.MustCompile(`^/v2`)
 	if v2.MatchString(r.URL.Path) {
 		response := ResponseFormat{
-			&Metadata{
+			&MetaData{
 				settings.ApiVersion,
 				h.config.Salt,
 				h.config.Stretching,
@@ -85,7 +85,7 @@ func (h *Handler) AuthResponse(q *Query, w rest.ResponseWriter, r *rest.Request)
 	for _, params := range attr {
 		if params.Password == r.PathParam("hash") {
 			response := ResponseFormat{
-				&Metadata{
+				&MetaData{
 					settings.ApiVersion,
 					h.config.Salt,
 					h.config.Stretching,
