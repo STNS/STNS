@@ -1,6 +1,7 @@
 package stns
 
 import (
+	"net/http"
 	"reflect"
 	"regexp"
 
@@ -61,18 +62,21 @@ func (h *Handler) Response(q *Query, w rest.ResponseWriter, r *rest.Request) {
 	v2 := regexp.MustCompile(`^/v2`)
 	if v2.MatchString(r.URL.Path) {
 		response := ResponseFormat{
-			&MetaData{
-				settings.API_VERSION,
-				h.config.Salt,
-				h.config.Stretching,
-				settings.SUCCESS,
+			MetaData: &MetaData{
+				ApiVersion: settings.API_VERSION,
+				Salt:       h.config.Salt,
+				Stretching: h.config.Stretching,
+				Result:     settings.SUCCESS,
 			},
-			&attr,
+			Items: &attr,
 		}
 		w.WriteJson(response)
+		return
 	} else {
 		w.WriteJson(attr)
+		return
 	}
+	rest.NotFound(w, r)
 }
 
 func (h *Handler) AuthResponse(q *Query, w rest.ResponseWriter, r *rest.Request) {
@@ -85,15 +89,18 @@ func (h *Handler) AuthResponse(q *Query, w rest.ResponseWriter, r *rest.Request)
 	for _, params := range attr {
 		if params.Password == r.PathParam("hash") {
 			response := ResponseFormat{
-				&MetaData{
-					settings.API_VERSION,
-					h.config.Salt,
-					h.config.Stretching,
-					settings.SUCCESS,
+				MetaData: &MetaData{
+					ApiVersion: settings.API_VERSION,
+					Salt:       h.config.Salt,
+					Stretching: h.config.Stretching,
+					Result:     settings.SUCCESS,
 				},
-				&Attributes{},
+				Items: &Attributes{},
 			}
 			w.WriteJson(response)
+			return
+		} else {
+			rest.Error(w, settings.AUTH_ERROR, http.StatusUnauthorized)
 			return
 		}
 	}
