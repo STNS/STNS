@@ -71,7 +71,7 @@ hash_type = "sha256"
 `hash_type`には`sha256`と`sha512`が指定可能です。パスワードハッシュについては下記のように生成すると良いでしょう。
 
 ```
-$ echo "test" | sha256sum
+$ echo -n "test" | sha256sum
 f2ca1bb6c7e907d06dafe4687e579fce76b37e4e93b7605022da52e6ccc26fd2
 ```
 
