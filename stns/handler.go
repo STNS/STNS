@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"reflect"
 	"regexp"
+	"strings"
 
 	"github.com/STNS/STNS/settings"
 	"github.com/ant0ine/go-json-rest/rest"
@@ -87,7 +88,7 @@ func (h *Handler) AuthResponse(q *Query, w rest.ResponseWriter, r *rest.Request)
 	}
 
 	for _, params := range attr {
-		if params.Password == r.PathParam("hash") {
+		if strings.ToLower(params.Password) == r.PathParams("hash") {
 			response := ResponseFormat{
 				MetaData: &MetaData{
 					ApiVersion: settings.API_VERSION,
