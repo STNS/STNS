@@ -83,7 +83,6 @@ func (s *Stns) Handler() http.Handler {
 	h := Handler{s.config}
 
 	router, err := rest.MakeRouter(
-		rest.Get("/v2/auth/:resource_name/:column/:value/:hash", h.Auth),
 		rest.Get("/v2/:resource_name/list", h.GetList),
 		rest.Get("/v2/:resource_name/:column/:value", h.Get),
 		rest.Get("/:resource_name/list", h.GetList),
