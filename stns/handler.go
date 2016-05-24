@@ -16,6 +16,7 @@ type MetaData struct {
 	ApiVersion float64 `json:"api_version"`
 	Salt       bool    `json:"salt_enable"`
 	Stretching int     `json:"stretching_count"`
+	HashType   string  `json:"hash_type"`
 	Result     string  `json:"result""`
 }
 
@@ -61,6 +62,7 @@ func (h *Handler) Response(q *Query, w rest.ResponseWriter, r *rest.Request) {
 				Salt:       h.config.Salt,
 				Stretching: h.config.Stretching,
 				Result:     settings.SUCCESS,
+				HashType:   h.config.HashType,
 			},
 			Items: &attr,
 		}

@@ -120,6 +120,7 @@ func TestHandlerV2(t *testing.T) {
     "api_version": 2,
     "salt_enable": false,
     "stretching_count": 0,
+    "hash_type": "sha256",
     "result": "success"
   },
   "items": {
@@ -149,6 +150,7 @@ func TestHandlerV2(t *testing.T) {
     "api_version": 2,
     "salt_enable": false,
     "stretching_count": 0,
+    "hash_type": "sha256",
     "result": "success"
   },
   "items": {
@@ -178,6 +180,7 @@ func TestHandlerV2(t *testing.T) {
     "api_version": 2,
     "salt_enable": false,
     "stretching_count": 0,
+    "hash_type": "sha256",
     "result": "success"
   },
   "items": {
@@ -201,6 +204,7 @@ func TestHandlerV2(t *testing.T) {
     "api_version": 2,
     "salt_enable": false,
     "stretching_count": 0,
+    "hash_type": "sha256",
     "result": "success"
   },
   "items": {
@@ -225,6 +229,7 @@ func TestHandlerV2(t *testing.T) {
     "api_version": 2,
     "salt_enable": false,
     "stretching_count": 0,
+    "hash_type": "sha256",
     "result": "success"
   },
   "items": {
