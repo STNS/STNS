@@ -1,27 +1,30 @@
 {
 	"ImportPath": "github.com/STNS/STNS",
 	"GoVersion": "go1.6",
-	"GodepVersion": "v60",
+	"GodepVersion": "v66",
+	"Packages": [
+		"./..."
+	],
 	"Deps": [
 		{
 			"ImportPath": "github.com/BurntSushi/toml",
-			"Comment": "v0.1.0-46-gbbd5bb6",
+			"Comment": "v0.2.0",
 			"Rev": "bbd5bb678321a0d6e58f1099321dfa73391c1b6f"
 		},
 		{
 			"ImportPath": "github.com/ant0ine/go-json-rest/rest",
-			"Comment": "v3.3.0-12-geab4809",
-			"Rev": "eab48093ffe42b1d6d2774db2e6bdc2ea83c71c0"
+			"Comment": "v3.3.1",
+			"Rev": "37ad7dc626602a8355801da6acd85155655520f8"
 		},
 		{
 			"ImportPath": "github.com/ant0ine/go-json-rest/rest/test",
-			"Comment": "v3.3.0-12-geab4809",
-			"Rev": "eab48093ffe42b1d6d2774db2e6bdc2ea83c71c0"
+			"Comment": "v3.3.1",
+			"Rev": "37ad7dc626602a8355801da6acd85155655520f8"
 		},
 		{
 			"ImportPath": "github.com/ant0ine/go-json-rest/rest/trie",
-			"Comment": "v3.3.0-12-geab4809",
-			"Rev": "eab48093ffe42b1d6d2774db2e6bdc2ea83c71c0"
+			"Comment": "v3.3.1",
+			"Rev": "37ad7dc626602a8355801da6acd85155655520f8"
 		}
 	]
 }
