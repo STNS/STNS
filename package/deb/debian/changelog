@@ -1,3 +1,10 @@
+stns (0.1.0) STABLE; urgency=low
+
+  * Go 1.6.2
+  * salt and streching suppprt
+
+ -- pyama86 <www.kazu.com@gmail.com>  Sat, 28 May 2016 15:00:00 +0000
+
 stns (0.0.5) STABLE; urgency=low
 
   * go 1.6.1
