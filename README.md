@@ -41,6 +41,9 @@ $ apt-get install stns
 ```toml
 port = 1104
 include = "/etc/stns/conf.d/*"
+salt_enable = false
+stretching_number = 0
+hash_type = "sha256"
 
 # support basic auth
 user = "basic_user"
@@ -70,6 +73,9 @@ hash_type = "sha256"
 |include|include config directory|
 |user| basic authentication user|
 |password| basic authentication password|
+|salt_enable| To generate a salt of the password from the user name |
+|stretching_number|Stretching number of password|
+|hash_type| password hash algorithm (sha256,sha512) |
 
 ### Users
 |Name|Description|
@@ -82,7 +88,7 @@ hash_type = "sha256"
 |keys|public key list|
 |link_users|merge public key from the specified user|
 |password| password token|
-|hash_type| hash algorithm default sha256(sha256,sha512) |
+|hash_type| hash algorithm (sha256,sha512) Users > General|
 
 #### link_users
 link_users params is merge public key from the specified user
