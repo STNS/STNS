@@ -11,7 +11,7 @@ type Config struct {
 	Port       int    `toml:"port"`
 	Include    string `toml:"include"`
 	Salt       bool   `toml:"salt_enable"`
-	Stretching int    `toml:"stretching_count"`
+	Stretching int    `toml:"stretching_number"`
 	User       string `toml:"user"`
 	Password   string `toml:"password"`
 	HashType   string `toml:"hash_type" json:"hash_type"`

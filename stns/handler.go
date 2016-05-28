@@ -15,7 +15,7 @@ type Handler struct {
 type MetaData struct {
 	ApiVersion float64 `json:"api_version"`
 	Salt       bool    `json:"salt_enable"`
-	Stretching int     `json:"stretching_count"`
+	Stretching int     `json:"stretching_number"`
 	HashType   string  `json:"hash_type"`
 	Result     string  `json:"result""`
 }
