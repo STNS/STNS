@@ -20,21 +20,21 @@ type Config struct {
 	Sudoers    Attributes
 }
 
-func LoadConfig(configFile string) (*Config, error) {
+func LoadConfig(configFile string) (Config, error) {
 	var config Config
 	defaultConfig(&config)
 
 	_, err := toml.DecodeFile(configFile, &config)
 	if err != nil {
-		return nil, err
+		return Config{}, err
 	}
 
 	if config.Include != "" {
 		if err := includeConfigFile(&config, config.Include); err != nil {
-			return nil, err
+			return Config{}, err
 		}
 	}
-	return &config, nil
+	return config, nil
 }
 
 func defaultConfig(config *Config) {

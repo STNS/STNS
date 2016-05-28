@@ -12,12 +12,12 @@ import (
 )
 
 type Stns struct {
-	config         *Config
+	config         Config
 	configFileName string
 	pidFileName    string
 }
 
-func Create(config *Config, configFileName string, pidFileName string) *Stns {
+func Create(config Config, configFileName string, pidFileName string) *Stns {
 	return &Stns{config, configFileName, pidFileName}
 }
 
@@ -80,7 +80,7 @@ func (s *Stns) Handler() http.Handler {
 		})
 	}
 
-	h := Handler{s.config}
+	h := Handler{&s.config}
 
 	router, err := rest.MakeRouter(
 		rest.Get("/v2/:resource_name/list", h.GetList),
