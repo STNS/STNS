@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"strconv"
 
 	"github.com/STNS/STNS/settings"
 	"github.com/STNS/STNS/stns"
@@ -19,7 +18,7 @@ func main() {
 	flag.Parse()
 
 	if *version {
-		fmt.Println("STNS version " + strconv.FormatFloat(settings.API_VERSION, 'f', 1, 64))
+		fmt.Println("STNS version " + settings.VERSION)
 		os.Exit(0)
 	}
 
