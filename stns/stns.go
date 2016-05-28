@@ -12,12 +12,12 @@ import (
 )
 
 type Stns struct {
-	config         *Config
+	config         Config
 	configFileName string
 	pidFileName    string
 }
 
-func Create(config *Config, configFileName string, pidFileName string) *Stns {
+func Create(config Config, configFileName string, pidFileName string) *Stns {
 	return &Stns{config, configFileName, pidFileName}
 }
 
@@ -80,9 +80,13 @@ func (s *Stns) Handler() http.Handler {
 		})
 	}
 
+	h := Handler{&s.config}
+
 	router, err := rest.MakeRouter(
-		rest.Get("/:resource_name/list", s.GetList),
-		rest.Get("/:resource_name/:column/:value", s.Get),
+		rest.Get("/v2/:resource_name/list", h.GetList),
+		rest.Get("/v2/:resource_name/:column/:value", h.Get),
+		rest.Get("/:resource_name/list", h.GetList),
+		rest.Get("/:resource_name/:column/:value", h.Get),
 		rest.Get("/healthcheck", s.HealthChech),
 	)
 	if err != nil {
@@ -91,20 +95,6 @@ func (s *Stns) Handler() http.Handler {
 
 	server.SetApp(router)
 	return server.MakeHandler()
-}
-
-func (s *Stns) Get(w rest.ResponseWriter, r *rest.Request) {
-	value := r.PathParam("value")
-	column := r.PathParam("column")
-	resource_name := r.PathParam("resource_name")
-	query := Query{s.config, resource_name, column, value}
-	query.Response(w, r)
-}
-
-func (s *Stns) GetList(w rest.ResponseWriter, r *rest.Request) {
-	resource_name := r.PathParam("resource_name")
-	query := Query{s.config, resource_name, "list", ""}
-	query.Response(w, r)
 }
 
 func (s *Stns) HealthChech(w rest.ResponseWriter, r *rest.Request) {

@@ -7,9 +7,11 @@ import (
 
 func TestLoadConfig(t *testing.T) {
 	config, err := LoadConfig("./fixtures/base.conf")
-
 	assertNoError(t, err)
 	assert(t, config.Port == 9999, "not over write port")
+	assert(t, config.Salt == true, "not over write salt")
+	assert(t, config.HashType == "sha256", "miss match hash type")
+	assert(t, config.Stretching == 1000, "not ovver write stretching_number")
 	assert(t, config.Users["example"].Id == 1001, "unmatch id")
 	assert(t, config.Users["example"].GroupId == 2002, "unmatch group id")
 	assert(t, config.Users["example"].Directory == "/home/example", "unmatch directory")

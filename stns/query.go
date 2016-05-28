@@ -1,10 +1,6 @@
 package stns
 
-import (
-	"reflect"
-
-	"github.com/ant0ine/go-json-rest/rest"
-)
+import "reflect"
 
 type Query struct {
 	config   *Config
@@ -114,13 +110,4 @@ func RemoveDuplicates(xs []string) []string {
 		}
 	}
 	return ys
-}
-
-func (q *Query) Response(w rest.ResponseWriter, r *rest.Request) {
-	attr := q.Get()
-	if attr == nil || reflect.ValueOf(attr).IsNil() {
-		rest.NotFound(w, r)
-		return
-	}
-	w.WriteJson(attr)
 }

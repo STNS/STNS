@@ -6,10 +6,9 @@ import (
 	"log"
 	"os"
 
+	"github.com/STNS/STNS/settings"
 	"github.com/STNS/STNS/stns"
 )
-
-const VERSION = "0.0.5"
 
 func main() {
 	configFile := flag.String("conf", "/etc/stns/stns.conf", "config file path")
@@ -19,7 +18,7 @@ func main() {
 	flag.Parse()
 
 	if *version {
-		fmt.Println("STNS version " + VERSION)
+		fmt.Println("STNS version " + settings.VERSION)
 		os.Exit(0)
 	}
 
