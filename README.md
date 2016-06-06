@@ -14,8 +14,13 @@ uid=1001(pyama) gid=1001(pyama) groups=1001(pyama)
 ![overview](https://cloud.githubusercontent.com/assets/8022082/13373974/250a8b16-ddba-11e5-994d-b1bbc81a6b94.png)
 
 ## manual
-1. [インストールガイド](/docs/install_ja.md)
-1. [アドバンスドガイド](/docs/advanced_ja.md)
+
+1. Installation Guide
+  * [English](/docs/en/install.md)
+  * [日本語](/docs/ja/install.md)
+2. Advanced Usage
+  * [English](/docs/en/advanced.md)
+  * [日本語](/docs/ja/advanced.md)
 
 ## blog
 * [Linuxユーザーと公開鍵を統合管理するサーバ&クライアントを書いた](https://ten-snapon.com/archives/1228)
