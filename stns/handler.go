@@ -1,6 +1,7 @@
 package stns
 
 import (
+	"net/http"
 	"reflect"
 	"regexp"
 
@@ -65,7 +66,7 @@ func (h *Handler) Response(q *Query, w rest.ResponseWriter, r *rest.Request) {
 		}
 		w.WriteJson(response)
 		if attr == nil || reflect.ValueOf(attr).IsNil() {
-			w.WriteHeader(404)
+			w.WriteHeader(http.StatusNotFound)
 			return
 		}
 		return
