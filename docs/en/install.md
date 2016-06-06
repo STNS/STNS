@@ -4,7 +4,7 @@
 
 STNS allows you to easily manage Linux users with simple TOML-based configuration. It consists of server and client implementation, which requires only a few steps to install. Moreover, you can use it with existing user management systems such as LDAP.
 
-It's highly recommended that you adopt such a system architecture like that STNS server sits behind Nginx which handles and terminates TLS session using a free certificate provided by [Lets' Encrypt](https://letsencrypt.org/).
+It's highly recommended that you adopt such a system architecture like that STNS server sits behind Nginx which handles and terminates TLS session using a free certificate provided by [Let's Encrypt](https://letsencrypt.org/).
 
 ## Installation
 
