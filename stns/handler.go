@@ -53,6 +53,9 @@ func (h *Handler) Response(q *Query, w rest.ResponseWriter, r *rest.Request) {
 	attr := q.Get()
 	v2 := regexp.MustCompile(`^/v2`)
 	if v2.MatchString(r.URL.Path) {
+		if attr == nil || reflect.ValueOf(attr).IsNil() {
+			w.WriteHeader(http.StatusNotFound)
+		}
 		response := ResponseFormat{
 			MetaData: &MetaData{
 				ApiVersion: settings.API_VERSION,
@@ -65,10 +68,6 @@ func (h *Handler) Response(q *Query, w rest.ResponseWriter, r *rest.Request) {
 			Items: &attr,
 		}
 		w.WriteJson(response)
-		if attr == nil || reflect.ValueOf(attr).IsNil() {
-			w.WriteHeader(http.StatusNotFound)
-			return
-		}
 		return
 	} else {
 		if attr == nil || reflect.ValueOf(attr).IsNil() {
