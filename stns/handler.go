@@ -50,11 +50,6 @@ func (h *Handler) GetList(w rest.ResponseWriter, r *rest.Request) {
 
 func (h *Handler) Response(q *Query, w rest.ResponseWriter, r *rest.Request) {
 	attr := q.Get()
-	if attr == nil || reflect.ValueOf(attr).IsNil() {
-		rest.NotFound(w, r)
-		return
-	}
-
 	v2 := regexp.MustCompile(`^/v2`)
 	if v2.MatchString(r.URL.Path) {
 		response := ResponseFormat{
@@ -69,10 +64,17 @@ func (h *Handler) Response(q *Query, w rest.ResponseWriter, r *rest.Request) {
 			Items: &attr,
 		}
 		w.WriteJson(response)
+		if attr == nil || reflect.ValueOf(attr).IsNil() {
+			w.WriteHeader(404)
+			return
+		}
 		return
 	} else {
+		if attr == nil || reflect.ValueOf(attr).IsNil() {
+			rest.NotFound(w, r)
+			return
+		}
 		w.WriteJson(attr)
 		return
 	}
-	rest.NotFound(w, r)
 }
