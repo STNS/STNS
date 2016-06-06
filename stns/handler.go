@@ -18,6 +18,7 @@ type MetaData struct {
 	Stretching int     `json:"stretching_number"`
 	HashType   string  `json:"hash_type"`
 	Result     string  `json:"result""`
+	MinId      int     `json:"min_id""`
 }
 
 type ResponseFormat struct {
@@ -63,6 +64,7 @@ func (h *Handler) Response(q *Query, w rest.ResponseWriter, r *rest.Request) {
 				Stretching: h.config.Stretching,
 				Result:     settings.SUCCESS,
 				HashType:   h.config.HashType,
+				MinId:      q.GetMinId(),
 			},
 			Items: &attr,
 		}

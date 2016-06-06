@@ -7,7 +7,7 @@ import (
 	"github.com/ant0ine/go-json-rest/rest/test"
 )
 
-func TestHandlerV1(t *testing.T) {
+func TestHandlerV1User(t *testing.T) {
 	config, _ := LoadConfig("./fixtures/stns_01.conf")
 	s := Create(config, "", "")
 
@@ -52,8 +52,12 @@ func TestHandlerV1(t *testing.T) {
 }`)
 	recorded = test.RunRequest(t, s.Handler(), test.MakeSimpleRequest("GET", "http://localhost:9999/user/id/1001", nil))
 	recorded.CodeIs(404)
+}
+func TestHandlerV1Group(t *testing.T) {
+	config, _ := LoadConfig("./fixtures/stns_01.conf")
+	s := Create(config, "", "")
 
-	recorded = test.RunRequest(t, s.Handler(), test.MakeSimpleRequest("GET", "http://localhost:9999/group/name/example_group", nil))
+	recorded := test.RunRequest(t, s.Handler(), test.MakeSimpleRequest("GET", "http://localhost:9999/group/name/example_group", nil))
 	recorded.CodeIs(200)
 	recorded.ContentTypeIsJson()
 	recorded.BodyIs(`{
@@ -83,8 +87,12 @@ func TestHandlerV1(t *testing.T) {
 
 	recorded = test.RunRequest(t, s.Handler(), test.MakeSimpleRequest("GET", "http://localhost:9999/group/id/3001", nil))
 	recorded.CodeIs(404)
+}
+func TestHandlerV1Sudo(t *testing.T) {
+	config, _ := LoadConfig("./fixtures/stns_01.conf")
+	s := Create(config, "", "")
 
-	recorded = test.RunRequest(t, s.Handler(), test.MakeSimpleRequest("GET", "http://localhost:9999/sudo/name/example_sudo", nil))
+	recorded := test.RunRequest(t, s.Handler(), test.MakeSimpleRequest("GET", "http://localhost:9999/sudo/name/example_sudo", nil))
 	recorded.CodeIs(200)
 	recorded.ContentTypeIsJson()
 	recorded.BodyIs(`{
@@ -108,7 +116,7 @@ func TestHandlerV1(t *testing.T) {
 	recorded.CodeIs(404)
 }
 
-func TestHandlerV2(t *testing.T) {
+func TestHandlerV2User(t *testing.T) {
 	config, _ := LoadConfig("./fixtures/stns_01.conf")
 	s := Create(config, "", "")
 
@@ -121,7 +129,8 @@ func TestHandlerV2(t *testing.T) {
     "salt_enable": false,
     "stretching_number": 0,
     "hash_type": "sha256",
-    "result": "success"
+    "result": "success",
+    "min_id": 1000
   },
   "items": {
     "example": {
@@ -151,7 +160,8 @@ func TestHandlerV2(t *testing.T) {
     "salt_enable": false,
     "stretching_number": 0,
     "hash_type": "sha256",
-    "result": "success"
+    "result": "success",
+    "min_id": 1000
   },
   "items": {
     "example": {
@@ -171,8 +181,12 @@ func TestHandlerV2(t *testing.T) {
 }`)
 	recorded = test.RunRequest(t, s.Handler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v2/user/id/1001", nil))
 	recorded.CodeIs(404)
+}
+func TestHandlerV2Group(t *testing.T) {
+	config, _ := LoadConfig("./fixtures/stns_01.conf")
+	s := Create(config, "", "")
 
-	recorded = test.RunRequest(t, s.Handler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v2/group/name/example_group", nil))
+	recorded := test.RunRequest(t, s.Handler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v2/group/name/example_group", nil))
 	recorded.CodeIs(200)
 	recorded.ContentTypeIsJson()
 	recorded.BodyIs(`{
@@ -181,7 +195,8 @@ func TestHandlerV2(t *testing.T) {
     "salt_enable": false,
     "stretching_number": 0,
     "hash_type": "sha256",
-    "result": "success"
+    "result": "success",
+    "min_id": 3000
   },
   "items": {
     "example_group": {
@@ -205,7 +220,8 @@ func TestHandlerV2(t *testing.T) {
     "salt_enable": false,
     "stretching_number": 0,
     "hash_type": "sha256",
-    "result": "success"
+    "result": "success",
+    "min_id": 3000
   },
   "items": {
     "example_group": {
@@ -220,8 +236,12 @@ func TestHandlerV2(t *testing.T) {
 
 	recorded = test.RunRequest(t, s.Handler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v2/group/id/3001", nil))
 	recorded.CodeIs(404)
+}
+func TestHandlerV2Sudo(t *testing.T) {
+	config, _ := LoadConfig("./fixtures/stns_01.conf")
+	s := Create(config, "", "")
 
-	recorded = test.RunRequest(t, s.Handler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v2/sudo/name/example_sudo", nil))
+	recorded := test.RunRequest(t, s.Handler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v2/sudo/name/example_sudo", nil))
 	recorded.CodeIs(200)
 	recorded.ContentTypeIsJson()
 	recorded.BodyIs(`{
@@ -230,7 +250,8 @@ func TestHandlerV2(t *testing.T) {
     "salt_enable": false,
     "stretching_number": 0,
     "hash_type": "sha256",
-    "result": "success"
+    "result": "success",
+    "min_id": 0
   },
   "items": {
     "example_sudo": {

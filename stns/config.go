@@ -20,6 +20,8 @@ type Config struct {
 	Sudoers    Attributes
 }
 
+var MinUserId, MinGroupId int
+
 func LoadConfig(configFile string) (Config, error) {
 	var config Config
 	defaultConfig(&config)
@@ -34,6 +36,8 @@ func LoadConfig(configFile string) (Config, error) {
 			return Config{}, err
 		}
 	}
+	setIdRange(&MinUserId, config.Users)
+	setIdRange(&MinGroupId, config.Groups)
 	return config, nil
 }
 
@@ -42,6 +46,21 @@ func defaultConfig(config *Config) {
 	config.Salt = false
 	config.Stretching = 0
 	config.HashType = "sha256"
+}
+
+func setIdRange(min *int, attrs Attributes) {
+	if len(attrs) > 0 {
+
+		for _, a := range attrs {
+			switch {
+
+			case *min == 0:
+				*min = a.Id
+			case *min > a.Id:
+				*min = a.Id
+			}
+		}
+	}
 }
 
 func includeConfigFile(config *Config, include string) error {
