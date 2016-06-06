@@ -24,6 +24,11 @@ func TestLoadConfig(t *testing.T) {
 	assert(t, config.Sudoers["example"].Password == "p@ssword", "unmatch password")
 }
 
+func TestMinId(t *testing.T) {
+	LoadConfig("./fixtures/min_id.conf")
+	assert(t, MinUserId == 1, "unmatch min user")
+	assert(t, MinGroupId == 3, "unmatch min group")
+}
 func assertNoError(t *testing.T, err error) {
 	if err != nil {
 		t.Error(err)
