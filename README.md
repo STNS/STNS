@@ -18,7 +18,7 @@ uid=1001(pyama) gid=1001(pyama) groups=1001(pyama)
 1. Installation Guide
   * [English](/docs/en/install.md)
   * [日本語](/docs/ja/install.md)
-2. Advanced Usage
+2. Advanced Guide
   * [English](/docs/en/advanced.md)
   * [日本語](/docs/ja/advanced.md)
 
