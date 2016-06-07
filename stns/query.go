@@ -20,6 +20,15 @@ func (q *Query) getConfigByType() Attributes {
 	return nil
 }
 
+func (q *Query) GetMinId() int {
+	if q.resource == "user" {
+		return MinUserId
+	} else if q.resource == "group" {
+		return MinGroupId
+	}
+	return 0
+}
+
 func (q *Query) getAttribute() Attributes {
 	resource := q.getConfigByType()
 	if resource != nil && !reflect.ValueOf(resource).IsNil() {

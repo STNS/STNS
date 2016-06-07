@@ -1,6 +1,7 @@
 package stns
 
 import (
+	"net/http"
 	"reflect"
 	"regexp"
 
@@ -18,6 +19,7 @@ type MetaData struct {
 	Stretching int     `json:"stretching_number"`
 	HashType   string  `json:"hash_type"`
 	Result     string  `json:"result""`
+	MinId      int     `json:"min_id""`
 }
 
 type ResponseFormat struct {
@@ -49,13 +51,11 @@ func (h *Handler) GetList(w rest.ResponseWriter, r *rest.Request) {
 
 func (h *Handler) Response(q *Query, w rest.ResponseWriter, r *rest.Request) {
 	attr := q.Get()
-	if attr == nil || reflect.ValueOf(attr).IsNil() {
-		rest.NotFound(w, r)
-		return
-	}
-
 	v2 := regexp.MustCompile(`^/v2`)
 	if v2.MatchString(r.URL.Path) {
+		if attr == nil || reflect.ValueOf(attr).IsNil() {
+			w.WriteHeader(http.StatusNotFound)
+		}
 		response := ResponseFormat{
 			MetaData: &MetaData{
 				ApiVersion: settings.API_VERSION,
@@ -63,14 +63,18 @@ func (h *Handler) Response(q *Query, w rest.ResponseWriter, r *rest.Request) {
 				Stretching: h.config.Stretching,
 				Result:     settings.SUCCESS,
 				HashType:   h.config.HashType,
+				MinId:      q.GetMinId(),
 			},
 			Items: &attr,
 		}
 		w.WriteJson(response)
 		return
 	} else {
+		if attr == nil || reflect.ValueOf(attr).IsNil() {
+			rest.NotFound(w, r)
+			return
+		}
 		w.WriteJson(attr)
 		return
 	}
-	rest.NotFound(w, r)
 }
