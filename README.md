@@ -3,7 +3,7 @@
 
 STNS is used by sshd to access keys and user resolver provided
 
-client modules:https://github.com/STNS/libnss_stns
+You can see the details of STNS on [stns.jp](http://stns.jp)
 
 ```
 $ ssh pyama@example.jp
@@ -13,147 +13,13 @@ uid=1001(pyama) gid=1001(pyama) groups=1001(pyama)
 
 ![overview](https://cloud.githubusercontent.com/assets/8022082/13373974/250a8b16-ddba-11e5-994d-b1bbc81a6b94.png)
 
-## manual
-
-1. Installation Guide
-  * [English](/docs/en/install.md)
-  * [日本語](/docs/ja/install.md)
-2. Advanced Guide
-  * [English](/docs/en/advanced.md)
-  * [日本語](/docs/ja/advanced.md)
 
 ## blog
 * [Linuxユーザーと公開鍵を統合管理するサーバ&クライアントを書いた](https://ten-snapon.com/archives/1228)
 * [デプロイユーザーをSTNSで管理する](https://ten-snapon.com/archives/1330)
 * [STNSに組織体系を管理するLinkGroup機能を追加しi386に対応しました](https://ten-snapon.com/archives/1346)
 * [STNSでSudoパスワードをサポートした](https://ten-snapon.com/archives/1355)
-
-## install
-## redhat/centos
-```
-$ curl -fsSL https://repo.stns.jp/scripts/yum-repo.sh | sh
-$ yum install stns
-```
-## debian/ubuntu
-```
-$ curl -fsSL https://repo.stns.jp/scripts/apt-repo.sh | sh
-$ apt-get install stns
-```
-
-## config
-* /etc/stns/stns.conf
-
-```toml
-port = 1104
-include = "/etc/stns/conf.d/*"
-salt_enable = false
-stretching_number = 0
-hash_type = "sha256"
-
-# support basic auth
-user = "basic_user"
-password = "basic_password"
-
-[users.example]
-id = 1001
-group_id = 1001
-directory = "/home/example" # default:/home/:user_name
-shell = "/bin/bash" # default:/bin/bash
-keys = ["ssh-rsa XXXXX…"]
-link_users = ["foo"]
-
-[groups.example]
-id = 1001
-users = ["example"]
-
-[sudoers.example]
-password = "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08"
-hash_type = "sha256"
-```
-
-### General
-|Name|Description|
-|---|---|
-|port|listen port|
-|include|include config directory|
-|user| basic authentication user|
-|password| basic authentication password|
-|salt_enable| To generate a salt of the password from the user name |
-|stretching_number|Stretching number of password|
-|hash_type| password hash algorithm (sha256,sha512) |
-
-### Users
-|Name|Description|
-|---|---|
-|id(※)| unique user id|
-|group_id(※)|id of the group they belong|
-|directory|home directory path|
-|shell|default shell path|
-|gecos|description|
-|keys|public key list|
-|link_users|merge public key from the specified user|
-|password| password token|
-|hash_type| hash algorithm (sha256,sha512) Users > General|
-
-#### link_users
-link_users params is merge public key from the specified user
-
-```toml
-[users.example1]
-keys = ["ssh-rsa aaa"]
-link_users = ["example2"] ←
-
-[users.example2]
-keys = ["ssh-rsa bbb"]
-```
-```
-$ /user/local/bin/stns-key-wrapper example1
-ssh-rsa aaa
-ssh-rsa bbb
-$ /user/local/bin/stns-key-wrapper example2
-ssh-rsa bbb
-```
-
-### Groups
-|Name|Description|
-|---|---|
-|id(※)| unique group id|
-|users|user name of the members|
-|link_groups|merge from belong to the other group users|
-
-#### link_groups
-It can be used to represent the organizational structure
-
-```toml
-[groups.department]
-users = ["user1"]
-link_groups = ["division"]
-
-[groups.division]
-users = ["user2"]
-
-```
-
-```
-$ /user/local/bin/stns-query-wrapper /group/name/department
-{
-  …
-  "users": ["user1", "user2"]
-}
-$ /user/local/bin/stns-query-wrapper /group/name/division
-{
-  …
-  "users": ["user2"]
-}
-```
-
-### Sudoers
-|Name|Description|
-|---|---|
-|password(※)| password token|
-|hash_type| hash algorithm default sha256(sha256,sha512) |
-
-※: required parameter
+* [パスワード暗号化について学びを得た](https://ten-snapon.com/archives/1399)
 
 # VS
 ## LDAP
