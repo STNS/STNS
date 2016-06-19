@@ -15,10 +15,22 @@ type Stns struct {
 	config         Config
 	configFileName string
 	pidFileName    string
+	middleware     []rest.Middleware
 }
 
 func Create(config Config, configFileName string, pidFileName string) *Stns {
-	return &Stns{config, configFileName, pidFileName}
+	m := rest.DefaultProdStack
+	m = append(m, &rest.JsonIndentMiddleware{})
+	return &Stns{
+		config:         config,
+		configFileName: configFileName,
+		pidFileName:    pidFileName,
+		middleware:     m,
+	}
+}
+
+func (s *Stns) SetMiddleWare(m []rest.Middleware) {
+	s.middleware = m
 }
 
 func (s *Stns) Start() {
@@ -61,7 +73,9 @@ func (s *Stns) Start() {
 
 func (s *Stns) Handler() http.Handler {
 	server := rest.NewApi()
-	server.Use(rest.DefaultDevStack...)
+
+	server.Use(s.middleware...)
+
 	// using basic auth
 	if s.config.User != "" && s.config.Password != "" {
 		var basicAuthMiddleware = &rest.AuthBasicMiddleware{

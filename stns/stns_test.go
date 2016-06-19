@@ -4,12 +4,14 @@ import (
 	"encoding/base64"
 	"testing"
 
+	"github.com/ant0ine/go-json-rest/rest"
 	"github.com/ant0ine/go-json-rest/rest/test"
 )
 
 func TestHandlerV1User(t *testing.T) {
 	config, _ := LoadConfig("./fixtures/stns_01.conf")
 	s := Create(config, "", "")
+	s.SetMiddleWare(rest.DefaultDevStack)
 
 	recorded := test.RunRequest(t, s.Handler(), test.MakeSimpleRequest("GET", "http://localhost:9999/user/name/example", nil))
 	recorded.CodeIs(200)
@@ -56,6 +58,7 @@ func TestHandlerV1User(t *testing.T) {
 func TestHandlerV1Group(t *testing.T) {
 	config, _ := LoadConfig("./fixtures/stns_01.conf")
 	s := Create(config, "", "")
+	s.SetMiddleWare(rest.DefaultDevStack)
 
 	recorded := test.RunRequest(t, s.Handler(), test.MakeSimpleRequest("GET", "http://localhost:9999/group/name/example_group", nil))
 	recorded.CodeIs(200)
@@ -91,6 +94,7 @@ func TestHandlerV1Group(t *testing.T) {
 func TestHandlerV1Sudo(t *testing.T) {
 	config, _ := LoadConfig("./fixtures/stns_01.conf")
 	s := Create(config, "", "")
+	s.SetMiddleWare(rest.DefaultDevStack)
 
 	recorded := test.RunRequest(t, s.Handler(), test.MakeSimpleRequest("GET", "http://localhost:9999/sudo/name/example_sudo", nil))
 	recorded.CodeIs(200)
@@ -119,6 +123,7 @@ func TestHandlerV1Sudo(t *testing.T) {
 func TestHandlerV2User(t *testing.T) {
 	config, _ := LoadConfig("./fixtures/stns_01.conf")
 	s := Create(config, "", "")
+	s.SetMiddleWare(rest.DefaultDevStack)
 
 	recorded := test.RunRequest(t, s.Handler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v2/user/name/example", nil))
 	recorded.CodeIs(200)
@@ -185,6 +190,7 @@ func TestHandlerV2User(t *testing.T) {
 func TestHandlerV2Group(t *testing.T) {
 	config, _ := LoadConfig("./fixtures/stns_01.conf")
 	s := Create(config, "", "")
+	s.SetMiddleWare(rest.DefaultDevStack)
 
 	recorded := test.RunRequest(t, s.Handler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v2/group/name/example_group", nil))
 	recorded.CodeIs(200)
@@ -240,6 +246,7 @@ func TestHandlerV2Group(t *testing.T) {
 func TestHandlerV2Sudo(t *testing.T) {
 	config, _ := LoadConfig("./fixtures/stns_01.conf")
 	s := Create(config, "", "")
+	s.SetMiddleWare(rest.DefaultDevStack)
 
 	recorded := test.RunRequest(t, s.Handler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v2/sudo/name/example_sudo", nil))
 	recorded.CodeIs(200)
@@ -278,6 +285,7 @@ func TestHandlerV2Sudo(t *testing.T) {
 func TestBasicAuth(t *testing.T) {
 	config, _ := LoadConfig("./fixtures/stns_02.conf")
 	s := Create(config, "", "")
+	s.SetMiddleWare(rest.DefaultDevStack)
 
 	// simple request fails
 	recorded := test.RunRequest(t, s.Handler(), test.MakeSimpleRequest("GET", "http://localhost:9999/user/name/example", nil))
