@@ -11,7 +11,7 @@ type User struct {
 	LinkUsers []string `toml:"link_users" json:"link_users"`
 }
 
-func (u *User) LinkTargetValue() []string {
+func (u *User) LinkParams() []string {
 	return u.LinkUsers
 }
 

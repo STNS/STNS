@@ -1,9 +1,6 @@
 package stns
 
-import (
-	"reflect"
-	"strconv"
-)
+import "strconv"
 
 type Attribute struct {
 	Id int `toml:"id" json:"id"`
@@ -14,14 +11,14 @@ type Attribute struct {
 type Attributes map[string]*Attribute
 
 type Linker interface {
-	LinkTargetValue() []string
+	LinkParams() []string
 	LinkValue() []string
 	SetLinkValue([]string)
 }
 
 func (u Attributes) GetByName(name string) Attributes {
 	attr := u[name]
-	if attr == nil || reflect.ValueOf(attr).IsNil() {
+	if attr == nil || (attr.User == nil && attr.Group == nil) {
 		return nil
 	}
 	return Attributes{
@@ -33,6 +30,10 @@ func (u Attributes) GetById(_id string) Attributes {
 	id, _ := strconv.Atoi(_id)
 	for k, u := range u {
 		if u.Id == id {
+			if u.User == nil && u.Group == nil {
+				return nil
+			}
+
 			return Attributes{
 				k: u,
 			}

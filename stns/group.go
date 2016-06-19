@@ -5,7 +5,7 @@ type Group struct {
 	LinkGroups []string `toml:"link_groups" json:"link_groups"`
 }
 
-func (g *Group) LinkTargetValue() []string {
+func (g *Group) LinkParams() []string {
 	return g.LinkGroups
 }
 
