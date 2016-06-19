@@ -15,6 +15,7 @@ func main() {
 	pidFile := flag.String("pidfile", "/var/run/stns.pid", "File containing process PID")
 	configCheck := flag.Bool("check-conf", false, "config check flag")
 	version := flag.Bool("version", false, "Print version")
+	verbose := flag.Bool("verbose", false, "verbose log")
 	flag.Parse()
 
 	if *version {
@@ -40,6 +41,6 @@ func main() {
 	}
 	log.SetOutput(f)
 
-	server := stns.Create(config, *configFile, *pidFile)
+	server := stns.Create(config, *configFile, *pidFile, *verbose)
 	server.Start()
 }

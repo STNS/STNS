@@ -18,9 +18,15 @@ type Stns struct {
 	middleware     []rest.Middleware
 }
 
-func Create(config Config, configFileName string, pidFileName string) *Stns {
-	m := rest.DefaultProdStack
+func Create(config Config, configFileName string, pidFileName string, verbose bool) *Stns {
+	var m []rest.Middleware
+	if verbose {
+		m = rest.DefaultProdStack
+	} else {
+		m = rest.DefaultCommonStack
+	}
 	m = append(m, &rest.JsonIndentMiddleware{})
+
 	return &Stns{
 		config:         config,
 		configFileName: configFileName,
