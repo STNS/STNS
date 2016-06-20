@@ -2,8 +2,6 @@ package stns
 
 import (
 	"net/http"
-	"reflect"
-	"regexp"
 
 	"github.com/STNS/STNS/settings"
 	"github.com/ant0ine/go-json-rest/rest"
@@ -51,9 +49,8 @@ func (h *Handler) GetList(w rest.ResponseWriter, r *rest.Request) {
 
 func (h *Handler) Response(q *Query, w rest.ResponseWriter, r *rest.Request) {
 	attr := q.Get()
-	v2 := regexp.MustCompile(`^/v2`)
-	if v2.MatchString(r.URL.Path) {
-		if attr == nil || reflect.ValueOf(attr).IsNil() {
+	if r.URL.Path[1:3] == "v2" {
+		if attr == nil {
 			w.WriteHeader(http.StatusNotFound)
 		}
 		response := ResponseFormat{
@@ -70,11 +67,11 @@ func (h *Handler) Response(q *Query, w rest.ResponseWriter, r *rest.Request) {
 		w.WriteJson(response)
 		return
 	} else {
-		if attr == nil || reflect.ValueOf(attr).IsNil() {
+		if attr == nil {
 			rest.NotFound(w, r)
-			return
+		} else {
+			w.WriteJson(attr)
 		}
-		w.WriteJson(attr)
 		return
 	}
 }

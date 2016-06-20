@@ -35,39 +35,45 @@ func TestNull(t *testing.T) {
 	config, _ := LoadConfig("./fixtures/query_02.conf")
 	query := Query{&config, "user", "name", "example1"}
 	resource := query.Get()
-	test.Assert(t, len(resource) == 1, "unmatch resource count null1")
+	test.Assert(t, len(resource) == 1, "unmatch resource count null 1")
 
 	query = Query{&config, "user", "name", "example2"}
 	resource = query.Get()
-	test.Assert(t, len(resource) == 1, "unmatch resource count null2")
+	test.Assert(t, len(resource) == 1, "unmatch resource count null 2")
 
 	query = Query{&config, "user", "name", "example3"}
 	resource = query.Get()
-	test.Assert(t, len(resource) == 1, "unmatch resource count null2")
+	test.Assert(t, len(resource) == 0, "unmatch resource count null 3")
 
 	query = Query{&config, "user", "list", ""}
 	resource = query.Get()
-	test.Assert(t, len(resource) == 3, "unmatch resource count list")
+	test.Assert(t, len(resource) == 3, "unmatch resource count list 1")
 
 	query = Query{&config, "group", "name", "example1"}
 	resource = query.Get()
-	test.Assert(t, len(resource) == 1, "unmatch resource count null3")
+	test.Assert(t, len(resource) == 1, "unmatch resource count null 4")
 
 	query = Query{&config, "group", "name", "example2"}
 	resource = query.Get()
-	test.Assert(t, len(resource) == 1, "unmatch resource count null4")
+	test.Assert(t, len(resource) == 1, "unmatch resource count null 5")
 
 	query = Query{&config, "group", "name", "example3"}
 	resource = query.Get()
-	test.Assert(t, len(resource) == 1, "unmatch resource count null4")
+	test.Assert(t, len(resource) == 0, "unmatch resource count null 6")
 
 	query = Query{&config, "group", "list", ""}
 	resource = query.Get()
-	test.Assert(t, len(resource) == 3, "unmatch resource count list")
+	test.Assert(t, len(resource) == 3, "unmatch resource count list 2")
 
 	query = Query{&config, "sudo", "name", "example1"}
 	resource = query.Get()
-	test.Assert(t, len(resource) == 1, "unmatch resource count null5")
+	test.Assert(t, len(resource) == 0, "unmatch resource count null 7")
+
+	nullconfig, _ := LoadConfig("./fixtures/query_03.conf")
+	nq := Query{&nullconfig, "user", "name", "example1"}
+	resource = nq.Get()
+	test.Assert(t, len(resource) == 0, "unmatch resource count null 8")
+
 }
 
 func assertUserGet(t *testing.T, resource Attributes) {
