@@ -18,7 +18,8 @@ type Linker interface {
 
 func (u Attributes) GetByName(name string) Attributes {
 	attr := u[name]
-	if attr == nil || (attr.User == nil && attr.Group == nil) {
+	if attr == nil ||
+		(attr.User == nil && attr.Group == nil && attr.Id == 0) {
 		return nil
 	}
 	return Attributes{
@@ -30,10 +31,6 @@ func (u Attributes) GetById(_id string) Attributes {
 	id, _ := strconv.Atoi(_id)
 	for k, u := range u {
 		if u.Id == id {
-			if u.User == nil && u.Group == nil {
-				return nil
-			}
-
 			return Attributes{
 				k: u,
 			}

@@ -55,8 +55,7 @@ func TestGetByName(t *testing.T) {
 	}
 
 	t4 := users.GetByName("test4")
-
-	if t4 != nil {
+	if t4 == nil {
 		t.Error("ummatch user id test4")
 	}
 }
@@ -93,8 +92,7 @@ func TestGetById(t *testing.T) {
 	}
 
 	t4 := users.GetById("4")
-
-	if t4 != nil {
+	if t4 == nil {
 		t.Error("ummatch user id test4")
 	}
 }
