@@ -67,6 +67,7 @@ func includeConfigFile(config *Config, include string) error {
 }
 
 func setMinId(min *int, attrs Attributes) {
+	*min = 0
 	if len(attrs) > 0 {
 		for _, a := range attrs {
 			switch {
