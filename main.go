@@ -25,12 +25,12 @@ func main() {
 
 	config, err := stns.LoadConfig(*configFile)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		os.Exit(1)
 	}
 
 	if *configCheck {
-		fmt.Println("check config success!")
+		log.Println("check config success!")
 		os.Exit(0)
 	}
 
