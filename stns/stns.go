@@ -19,13 +19,13 @@ type Stns struct {
 }
 
 func Create(config Config, configFileName string, pidFileName string, verbose bool) *Stns {
-	var m []rest.Middleware
-	if verbose {
-		m = rest.DefaultProdStack
-	} else {
-		m = rest.DefaultCommonStack
-	}
+	m := rest.DefaultCommonStack
 	m = append(m, &rest.JsonIndentMiddleware{})
+	if verbose {
+		m = append(m, &rest.AccessLogApacheMiddleware{
+			Format: rest.CombinedLogFormat,
+		})
+	}
 
 	return &Stns{
 		config:         config,
