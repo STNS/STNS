@@ -13,6 +13,17 @@ uid=1001(pyama) gid=1001(pyama) groups=1001(pyama)
 
 ![overview](https://cloud.githubusercontent.com/assets/8022082/13373974/250a8b16-ddba-11e5-994d-b1bbc81a6b94.png)
 
+## Let's Trial
+can you trial STNS by docker.
+
+```
+$ git clone https://github.com/STNS/STNS.git
+$ cd example
+$ docker build -t stns:trial .
+$ docker run -t stns:trial
+[root@67f8941ad374 /]# id example
+uid=1001(example) gid=1001(example) groups=1001(example)
+```
 
 ## blog
 * [Linuxユーザーと公開鍵を統合管理するサーバ&クライアントを書いた](https://ten-snapon.com/archives/1228)
