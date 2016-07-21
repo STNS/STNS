@@ -13,15 +13,8 @@ import (
 func main() {
 	configFile := flag.String("conf", "/etc/stns/stns.conf", "config file path")
 	pidFile := flag.String("pidfile", "/var/run/stns.pid", "File containing process PID")
-	configCheck := flag.Bool("check-conf", false, "config check flag")
-	version := flag.Bool("version", false, "Print version")
 	verbose := flag.Bool("verbose", false, "verbose log")
 	flag.Parse()
-
-	if *version {
-		fmt.Println("STNS version " + settings.VERSION)
-		os.Exit(0)
-	}
 
 	config, err := stns.LoadConfig(*configFile)
 	if err != nil {
@@ -29,9 +22,19 @@ func main() {
 		os.Exit(1)
 	}
 
-	if *configCheck {
-		log.Println("check config success!")
-		os.Exit(0)
+	if len(flag.Args()) > 0 {
+		subcmd := flag.Args()[0]
+		switch subcmd {
+		case "version":
+			fmt.Println("STNS version " + settings.VERSION)
+			os.Exit(0)
+		case "check-conf":
+			fmt.Println("configuration file " + *configFile + " test is successful")
+			os.Exit(0)
+		default:
+			fmt.Println("unknown command:" + subcmd)
+			os.Exit(1)
+		}
 	}
 
 	// set log

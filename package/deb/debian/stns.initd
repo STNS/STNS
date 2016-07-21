@@ -67,7 +67,7 @@ do_reload()
 
 do_checkconf()
 {
-    $DAEMON --check-conf --pidfile=$PIDFILE $OTHER_OPTS >>$LOGFILE 2>&1
+    $DAEMON check-conf --pidfile=$PIDFILE $OTHER_OPTS >>$LOGFILE 2>&1
     return $?
 }
 
