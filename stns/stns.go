@@ -19,8 +19,9 @@ type Stns struct {
 }
 
 func Create(config Config, configFileName string, pidFileName string, verbose bool) *Stns {
-	m := rest.DefaultCommonStack
+	m := rest.DefaultProdStack
 	m = append(m, &rest.JsonIndentMiddleware{})
+	m = append(m, &rest.GzipMiddleware{})
 	if verbose {
 		m = append(m, &rest.AccessLogApacheMiddleware{
 			Format: rest.CombinedLogFormat,

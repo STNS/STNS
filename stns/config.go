@@ -16,9 +16,18 @@ type Config struct {
 	User       string `toml:"user"`
 	Password   string `toml:"password"`
 	HashType   string `toml:"hash_type" json:"hash_type"`
+	Backend    Backend
 	Users      Attributes
 	Groups     Attributes
 	Sudoers    Attributes
+}
+
+type Backend struct {
+	Driver   string `toml:"driver"`
+	Host     string `toml:"host"`
+	Port     string `toml:"port"`
+	User     string `toml:"user" validate:"required"`
+	Password string `toml:"password"`
 }
 
 var MinUserId, MinGroupId int
@@ -34,6 +43,7 @@ func LoadConfig(configFile string) (Config, error) {
 
 	if config.Include != "" {
 		if err := includeConfigFile(&config, config.Include); err != nil {
+			fmt.Println(err)
 			return Config{}, err
 		}
 	}
@@ -49,6 +59,10 @@ func defaultConfig(config *Config) {
 	config.Salt = false
 	config.Stretching = 0
 	config.HashType = "sha256"
+	config.Backend = Backend{
+		Host: "localhost",
+		Port: "3306",
+	}
 }
 
 func includeConfigFile(config *Config, include string) error {

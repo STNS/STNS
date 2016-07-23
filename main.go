@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/STNS/STNS/backend"
 	"github.com/STNS/STNS/settings"
 	"github.com/STNS/STNS/stns"
 )
@@ -18,21 +19,27 @@ func main() {
 
 	config, err := stns.LoadConfig(*configFile)
 	if err != nil {
-		log.Println(err)
+		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
 
 	if len(flag.Args()) > 0 {
-		subcmd := flag.Args()[0]
-		switch subcmd {
+		switch flag.Args()[0] {
 		case "version":
 			fmt.Println("STNS version " + settings.VERSION)
 			os.Exit(0)
 		case "check-conf":
 			fmt.Println("configuration file " + *configFile + " test is successful")
 			os.Exit(0)
+		case "backend":
+			err := backend.SubCommandRun(&config)
+			if err != nil {
+				fmt.Fprintln(os.Stderr, err)
+				os.Exit(1)
+			}
+			os.Exit(0)
 		default:
-			fmt.Println("unknown command:" + subcmd)
+			fmt.Fprintln(os.Stderr, "unknown command:"+flag.Args()[0])
 			os.Exit(1)
 		}
 	}
