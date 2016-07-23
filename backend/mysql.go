@@ -24,7 +24,8 @@ type Users struct {
 	Gecos     string
 }
 type Sudoers struct {
-	*Users
+	Name     string `gorm:"primary_key"`
+	Password string `gorm:"size:1024"`
 }
 
 func (m *Mysql) Migrate() error {
@@ -53,6 +54,28 @@ func (m *Mysql) Migrate() error {
 	return nil
 }
 
+func (m *Mysql) Delete() error {
+	return m.deleteDatabase()
+}
+
+func (m *Mysql) createDatabase() error {
+	return m.database("CREATE", "")
+}
+func (m *Mysql) deleteDatabase() error {
+	return m.database("DROP", "stns")
+}
+
+func (m *Mysql) database(ope, dbn string) error {
+	db, err := gorm.Open("mysql", m.connectInfo(dbn))
+	if err != nil {
+		return err
+	}
+
+	if err := db.Exec(ope + " DATABASE stns").Error; err != nil {
+		return err
+	}
+	return nil
+}
 func (m *Mysql) connectInfo(db string) string {
 	return fmt.Sprintf("%s:%s@tcp([%s]:%s)/%s",
 		m.config.Backend.User,
@@ -61,16 +84,4 @@ func (m *Mysql) connectInfo(db string) string {
 		m.config.Backend.Port,
 		db,
 	)
-}
-
-func (m *Mysql) createDatabase() error {
-	db, err := gorm.Open("mysql", m.connectInfo(""))
-	if err != nil {
-		return err
-	}
-
-	if err := db.Exec("CREATE DATABASE stns").Error; err != nil {
-		return err
-	}
-	return nil
 }
