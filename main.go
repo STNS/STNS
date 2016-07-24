@@ -23,6 +23,7 @@ func main() {
 		os.Exit(1)
 	}
 
+	b := backend.GetInstance(&config)
 	if len(flag.Args()) > 0 {
 		switch flag.Args()[0] {
 		case "version":
@@ -32,7 +33,7 @@ func main() {
 			fmt.Println("configuration file " + *configFile + " test is successful")
 			os.Exit(0)
 		case "backend":
-			err := backend.SubCommandRun(&config)
+			err := backend.SubCommandRun(b)
 			if err != nil {
 				fmt.Fprintln(os.Stderr, err)
 				os.Exit(1)

@@ -85,3 +85,7 @@ func (m *Mysql) connectInfo(db string) string {
 		db,
 	)
 }
+
+func (m *Mysql) DriverName() string {
+	return "mysql"
+}

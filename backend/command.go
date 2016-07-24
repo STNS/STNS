@@ -8,28 +8,25 @@ import (
 	"github.com/STNS/STNS/stns"
 )
 
-var singletonB Backend
-
 type Backend interface {
 	Migrate() error
 	Delete() error
+	DriverName() string
 }
 
-func getInstance(config *stns.Config) Backend {
-	if singletonB == nil {
-		switch config.Backend.Driver {
-		case "mysql":
-			singletonB = &Mysql{config}
-		}
+func GetInstance(config *stns.Config) Backend {
+	var b Backend = nil
+	switch config.Backend.Driver {
+	case "mysql":
+		b = &Mysql{config}
 	}
-	return singletonB
+	return b
 }
 
-func SubCommandRun(config *stns.Config) error {
+func SubCommandRun(b Backend) error {
 	if len(flag.Args()) > 1 {
-		b := getInstance(config)
 		if b == nil {
-			return errors.New("unknown backend driver:" + config.Backend.Driver)
+			return errors.New("unknown backend driver")
 		}
 
 		switch flag.Args()[1] {
@@ -37,14 +34,14 @@ func SubCommandRun(config *stns.Config) error {
 			if err := b.Migrate(); err != nil {
 				return err
 			} else {
-				fmt.Println("backend driver " + config.Backend.Driver + " init successful")
+				fmt.Println("backend driver " + b.DriverName() + " init successful")
 				return nil
 			}
 		case "delete":
 			if err := b.Delete(); err != nil {
 				return err
 			} else {
-				fmt.Println("backend driver " + config.Backend.Driver + " delete successful")
+				fmt.Println("backend driver " + b.DriverName() + " delete successful")
 				return nil
 			}
 		}
