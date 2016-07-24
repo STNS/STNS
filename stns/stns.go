@@ -16,11 +16,13 @@ type Stns struct {
 	configFileName string
 	pidFileName    string
 	middleware     []rest.Middleware
+	backend        Backend
 }
 
-func Create(config Config, configFileName string, pidFileName string, verbose bool) *Stns {
-	m := rest.DefaultCommonStack
+func Create(config Config, configFileName string, pidFileName string, verbose bool, b Backend) *Stns {
+	m := rest.DefaultProdStack
 	m = append(m, &rest.JsonIndentMiddleware{})
+	m = append(m, &rest.GzipMiddleware{})
 	if verbose {
 		m = append(m, &rest.AccessLogApacheMiddleware{
 			Format: rest.CombinedLogFormat,
@@ -32,6 +34,7 @@ func Create(config Config, configFileName string, pidFileName string, verbose bo
 		configFileName: configFileName,
 		pidFileName:    pidFileName,
 		middleware:     m,
+		backend:        b,
 	}
 }
 
@@ -100,7 +103,10 @@ func (s *Stns) Handler() http.Handler {
 		})
 	}
 
-	h := Handler{&s.config}
+	h := Handler{
+		config:  &s.config,
+		backend: s.backend,
+	}
 
 	router, err := rest.MakeRouter(
 		rest.Get("/v2/:resource_name/list", h.GetList),

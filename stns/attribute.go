@@ -22,6 +22,7 @@ func (u Attributes) GetByName(name string) Attributes {
 		(attr.User == nil && attr.Group == nil && attr.Id == 0) {
 		return nil
 	}
+
 	return Attributes{
 		name: attr,
 	}

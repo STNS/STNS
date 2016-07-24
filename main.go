@@ -13,25 +13,36 @@ import (
 func main() {
 	configFile := flag.String("conf", "/etc/stns/stns.conf", "config file path")
 	pidFile := flag.String("pidfile", "/var/run/stns.pid", "File containing process PID")
-	configCheck := flag.Bool("check-conf", false, "config check flag")
-	version := flag.Bool("version", false, "Print version")
 	verbose := flag.Bool("verbose", false, "verbose log")
 	flag.Parse()
 
-	if *version {
-		fmt.Println("STNS version " + settings.VERSION)
-		os.Exit(0)
-	}
-
 	config, err := stns.LoadConfig(*configFile)
 	if err != nil {
-		log.Println(err)
+		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
 
-	if *configCheck {
-		log.Println("check config success!")
-		os.Exit(0)
+	b := stns.NewBackend(&config)
+
+	if len(flag.Args()) > 0 {
+		switch flag.Args()[0] {
+		case "version":
+			fmt.Println("STNS version " + settings.VERSION)
+			os.Exit(0)
+		case "check-conf":
+			fmt.Println("configuration file " + *configFile + " test is successful")
+			os.Exit(0)
+		case "backend":
+			err := stns.BackendSubCommandRun(b)
+			if err != nil {
+				fmt.Fprintln(os.Stderr, err)
+				os.Exit(1)
+			}
+			os.Exit(0)
+		default:
+			fmt.Fprintln(os.Stderr, "unknown command:"+flag.Args()[0])
+			os.Exit(1)
+		}
 	}
 
 	// set log
@@ -41,6 +52,13 @@ func main() {
 	}
 	log.SetOutput(f)
 
-	server := stns.Create(config, *configFile, *pidFile, *verbose)
+	server := stns.Create(
+		config,
+		*configFile,
+		*pidFile,
+		*verbose,
+		b,
+	)
+
 	server.Start()
 }
