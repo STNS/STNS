@@ -6,7 +6,6 @@ import (
 	"log"
 	"os"
 
-	"github.com/STNS/STNS/backend"
 	"github.com/STNS/STNS/settings"
 	"github.com/STNS/STNS/stns"
 )
@@ -23,7 +22,8 @@ func main() {
 		os.Exit(1)
 	}
 
-	b := backend.GetInstance(&config)
+	b := stns.NewBackend(&config)
+
 	if len(flag.Args()) > 0 {
 		switch flag.Args()[0] {
 		case "version":
@@ -33,7 +33,7 @@ func main() {
 			fmt.Println("configuration file " + *configFile + " test is successful")
 			os.Exit(0)
 		case "backend":
-			err := backend.SubCommandRun(b)
+			err := stns.BackendSubCommandRun(b)
 			if err != nil {
 				fmt.Fprintln(os.Stderr, err)
 				os.Exit(1)
@@ -52,6 +52,13 @@ func main() {
 	}
 	log.SetOutput(f)
 
-	server := stns.Create(config, *configFile, *pidFile, *verbose)
+	server := stns.Create(
+		config,
+		*configFile,
+		*pidFile,
+		*verbose,
+		b,
+	)
+
 	server.Start()
 }

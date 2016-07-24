@@ -9,23 +9,23 @@ import (
 
 func TestGet(t *testing.T) {
 	config, _ := LoadConfig("./fixtures/query_01.conf")
-	query := Query{&config, "user", "name", "example1"}
+	query := Query{&config, nil, "user", "name", "example1"}
 	resource := query.Get()
 	assertUserGet(t, resource)
 
-	query = Query{&config, "user", "id", "1001"}
+	query = Query{&config, nil, "user", "id", "1001"}
 	resource = query.Get()
 	assertUserGet(t, resource)
 
-	query = Query{&config, "group", "name", "example_group1"}
+	query = Query{&config, nil, "group", "name", "example_group1"}
 	resource = query.Get()
 	assertGroupGet(t, resource)
 
-	query = Query{&config, "group", "id", "3001"}
+	query = Query{&config, nil, "group", "id", "3001"}
 	resource = query.Get()
 	assertGroupGet(t, resource)
 
-	query = Query{&config, "sudo", "name", "example1"}
+	query = Query{&config, nil, "sudo", "name", "example1"}
 	resource = query.Get()
 	assertSudoGet(t, resource)
 
@@ -33,44 +33,44 @@ func TestGet(t *testing.T) {
 
 func TestNull(t *testing.T) {
 	config, _ := LoadConfig("./fixtures/query_02.conf")
-	query := Query{&config, "user", "name", "example1"}
+	query := Query{&config, nil, "user", "name", "example1"}
 	resource := query.Get()
 	test.Assert(t, len(resource) == 1, "unmatch resource count null 1")
 
-	query = Query{&config, "user", "name", "example2"}
+	query = Query{&config, nil, "user", "name", "example2"}
 	resource = query.Get()
 	test.Assert(t, len(resource) == 1, "unmatch resource count null 2")
 
-	query = Query{&config, "user", "name", "example3"}
+	query = Query{&config, nil, "user", "name", "example3"}
 	resource = query.Get()
 	test.Assert(t, len(resource) == 0, "unmatch resource count null 3")
 
-	query = Query{&config, "user", "list", ""}
+	query = Query{&config, nil, "user", "list", ""}
 	resource = query.Get()
 	test.Assert(t, len(resource) == 3, "unmatch resource count list 1")
 
-	query = Query{&config, "group", "name", "example1"}
+	query = Query{&config, nil, "group", "name", "example1"}
 	resource = query.Get()
 	test.Assert(t, len(resource) == 1, "unmatch resource count null 4")
 
-	query = Query{&config, "group", "name", "example2"}
+	query = Query{&config, nil, "group", "name", "example2"}
 	resource = query.Get()
 	test.Assert(t, len(resource) == 1, "unmatch resource count null 5")
 
-	query = Query{&config, "group", "name", "example3"}
+	query = Query{&config, nil, "group", "name", "example3"}
 	resource = query.Get()
 	test.Assert(t, len(resource) == 0, "unmatch resource count null 6")
 
-	query = Query{&config, "group", "list", ""}
+	query = Query{&config, nil, "group", "list", ""}
 	resource = query.Get()
 	test.Assert(t, len(resource) == 3, "unmatch resource count list 2")
 
-	query = Query{&config, "sudo", "name", "example1"}
+	query = Query{&config, nil, "sudo", "name", "example1"}
 	resource = query.Get()
 	test.Assert(t, len(resource) == 0, "unmatch resource count null 7")
 
 	nullconfig, _ := LoadConfig("./fixtures/query_03.conf")
-	nq := Query{&nullconfig, "user", "name", "example1"}
+	nq := Query{&nullconfig, nil, "user", "name", "example1"}
 	resource = nq.Get()
 	test.Assert(t, len(resource) == 0, "unmatch resource count null 8")
 
@@ -106,7 +106,7 @@ func assertSudoGet(t *testing.T, resource Attributes) {
 
 func TestGetList(t *testing.T) {
 	config, _ := LoadConfig("./fixtures/query_01.conf")
-	query := Query{&config, "user", "list", ""}
+	query := Query{&config, nil, "user", "list", ""}
 	resource := query.Get()
 	test.Assert(t, len(resource) == 3, "unmatch resource count")
 
@@ -123,7 +123,7 @@ func TestGetList(t *testing.T) {
 	test.Assert(t, resource["example3"].Id == 1003, "unmatch id3")
 	test.Assert(t, len(resource["example3"].Keys) == 3, "unmatch key length3")
 
-	query = Query{&config, "group", "list", ""}
+	query = Query{&config, nil, "group", "list", ""}
 	resource = query.Get()
 	test.Assert(t, len(resource) == 2, "unmatch group resource count")
 	test.Assert(t, resource["example_group1"].Id == 3001, "unmatch group id")
@@ -137,7 +137,7 @@ func TestGetList(t *testing.T) {
 	test.Assert(t, len(resource["example_group2"].Users) == 1, "unmatch group  user count")
 	test.Assert(t, resource["example_group2"].Users[0] == "example2", "unmatch group user1")
 
-	query = Query{&config, "sudo", "list", ""}
+	query = Query{&config, nil, "sudo", "list", ""}
 	resource = query.Get()
 	test.Assert(t, len(resource) == 2, "unmatch sudo resource count")
 }

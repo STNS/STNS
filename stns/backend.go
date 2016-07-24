@@ -1,20 +1,19 @@
-package backend
+package stns
 
 import (
 	"errors"
 	"flag"
 	"fmt"
-
-	"github.com/STNS/STNS/stns"
 )
 
 type Backend interface {
 	Migrate() error
 	Delete() error
 	DriverName() string
+	UserFindByName(string) *User
 }
 
-func GetInstance(config *stns.Config) Backend {
+func NewBackend(config *Config) Backend {
 	var b Backend = nil
 	switch config.Backend.Driver {
 	case "mysql":
@@ -23,7 +22,7 @@ func GetInstance(config *stns.Config) Backend {
 	return b
 }
 
-func SubCommandRun(b Backend) error {
+func BackendSubCommandRun(b Backend) error {
 	if len(flag.Args()) > 1 {
 		if b == nil {
 			return errors.New("unknown backend driver")

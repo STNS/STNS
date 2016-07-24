@@ -1,9 +1,9 @@
-package backend
+package stns
 
 import (
 	"fmt"
+	"log"
 
-	"github.com/STNS/STNS/stns"
 	"github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
 )
@@ -11,7 +11,7 @@ import (
 const UNKNOWN_DATABASE = 1049
 
 type Mysql struct {
-	config *stns.Config
+	config *Config
 }
 
 type Users struct {
@@ -88,4 +88,26 @@ func (m *Mysql) connectInfo(db string) string {
 
 func (m *Mysql) DriverName() string {
 	return "mysql"
+}
+
+func (m *Mysql) UserFindByName(name string) *User {
+	db, err := gorm.Open("mysql", m.connectInfo("stns"))
+	if err != nil {
+		log.Println(err)
+		return nil
+	}
+
+	u := &Users{}
+	err = db.Where("name = ?", name).First(u).Error
+	if err != nil {
+		log.Println(err)
+		return nil
+	}
+
+	if u.Name != "" {
+		return &User{
+			Password: u.Password,
+		}
+	}
+	return nil
 }

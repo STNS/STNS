@@ -16,13 +16,13 @@ type Config struct {
 	User       string `toml:"user"`
 	Password   string `toml:"password"`
 	HashType   string `toml:"hash_type" json:"hash_type"`
-	Backend    Backend
+	Backend    BackendConfig
 	Users      Attributes
 	Groups     Attributes
 	Sudoers    Attributes
 }
 
-type Backend struct {
+type BackendConfig struct {
 	Driver   string `toml:"driver"`
 	Host     string `toml:"host"`
 	Port     string `toml:"port"`
@@ -59,7 +59,7 @@ func defaultConfig(config *Config) {
 	config.Salt = false
 	config.Stretching = 0
 	config.HashType = "sha256"
-	config.Backend = Backend{
+	config.Backend = BackendConfig{
 		Host: "localhost",
 		Port: "3306",
 	}

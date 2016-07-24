@@ -8,7 +8,8 @@ import (
 )
 
 type Handler struct {
-	config *Config
+	config  *Config
+	backend Backend
 }
 
 type MetaData struct {
@@ -29,12 +30,24 @@ func (h *Handler) getQuery(r *rest.Request) *Query {
 	value := r.PathParam("value")
 	column := r.PathParam("column")
 	resource_name := r.PathParam("resource_name")
-	return &Query{h.config, resource_name, column, value}
+	return &Query{
+		config:   h.config,
+		backend:  h.backend,
+		resource: resource_name,
+		column:   column,
+		value:    value,
+	}
 }
 
 func (h *Handler) getListQuery(r *rest.Request) *Query {
 	resource_name := r.PathParam("resource_name")
-	return &Query{h.config, resource_name, "list", ""}
+	return &Query{
+		config:   h.config,
+		backend:  h.backend,
+		resource: resource_name,
+		column:   "list",
+		value:    "",
+	}
 }
 
 func (h *Handler) Get(w rest.ResponseWriter, r *rest.Request) {
