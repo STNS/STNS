@@ -9,16 +9,13 @@ import (
 )
 
 type Config struct {
-	Port       int    `toml:"port"`
-	Include    string `toml:"include"`
-	Salt       bool   `toml:"salt_enable"`
-	Stretching int    `toml:"stretching_number"`
-	User       string `toml:"user"`
-	Password   string `toml:"password"`
-	HashType   string `toml:"hash_type" json:"hash_type"`
-	Users      Attributes
-	Groups     Attributes
-	Sudoers    Attributes
+	Port     int    `toml:"port"`
+	Include  string `toml:"include"`
+	User     string `toml:"user"`
+	Password string `toml:"password"`
+	Users    Attributes
+	Groups   Attributes
+	Sudoers  Attributes
 }
 
 var MinUserId, MinGroupId int
@@ -46,9 +43,6 @@ func LoadConfig(configFile string) (Config, error) {
 
 func defaultConfig(config *Config) {
 	config.Port = 1104
-	config.Salt = false
-	config.Stretching = 0
-	config.HashType = "sha256"
 }
 
 func includeConfigFile(config *Config, include string) error {
