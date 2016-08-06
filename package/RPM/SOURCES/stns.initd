@@ -132,7 +132,7 @@ reload() {
 }
 
 check_conf_q() {
-    $BIN --check-conf --pidfile=$PIDFILE $OTHER_OPTS >>$LOGFILE 2>&1
+    $BIN check-conf --pidfile=$PIDFILE $OTHER_OPTS >>$LOGFILE 2>&1
 }
 
 checkconf() {
