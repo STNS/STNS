@@ -2,7 +2,6 @@ package stns
 
 type User struct {
 	Password  string   `toml:"password" json:"password"`
-	HashType  string   `toml:"hash_type" json:"hash_type"`
 	GroupId   int      `toml:"group_id" json:"group_id"`
 	Directory string   `toml:"directory" json:"directory"`
 	Shell     string   `toml:"shell" json:"shell"`
