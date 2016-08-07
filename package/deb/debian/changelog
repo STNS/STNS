@@ -1,3 +1,9 @@
+libnss-stns (0.2.0) STABLE; urgency=low
+
+  * Change Password Method to /etc/shadow
+
+ -- pyama86 <www.kazu.com@gmail.com>  Fri, 7 Aug 2016 22:00:00 +0000
+
 stns (0.1.3) STABLE; urgency=low
 
   * delete gzip middleware
