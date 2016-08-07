@@ -1,4 +1,4 @@
-libnss-stns (0.2.0) STABLE; urgency=low
+stns (0.2.0) STABLE; urgency=low
 
   * Change Password Method to /etc/shadow
 
