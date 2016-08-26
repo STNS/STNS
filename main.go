@@ -14,6 +14,7 @@ func main() {
 	configFile := flag.String("conf", "/etc/stns/stns.conf", "config file path")
 	pidFile := flag.String("pidfile", "/var/run/stns.pid", "File containing process PID")
 	verbose := flag.Bool("verbose", false, "verbose log")
+	logFile := flag.String("logfile", "/var/log/stns.log", "log file path")
 	flag.Parse()
 
 	config, err := stns.LoadConfig(*configFile)
@@ -37,11 +38,13 @@ func main() {
 	}
 
 	// set log
-	f, err := os.OpenFile("/var/log/stns.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
-	if err != nil {
-		log.Fatal("error opening file :", err.Error())
+	if *logFile != "" {
+		f, err := os.OpenFile(*logFile, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
+		if err != nil {
+			log.Fatal("error opening file :", err.Error())
+		}
+		log.SetOutput(f)
 	}
-	log.SetOutput(f)
 
 	server := stns.Create(config, *configFile, *pidFile, *verbose)
 	server.Start()
