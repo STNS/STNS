@@ -18,8 +18,8 @@ type MetaData struct {
 }
 
 type ResponseFormat struct {
-	MetaData *MetaData   `json:"metadata"`
-	Items    *Attributes `json:"items"`
+	MetaData *MetaData  `json:"metadata"`
+	Items    Attributes `json:"items"`
 }
 
 func (h *Handler) getQuery(r *rest.Request) *Query {
@@ -56,7 +56,7 @@ func (h *Handler) Response(q *Query, w rest.ResponseWriter, r *rest.Request) {
 				Result:     settings.SUCCESS,
 				MinId:      q.GetMinId(),
 			},
-			Items: &attr,
+			Items: attr,
 		}
 		w.WriteJson(response)
 		return
