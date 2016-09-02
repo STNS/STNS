@@ -9,6 +9,10 @@ func TestLoadConfig(t *testing.T) {
 	config, err := LoadConfig("./fixtures/base.conf")
 	assertNoError(t, err)
 	assert(t, config.Port == 9999, "not over write port")
+	assert(t, config.TlsCa == "ca.pem", "unmatch tls ca")
+	assert(t, config.TlsCert == "tls.crt", "unmatch tls crt")
+	assert(t, config.TlsKey == "tls.key", "unmatch tls key")
+
 	assert(t, config.Users["example"].Id == 1001, "unmatch id")
 	assert(t, config.Users["example"].GroupId == 2002, "unmatch group id")
 	assert(t, config.Users["example"].Directory == "/home/example", "unmatch directory")
