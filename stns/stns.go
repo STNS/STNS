@@ -1,6 +1,9 @@
 package stns
 
 import (
+	"crypto/tls"
+	"crypto/x509"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -52,7 +55,6 @@ func (s *Stns) Start() {
 				config, err := LoadConfig(s.configFileName)
 				if err != nil {
 					log.Fatal(err)
-					os.Exit(1)
 				}
 				s.config = config
 				log.Printf("Complete reload config\n")
@@ -65,16 +67,51 @@ func (s *Stns) Start() {
 		}
 	}()
 
+	server := &http.Server{
+		Addr:    ":" + strconv.Itoa(s.config.Port),
+		Handler: s.Handler(),
+	}
+
+	// tls client authentication
+	if _, err := os.Stat(s.config.TlsCa); err == nil {
+		ca, err := ioutil.ReadFile(s.config.TlsCa)
+		if err != nil {
+			log.Fatal(err)
+		}
+		caPool := x509.NewCertPool()
+		caPool.AppendCertsFromPEM(ca)
+
+		tlsConfig := &tls.Config{
+			ClientCAs:              caPool,
+			SessionTicketsDisabled: true,
+			ClientAuth:             tls.RequireAndVerifyClientCert,
+		}
+
+		tlsConfig.BuildNameToCertificate()
+		server.TLSConfig = tlsConfig
+	}
+
 	// make pid
 	if err := createPidFile(s.pidFileName); err != nil {
 		log.Fatal(err)
 		os.Exit(1)
 	}
+
 	defer removePidFile(s.pidFileName)
 	log.Printf("Start Server pid:%d", os.Getpid())
 
-	log.Fatal(http.ListenAndServe(":"+strconv.Itoa(s.config.Port), s.Handler()))
+	// tls encryption
+	if s.config.TlsCert != "" && s.config.TlsKey != "" {
+		for _, v := range []string{s.config.TlsCert, s.config.TlsKey} {
+			if _, err := os.Stat(v); err != nil {
+				log.Fatal(err)
+			}
+		}
 
+		log.Fatal(server.ListenAndServeTLS(s.config.TlsCert, s.config.TlsKey))
+	} else {
+		log.Fatal(server.ListenAndServe())
+	}
 }
 
 func (s *Stns) Handler() http.Handler {

@@ -142,5 +142,16 @@ func TestBasicAuth(t *testing.T) {
 	rightCredReq.Header.Set("Authorization", "Basic "+encoded)
 	recorded = test.RunRequest(t, s.Handler(), rightCredReq)
 	recorded.CodeIs(200)
+}
 
+func TestTlsAuthentication(t *testing.T) {
+	config, _ := LoadConfig("./fixtures/stns_03.conf")
+	s := Create(config, "", "", false)
+	s.SetMiddleWare(rest.DefaultCommonStack)
+
+	recorded := test.RunRequest(t, s.Handler(), test.MakeSimpleRequest("GET", "https://localhost:9999/user/name/example", nil))
+	recorded.CodeIs(200)
+
+	recorded = test.RunRequest(t, s.Handler(), test.MakeSimpleRequest("GET", "http://localhost:9999/user/name/example", nil))
+	recorded.CodeIs(201)
 }
