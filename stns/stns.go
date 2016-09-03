@@ -67,9 +67,73 @@ func (s *Stns) Start() {
 		}
 	}()
 
+	server := s.NewHttpServer()
+
+	// make pid
+	if err := createPidFile(s.pidFileName); err != nil {
+		log.Fatal(err)
+		os.Exit(1)
+	}
+
+	defer removePidFile(s.pidFileName)
+	log.Printf("Start Server pid:%d", os.Getpid())
+
+	// tls encryption
+	if ok := s.TlsKeysExists(); ok == true {
+		log.Fatal(server.ListenAndServeTLS(s.config.TlsCert, s.config.TlsKey))
+	} else {
+		log.Fatal(server.ListenAndServe())
+	}
+}
+
+func (s *Stns) NewApiHandler() http.Handler {
+	api := rest.NewApi()
+
+	api.Use(s.middleware...)
+
+	// using basic auth
+	if s.config.User != "" && s.config.Password != "" {
+		var basicAuthMiddleware = &rest.AuthBasicMiddleware{
+			Realm: "stns",
+			Authenticator: func(user string, password string) bool {
+				return user == s.config.User && password == s.config.Password
+			},
+		}
+
+		// exclude health check
+		api.Use(&rest.IfMiddleware{
+			Condition: func(request *rest.Request) bool {
+				return request.URL.Path != "/healthcheck"
+			},
+			IfTrue: basicAuthMiddleware,
+		})
+	}
+
+	h := Handler{&s.config}
+
+	router, err := rest.MakeRouter(
+		rest.Get("/v2/:resource_name/list", h.GetList),
+		rest.Get("/v2/:resource_name/:column/:value", h.Get),
+		rest.Get("/:resource_name/list", h.GetList),
+		rest.Get("/:resource_name/:column/:value", h.Get),
+		rest.Get("/healthcheck", s.HealthChech),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	api.SetApp(router)
+	return api.MakeHandler()
+}
+
+func (s *Stns) HealthChech(w rest.ResponseWriter, r *rest.Request) {
+	w.WriteJson("success")
+}
+
+func (s *Stns) NewHttpServer() *http.Server {
 	server := &http.Server{
 		Addr:    ":" + strconv.Itoa(s.config.Port),
-		Handler: s.Handler(),
+		Handler: s.NewApiHandler(),
 	}
 
 	// tls client authentication
@@ -91,69 +155,17 @@ func (s *Stns) Start() {
 		server.TLSConfig = tlsConfig
 	}
 
-	// make pid
-	if err := createPidFile(s.pidFileName); err != nil {
-		log.Fatal(err)
-		os.Exit(1)
-	}
+	return server
+}
 
-	defer removePidFile(s.pidFileName)
-	log.Printf("Start Server pid:%d", os.Getpid())
-
-	// tls encryption
+func (s *Stns) TlsKeysExists() bool {
 	if s.config.TlsCert != "" && s.config.TlsKey != "" {
 		for _, v := range []string{s.config.TlsCert, s.config.TlsKey} {
 			if _, err := os.Stat(v); err != nil {
 				log.Fatal(err)
 			}
 		}
-
-		log.Fatal(server.ListenAndServeTLS(s.config.TlsCert, s.config.TlsKey))
-	} else {
-		log.Fatal(server.ListenAndServe())
+		return true
 	}
-}
-
-func (s *Stns) Handler() http.Handler {
-	server := rest.NewApi()
-
-	server.Use(s.middleware...)
-
-	// using basic auth
-	if s.config.User != "" && s.config.Password != "" {
-		var basicAuthMiddleware = &rest.AuthBasicMiddleware{
-			Realm: "stns",
-			Authenticator: func(user string, password string) bool {
-				return user == s.config.User && password == s.config.Password
-			},
-		}
-
-		// exclude health check
-		server.Use(&rest.IfMiddleware{
-			Condition: func(request *rest.Request) bool {
-				return request.URL.Path != "/healthcheck"
-			},
-			IfTrue: basicAuthMiddleware,
-		})
-	}
-
-	h := Handler{&s.config}
-
-	router, err := rest.MakeRouter(
-		rest.Get("/v2/:resource_name/list", h.GetList),
-		rest.Get("/v2/:resource_name/:column/:value", h.Get),
-		rest.Get("/:resource_name/list", h.GetList),
-		rest.Get("/:resource_name/:column/:value", h.Get),
-		rest.Get("/healthcheck", s.HealthChech),
-	)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	server.SetApp(router)
-	return server.MakeHandler()
-}
-
-func (s *Stns) HealthChech(w rest.ResponseWriter, r *rest.Request) {
-	w.WriteJson("success")
+	return false
 }
