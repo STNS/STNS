@@ -11,6 +11,9 @@ import (
 type Config struct {
 	Port     int    `toml:"port"`
 	Include  string `toml:"include"`
+	TlsCa    string `toml:"tls_ca"`
+	TlsCert  string `toml:"tls_cert"`
+	TlsKey   string `toml:"tls_key"`
 	User     string `toml:"user"`
 	Password string `toml:"password"`
 	Users    Attributes
