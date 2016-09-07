@@ -5,7 +5,7 @@ Name: stns
 Group: SipmleTomlNameService
 URL: https://github.com/pyama86/SimpleTomlNameService
 Version: 0.2
-Release: 1
+Release: 2
 License: MIT
 Source0:   %{name}.initd
 Source2:   %{name}.logrotate

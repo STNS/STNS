@@ -1,9 +1,14 @@
+stns (0.2.2) STABLE; urgency=low
+
+  * Fix map pointer to map because of map is reference(sona-tar)
+  * Support tls(pyama86)
+ -- pyama86 <>  Wed, 8 Sep 2016 02:00:00 +0000
+
 stns (0.2.1) STABLE; urgency=low
 
   * Add -logfile option
 
  -- fujiwara <>  Fri, 28 Aug 2016 20:00:00 +0000
-
 
 stns (0.2.0) STABLE; urgency=low
 
