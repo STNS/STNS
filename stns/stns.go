@@ -79,7 +79,7 @@ func (s *Stns) Start() {
 	log.Printf("Start Server pid:%d", os.Getpid())
 
 	// tls encryption
-	if ok := s.TlsKeysExists(); ok == true {
+	if ok := s.TlsKeysExists(); ok {
 		log.Fatal(server.ListenAndServeTLS(s.config.TlsCert, s.config.TlsKey))
 	} else {
 		log.Fatal(server.ListenAndServe())
