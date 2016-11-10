@@ -1,5 +1,6 @@
 package stns
 
+// Query query object
 type Query struct {
 	config   *Config
 	resource string
@@ -18,11 +19,12 @@ func (q *Query) getConfigByType() Attributes {
 	return nil
 }
 
+// Get get resouce from endpoint(id,name,list)
 func (q *Query) Get() Attributes {
 	resource := q.getConfigByType()
 	if resource != nil {
 		if q.column == "id" {
-			return resource.GetById(q.value)
+			return resource.GetByID(q.value)
 		} else if q.column == "name" {
 			return resource.GetByName(q.value)
 		} else if q.column == "list" {
@@ -32,11 +34,12 @@ func (q *Query) Get() Attributes {
 	return nil
 }
 
-func (q *Query) GetMinId() int {
+// GetMinID get the minimum id of the specified resource
+func (q *Query) GetMinID() int {
 	if q.resource == "user" {
-		return MinUserId
+		return minUserID
 	} else if q.resource == "group" {
-		return MinGroupId
+		return minGroupID
 	}
 	return 0
 }

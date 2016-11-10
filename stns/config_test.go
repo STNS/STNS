@@ -9,26 +9,26 @@ func TestLoadConfig(t *testing.T) {
 	config, err := LoadConfig("./fixtures/base.conf")
 	assertNoError(t, err)
 	assert(t, config.Port == 9999, "not over write port")
-	assert(t, config.TlsCa == "ca.pem", "unmatch tls ca")
-	assert(t, config.TlsCert == "tls.crt", "unmatch tls crt")
-	assert(t, config.TlsKey == "tls.key", "unmatch tls key")
+	assert(t, config.TLSCa == "ca.pem", "unmatch tls ca")
+	assert(t, config.TLSCert == "tls.crt", "unmatch tls crt")
+	assert(t, config.TLSKey == "tls.key", "unmatch tls key")
 
-	assert(t, config.Users["example"].Id == 1001, "unmatch id")
-	assert(t, config.Users["example"].GroupId == 2002, "unmatch group id")
+	assert(t, config.Users["example"].ID == 1001, "unmatch id")
+	assert(t, config.Users["example"].GroupID == 2002, "unmatch group id")
 	assert(t, config.Users["example"].Directory == "/home/example", "unmatch directory")
 	assert(t, config.Users["example"].Shell == "/bin/bash", "unmatch shell")
 	assert(t, config.Users["example"].Keys[0] == "ssh-rsa aaa", "unmatch key")
 	assert(t, config.Users["example"].LinkUsers[0] == "example2", "unmach link_users")
 	assert(t, config.Users["example"].LinkUsers[1] == "example3", "unmach link_users")
-	assert(t, config.Groups["pepabo"].Id == 3001, "unmatch group id")
+	assert(t, config.Groups["pepabo"].ID == 3001, "unmatch group id")
 	assert(t, config.Groups["pepabo"].Users[0] == "example", "unmatch group users")
 	assert(t, config.Sudoers["example"].Password == "p@ssword", "unmatch password")
 }
 
-func TestMinId(t *testing.T) {
+func TestMinID(t *testing.T) {
 	LoadConfig("./fixtures/min_id.conf")
-	assert(t, MinUserId == 1, "unmatch min user")
-	assert(t, MinGroupId == 3, "unmatch min group")
+	assert(t, minUserID == 1, "unmatch min user")
+	assert(t, minGroupID == 3, "unmatch min group")
 }
 func assertNoError(t *testing.T, err error) {
 	if err != nil {

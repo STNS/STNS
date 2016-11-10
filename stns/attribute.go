@@ -2,24 +2,28 @@ package stns
 
 import "strconv"
 
+// Attribute attribute object
 type Attribute struct {
-	Id int `toml:"id" json:"id"`
+	ID int `toml:"id" json:"id"`
 	*User
 	*Group
 }
 
+// Attributes attributes object
 type Attributes map[string]*Attribute
 
+// Linker linker interface
 type Linker interface {
 	LinkParams() []string
 	LinkValue() []string
 	SetLinkValue([]string)
 }
 
+// GetByName is find attribute by name
 func (u Attributes) GetByName(name string) Attributes {
 	attr := u[name]
 	if attr == nil ||
-		(attr.User == nil && attr.Group == nil && attr.Id == 0) {
+		(attr.User == nil && attr.Group == nil && attr.ID == 0) {
 		return nil
 	}
 	return Attributes{
@@ -27,10 +31,11 @@ func (u Attributes) GetByName(name string) Attributes {
 	}
 }
 
-func (u Attributes) GetById(_id string) Attributes {
+// GetByID is find attribute by id
+func (u Attributes) GetByID(_id string) Attributes {
 	id, _ := strconv.Atoi(_id)
 	for k, u := range u {
-		if u.Id == id {
+		if u.ID == id {
 			return Attributes{
 				k: u,
 			}
