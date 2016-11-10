@@ -31,6 +31,6 @@ func createPidFile(pidFile string) error {
 
 func removePidFile(pidFile string) {
 	if err := os.Remove(pidFile); err != nil {
-		log.Fatal("Error removing %s: %s", pidFile, err)
+		log.Fatalf("Error removing %s: %s", pidFile, err)
 	}
 }

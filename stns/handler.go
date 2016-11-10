@@ -1,25 +1,9 @@
 package stns
 
-import (
-	"net/http"
-
-	"github.com/STNS/STNS/settings"
-	"github.com/ant0ine/go-json-rest/rest"
-)
+import "github.com/ant0ine/go-json-rest/rest"
 
 type Handler struct {
 	config *Config
-}
-
-type MetaData struct {
-	ApiVersion float64 `json:"api_version"`
-	Result     string  `json:"result""`
-	MinId      int     `json:"min_id""`
-}
-
-type ResponseFormat struct {
-	MetaData *MetaData  `json:"metadata"`
-	Items    Attributes `json:"items"`
 }
 
 func (h *Handler) getQuery(r *rest.Request) *Query {
@@ -45,27 +29,6 @@ func (h *Handler) GetList(w rest.ResponseWriter, r *rest.Request) {
 }
 
 func (h *Handler) Response(q *Query, w rest.ResponseWriter, r *rest.Request) {
-	attr := q.Get()
-	if r.URL.Path[1:3] == "v2" {
-		if attr == nil {
-			w.WriteHeader(http.StatusNotFound)
-		}
-		response := ResponseFormat{
-			MetaData: &MetaData{
-				ApiVersion: settings.API_VERSION,
-				Result:     settings.SUCCESS,
-				MinId:      q.GetMinId(),
-			},
-			Items: attr,
-		}
-		w.WriteJson(response)
-		return
-	} else {
-		if attr == nil {
-			rest.NotFound(w, r)
-		} else {
-			w.WriteJson(attr)
-		}
-		return
-	}
+	res := NewResponder(q, w, r)
+	res.Response()
 }
