@@ -28,6 +28,11 @@ func TestHandlerV1User(t *testing.T) {
 	recorded.BodyIs(`{"example":{"id":1000,"password":"p@ssword","group_id":2000,"directory":"/home/example","shell":"/bin/bash","gecos":"","keys":["ssh-rsa aaa"],"link_users":null}}`)
 	recorded = test.RunRequest(t, s.NewApiHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/user/id/1001", nil))
 	recorded.CodeIs(404)
+
+	recorded = test.RunRequest(t, s.NewApiHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/user/list", nil))
+	recorded.CodeIs(200)
+	recorded.ContentTypeIsJson()
+	recorded.BodyIs(`{"example":{"id":1000,"password":"p@ssword","group_id":2000,"directory":"/home/example","shell":"/bin/bash","gecos":"","keys":["ssh-rsa aaa"],"link_users":null}}`)
 }
 
 func TestHandlerV1Group(t *testing.T) {
@@ -49,6 +54,11 @@ func TestHandlerV1Group(t *testing.T) {
 
 	recorded = test.RunRequest(t, s.NewApiHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/group/id/3001", nil))
 	recorded.CodeIs(404)
+
+	recorded = test.RunRequest(t, s.NewApiHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/group/list", nil))
+	recorded.CodeIs(200)
+	recorded.ContentTypeIsJson()
+	recorded.BodyIs(`{"example_group":{"id":3000,"users":["example"],"link_groups":null}}`)
 }
 
 func TestHandlerV1Sudo(t *testing.T) {
@@ -65,6 +75,11 @@ func TestHandlerV1Sudo(t *testing.T) {
 
 	recorded = test.RunRequest(t, s.NewApiHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/sudo/id/1001", nil))
 	recorded.CodeIs(404)
+
+	recorded = test.RunRequest(t, s.NewApiHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/sudo/list", nil))
+	recorded.CodeIs(200)
+	recorded.ContentTypeIsJson()
+	recorded.BodyIs(`{"example_sudo":{"id":0,"password":"p@ssword","group_id":0,"directory":"","shell":"","gecos":"","keys":null,"link_users":null}}`)
 }
 
 func TestHandlerV2User(t *testing.T) {
@@ -85,7 +100,13 @@ func TestHandlerV2User(t *testing.T) {
 	recorded.BodyIs(`{"metadata":{"api_version":2.1,"result":"success","min_id":1000},"items":{"example":{"id":1000,"password":"p@ssword","group_id":2000,"directory":"/home/example","shell":"/bin/bash","gecos":"","keys":["ssh-rsa aaa"],"link_users":null}}}`)
 	recorded = test.RunRequest(t, s.NewApiHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v2/user/id/1001", nil))
 	recorded.CodeIs(404)
+
+	recorded = test.RunRequest(t, s.NewApiHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v2/user/list", nil))
+	recorded.CodeIs(200)
+	recorded.ContentTypeIsJson()
+	recorded.BodyIs(`{"metadata":{"api_version":2.1,"result":"success","min_id":1000},"items":{"example":{"id":1000,"password":"p@ssword","group_id":2000,"directory":"/home/example","shell":"/bin/bash","gecos":"","keys":["ssh-rsa aaa"],"link_users":null}}}`)
 }
+
 func TestHandlerV2Group(t *testing.T) {
 	config, _ := LoadConfig("./fixtures/stns_01.conf")
 	s := Create(config, "", "", false)
@@ -105,7 +126,13 @@ func TestHandlerV2Group(t *testing.T) {
 
 	recorded = test.RunRequest(t, s.NewApiHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v2/group/id/3001", nil))
 	recorded.CodeIs(404)
+
+	recorded = test.RunRequest(t, s.NewApiHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v2/group/list", nil))
+	recorded.CodeIs(200)
+	recorded.ContentTypeIsJson()
+	recorded.BodyIs(`{"metadata":{"api_version":2.1,"result":"success","min_id":3000},"items":{"example_group":{"id":3000,"users":["example"],"link_groups":null}}}`)
 }
+
 func TestHandlerV2Sudo(t *testing.T) {
 	config, _ := LoadConfig("./fixtures/stns_01.conf")
 	s := Create(config, "", "", false)
@@ -122,7 +149,93 @@ func TestHandlerV2Sudo(t *testing.T) {
 	recorded = test.RunRequest(t, s.NewApiHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v2/sudo/id/1001", nil))
 	recorded.CodeIs(404)
 
+	recorded = test.RunRequest(t, s.NewApiHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v2/sudo/list", nil))
+	recorded.CodeIs(200)
+	recorded.ContentTypeIsJson()
+	recorded.BodyIs(`{"metadata":{"api_version":2.1,"result":"success","min_id":0},"items":{"example_sudo":{"id":0,"password":"p@ssword","group_id":0,"directory":"","shell":"","gecos":"","keys":null,"link_users":null}}}`)
 }
+
+func TestHandlerV3User(t *testing.T) {
+	config, _ := LoadConfig("./fixtures/stns_01.conf")
+	s := Create(config, "", "", false)
+	s.SetMiddleWare(rest.DefaultCommonStack)
+
+	recorded := test.RunRequest(t, s.NewApiHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v3/user/name/example", nil))
+	recorded.CodeIs(200)
+	recorded.HeaderIs("X-STNS-MIN-ID", "1000")
+	recorded.ContentTypeIsJson()
+	recorded.BodyIs(`{"id":1000,"name":"example","password":"p@ssword","group_id":2000,"directory":"/home/example","shell":"/bin/bash","gecos":"","keys":["ssh-rsa aaa"]}`)
+	recorded = test.RunRequest(t, s.NewApiHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v3/user/name/example3", nil))
+	recorded.CodeIs(404)
+
+	recorded = test.RunRequest(t, s.NewApiHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v3/user/id/1000", nil))
+	recorded.CodeIs(200)
+	recorded.HeaderIs("X-STNS-MIN-ID", "1000")
+	recorded.ContentTypeIsJson()
+	recorded.BodyIs(`{"id":1000,"name":"example","password":"p@ssword","group_id":2000,"directory":"/home/example","shell":"/bin/bash","gecos":"","keys":["ssh-rsa aaa"]}`)
+	recorded = test.RunRequest(t, s.NewApiHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v3/user/id/1001", nil))
+	recorded.CodeIs(404)
+
+	recorded = test.RunRequest(t, s.NewApiHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v3/user/list", nil))
+	recorded.CodeIs(200)
+	recorded.HeaderIs("X-STNS-MIN-ID", "1000")
+	recorded.ContentTypeIsJson()
+	recorded.BodyIs(`[{"id":1000,"name":"example","password":"p@ssword","group_id":2000,"directory":"/home/example","shell":"/bin/bash","gecos":"","keys":["ssh-rsa aaa"]}]`)
+}
+
+func TestHandlerv3Group(t *testing.T) {
+	config, _ := LoadConfig("./fixtures/stns_01.conf")
+	s := Create(config, "", "", false)
+	s.SetMiddleWare(rest.DefaultCommonStack)
+
+	recorded := test.RunRequest(t, s.NewApiHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v3/group/name/example_group", nil))
+	recorded.CodeIs(200)
+	recorded.HeaderIs("X-STNS-MIN-ID", "3000")
+	recorded.ContentTypeIsJson()
+	recorded.BodyIs(`{"id":3000,"name":"example_group","users":["example"]}`)
+	recorded = test.RunRequest(t, s.NewApiHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v3/group/name/example_group3", nil))
+	recorded.CodeIs(404)
+
+	recorded = test.RunRequest(t, s.NewApiHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v3/group/id/3000", nil))
+	recorded.CodeIs(200)
+	recorded.HeaderIs("X-STNS-MIN-ID", "3000")
+	recorded.ContentTypeIsJson()
+	recorded.BodyIs(`{"id":3000,"name":"example_group","users":["example"]}`)
+
+	recorded = test.RunRequest(t, s.NewApiHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v3/group/id/3001", nil))
+	recorded.CodeIs(404)
+
+	recorded = test.RunRequest(t, s.NewApiHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v3/group/list", nil))
+	recorded.CodeIs(200)
+	recorded.HeaderIs("X-STNS-MIN-ID", "3000")
+	recorded.ContentTypeIsJson()
+	recorded.BodyIs(`[{"id":3000,"name":"example_group","users":["example"]}]`)
+}
+
+func TestHandlerv3Sudo(t *testing.T) {
+	config, _ := LoadConfig("./fixtures/stns_01.conf")
+	s := Create(config, "", "", false)
+	s.SetMiddleWare(rest.DefaultCommonStack)
+
+	recorded := test.RunRequest(t, s.NewApiHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v3/sudo/name/example_sudo", nil))
+	recorded.CodeIs(200)
+	recorded.HeaderIs("X-STNS-MIN-ID", "0")
+	recorded.ContentTypeIsJson()
+	recorded.BodyIs(`{"name":"example_sudo","password":"p@ssword"}`)
+
+	recorded = test.RunRequest(t, s.NewApiHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v3/sudo/name/example_notfound", nil))
+	recorded.CodeIs(404)
+
+	recorded = test.RunRequest(t, s.NewApiHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v3/sudo/id/1001", nil))
+	recorded.CodeIs(404)
+
+	recorded = test.RunRequest(t, s.NewApiHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v3/sudo/list", nil))
+	recorded.CodeIs(200)
+	recorded.HeaderIs("X-STNS-MIN-ID", "0")
+	recorded.ContentTypeIsJson()
+	recorded.BodyIs(`[{"name":"example_sudo","password":"p@ssword"}]`)
+}
+
 func TestBasicAuth(t *testing.T) {
 	config, _ := LoadConfig("./fixtures/stns_02.conf")
 	s := Create(config, "", "", false)

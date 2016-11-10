@@ -35,8 +35,8 @@ func (self *v1_ResponseFormat) Response() {
 // ----------------------------------------
 type v2_MetaData struct {
 	ApiVersion float64 `json:"api_version"`
-	Result     string  `json:"result""`
-	MinId      int     `json:"min_id""`
+	Result     string  `json:"result"`
+	MinId      int     `json:"min_id"`
 }
 
 type v2_ResponseFormat struct {
