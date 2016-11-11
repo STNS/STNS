@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/STNS/STNS/settings"
 	"github.com/ant0ine/go-json-rest/rest"
 )
 
@@ -15,59 +14,59 @@ type responser interface {
 // ----------------------------------------
 // v1
 // ----------------------------------------
-type v1_ResponseFormat struct {
+type v1ResponseFormat struct {
 	Items Attributes `json:"items"`
 	query *Query
 	w     rest.ResponseWriter
 	r     *rest.Request
 }
 
-func (self *v1_ResponseFormat) Response() {
-	if self.Items == nil {
-		rest.NotFound(self.w, self.r)
+func (res *v1ResponseFormat) Response() {
+	if res.Items == nil {
+		rest.NotFound(res.w, res.r)
 	} else {
-		self.w.WriteJson(self.Items)
+		res.w.WriteJson(res.Items)
 	}
 }
 
 // ----------------------------------------
 // v2
 // ----------------------------------------
-type v2_MetaData struct {
-	ApiVersion float64 `json:"api_version"`
+type v2MetaData struct {
+	APIVersion float64 `json:"api_version"`
 	Result     string  `json:"result"`
-	MinId      int     `json:"min_id"`
+	MinID      int     `json:"min_id"`
 }
 
-type v2_ResponseFormat struct {
-	MetaData *v2_MetaData `json:"metadata"`
-	Items    Attributes   `json:"items"`
+type v2ResponseFormat struct {
+	MetaData *v2MetaData `json:"metadata"`
+	Items    Attributes  `json:"items"`
 	query    *Query
 	w        rest.ResponseWriter
 	r        *rest.Request
 }
 
-func (self *v2_ResponseFormat) Response() {
-	if self.Items == nil {
-		self.w.WriteHeader(http.StatusNotFound)
+func (res *v2ResponseFormat) Response() {
+	if res.Items == nil {
+		res.w.WriteHeader(http.StatusNotFound)
 	}
 
-	response := v2_ResponseFormat{
-		MetaData: &v2_MetaData{
-			ApiVersion: settings.API_VERSION,
-			Result:     settings.SUCCESS,
-			MinId:      self.query.GetMinId(),
+	response := v2ResponseFormat{
+		MetaData: &v2MetaData{
+			APIVersion: 2.1,
+			Result:     "success",
+			MinID:      res.query.GetMinID(),
 		},
-		Items: self.Items,
+		Items: res.Items,
 	}
-	self.w.WriteJson(response)
+	res.w.WriteJson(response)
 	return
 }
 
 // ----------------------------------------
 // v3
 // ----------------------------------------
-type v3_ResponseFormat struct {
+type v3ResponseFormat struct {
 	Items Attributes `json:"items"`
 	query *Query
 	w     rest.ResponseWriter
@@ -75,10 +74,10 @@ type v3_ResponseFormat struct {
 }
 
 type v3User struct {
-	Id        int      `json:"id"`
+	ID        int      `json:"id"`
 	Name      string   `json:"name"`
 	Password  string   `json:"password"`
-	GroupId   int      `json:"group_id"`
+	GroupID   int      `json:"group_id"`
 	Directory string   `json:"directory"`
 	Shell     string   `json:"shell"`
 	Gecos     string   `json:"gecos"`
@@ -86,7 +85,7 @@ type v3User struct {
 }
 
 type v3Group struct {
-	Id    int      `json:"id"`
+	ID    int      `json:"id"`
 	Name  string   `json:"name"`
 	Users []string `json:"users"`
 }
@@ -111,7 +110,7 @@ type v3Resource interface {
 	buildResource(string, *Attribute) interface{}
 }
 
-func NewV3Resource(q *Query) v3Resource {
+func newV3Resource(q *Query) v3Resource {
 	switch q.resource {
 	case "user":
 		return v3Users{}
@@ -123,13 +122,13 @@ func NewV3Resource(q *Query) v3Resource {
 	return nil
 }
 
-func (self v3Users) buildResource(n string, u *Attribute) interface{} {
+func (user v3Users) buildResource(n string, u *Attribute) interface{} {
 	if u.User != nil {
 		return &v3User{
 			Name:      n,
-			Id:        u.Id,
+			ID:        u.ID,
 			Password:  u.Password,
-			GroupId:   u.GroupId,
+			GroupID:   u.GroupID,
 			Directory: u.Directory,
 			Shell:     u.Shell,
 			Gecos:     u.Gecos,
@@ -139,18 +138,18 @@ func (self v3Users) buildResource(n string, u *Attribute) interface{} {
 	return nil
 }
 
-func (self v3Groups) buildResource(n string, g *Attribute) interface{} {
+func (user v3Groups) buildResource(n string, g *Attribute) interface{} {
 	if g.Group != nil {
 		return &v3Group{
 			Name:  n,
-			Id:    g.Id,
+			ID:    g.ID,
 			Users: g.Users,
 		}
 	}
 	return nil
 }
 
-func (self v3Sudoers) buildResource(n string, u *Attribute) interface{} {
+func (user v3Sudoers) buildResource(n string, u *Attribute) interface{} {
 	if u.User != nil {
 		return &v3Sudo{
 			Name:     n,
@@ -160,54 +159,54 @@ func (self v3Sudoers) buildResource(n string, u *Attribute) interface{} {
 	return nil
 }
 
-func (self *v3_ResponseFormat) Response() {
-	if len(self.Items) == 0 {
-		rest.NotFound(self.w, self.r)
+func (res *v3ResponseFormat) Response() {
+	if len(res.Items) == 0 {
+		rest.NotFound(res.w, res.r)
 		return
 	}
 
-	self.w.Header().Set("X-STNS-MIN-ID", strconv.Itoa(self.query.GetMinId()))
+	res.w.Header().Set("X-STNS-MIN-ID", strconv.Itoa(res.query.GetMinID()))
 
-	resource := NewV3Resource(self.query)
+	resource := newV3Resource(res.query)
 	resources := []interface{}{}
 
-	for n, u := range self.Items {
+	for n, u := range res.Items {
 		resources = append(resources, resource.buildResource(n, u))
-		if self.query.column != "list" {
+		if res.query.column != "list" {
 			break
 		}
 	}
 
 	if len(resources) > 0 {
-		if self.query.column == "list" {
-			self.w.WriteJson(resources)
+		if res.query.column == "list" {
+			res.w.WriteJson(resources)
 		} else {
-			self.w.WriteJson(resources[0])
+			res.w.WriteJson(resources[0])
 		}
 	} else {
-		rest.NotFound(self.w, self.r)
+		rest.NotFound(res.w, res.r)
 	}
 }
 
-func NewResponder(q *Query, w rest.ResponseWriter, r *rest.Request) responser {
+func newResponder(q *Query, w rest.ResponseWriter, r *rest.Request) responser {
 	res := q.Get()
 	switch r.URL.Path[1:3] {
 	case "v2":
-		return &v2_ResponseFormat{
+		return &v2ResponseFormat{
 			Items: res,
 			query: q,
 			w:     w,
 			r:     r,
 		}
 	case "v3":
-		return &v3_ResponseFormat{
+		return &v3ResponseFormat{
 			Items: res,
 			query: q,
 			w:     w,
 			r:     r,
 		}
 	default:
-		return &v1_ResponseFormat{
+		return &v1ResponseFormat{
 			Items: res,
 			query: q,
 			w:     w,

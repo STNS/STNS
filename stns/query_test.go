@@ -78,7 +78,7 @@ func TestNull(t *testing.T) {
 
 func assertUserGet(t *testing.T, resource Attributes) {
 	test.Assert(t, len(resource) == 1, "unmatch resource count")
-	test.Assert(t, resource["example1"].Id == 1001, "unmatch id")
+	test.Assert(t, resource["example1"].ID == 1001, "unmatch id")
 	test.Assert(t, resource["example1"].Directory == "/home/example1", "unmatch directory")
 	test.Assert(t, resource["example1"].Shell == "/bin/bash", "unmatch shell")
 
@@ -91,7 +91,7 @@ func assertUserGet(t *testing.T, resource Attributes) {
 
 func assertGroupGet(t *testing.T, resource Attributes) {
 	test.Assert(t, len(resource) == 1, "unmatch resource count")
-	test.Assert(t, resource["example_group1"].Id == 3001, "unmatch id")
+	test.Assert(t, resource["example_group1"].ID == 3001, "unmatch id")
 	test.Assert(t, len(resource["example_group1"].Users) == 3, "unmatch group user count")
 	sort.Strings(resource["example_group1"].Users)
 	test.Assert(t, resource["example_group1"].Users[0] == "example", "unmatch group user1")
@@ -110,30 +110,30 @@ func TestGetList(t *testing.T) {
 	resource := query.Get()
 	test.Assert(t, len(resource) == 3, "unmatch resource count")
 
-	test.Assert(t, resource["example1"].Id == 1001, "unmatch id1")
+	test.Assert(t, resource["example1"].ID == 1001, "unmatch id1")
 	test.Assert(t, len(resource["example1"].Keys) == 3, "unmatch key length1")
 	sort.Strings(resource["example1"].Keys)
 	test.Assert(t, resource["example1"].Keys[0] == "ssh-rsa aaa", "unmatch key1")
 	test.Assert(t, resource["example1"].Keys[1] == "ssh-rsa bbb", "unmatch key2")
 	test.Assert(t, resource["example1"].Keys[2] == "ssh-rsa ccc", "unmatch key3")
 
-	test.Assert(t, resource["example2"].Id == 1002, "unmatch id2")
+	test.Assert(t, resource["example2"].ID == 1002, "unmatch id2")
 	test.Assert(t, len(resource["example2"].Keys) == 3, "unmatch key length2")
 
-	test.Assert(t, resource["example3"].Id == 1003, "unmatch id3")
+	test.Assert(t, resource["example3"].ID == 1003, "unmatch id3")
 	test.Assert(t, len(resource["example3"].Keys) == 3, "unmatch key length3")
 
 	query = Query{&config, "group", "list", ""}
 	resource = query.Get()
 	test.Assert(t, len(resource) == 2, "unmatch group resource count")
-	test.Assert(t, resource["example_group1"].Id == 3001, "unmatch group id")
+	test.Assert(t, resource["example_group1"].ID == 3001, "unmatch group id")
 	test.Assert(t, len(resource["example_group1"].Users) == 3, "unmatch user count")
 	sort.Strings(resource["example_group1"].Users)
 	test.Assert(t, resource["example_group1"].Users[0] == "example", "unmatch group user1")
 	test.Assert(t, resource["example_group1"].Users[1] == "example1", "unmatch group user2")
 	test.Assert(t, resource["example_group1"].Users[2] == "example2", "unmatch group user3")
 
-	test.Assert(t, resource["example_group2"].Id == 3002, "unmatch group  id")
+	test.Assert(t, resource["example_group2"].ID == 3002, "unmatch group  id")
 	test.Assert(t, len(resource["example_group2"].Users) == 1, "unmatch group  user count")
 	test.Assert(t, resource["example_group2"].Users[0] == "example2", "unmatch group user1")
 

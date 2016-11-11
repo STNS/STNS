@@ -14,6 +14,7 @@ import (
 	"github.com/ant0ine/go-json-rest/rest"
 )
 
+// Stns stns object
 type Stns struct {
 	config         Config
 	configFileName string
@@ -21,7 +22,8 @@ type Stns struct {
 	middleware     []rest.Middleware
 }
 
-func Create(config Config, configFileName string, pidFileName string, verbose bool) *Stns {
+// NewServer make server object
+func NewServer(config Config, configFileName string, pidFileName string, verbose bool) *Stns {
 	m := rest.DefaultCommonStack
 	m = append(m, &rest.JsonIndentMiddleware{})
 	if verbose {
@@ -38,10 +40,12 @@ func Create(config Config, configFileName string, pidFileName string, verbose bo
 	}
 }
 
+// SetMiddleWare use only test
 func (s *Stns) SetMiddleWare(m []rest.Middleware) {
 	s.middleware = m
 }
 
+// Start server start
 func (s *Stns) Start() {
 	// wait reload signal
 	c := make(chan os.Signal, 1)
@@ -67,7 +71,7 @@ func (s *Stns) Start() {
 		}
 	}()
 
-	server := s.NewHttpServer()
+	server := s.newHTTPServer()
 
 	// make pid
 	if err := createPidFile(s.pidFileName); err != nil {
@@ -79,14 +83,14 @@ func (s *Stns) Start() {
 	log.Printf("Start Server pid:%d", os.Getpid())
 
 	// tls encryption
-	if ok := s.TlsKeysExists(); ok {
-		log.Fatal(server.ListenAndServeTLS(s.config.TlsCert, s.config.TlsKey))
+	if ok := s.tlsKeysExists(); ok {
+		log.Fatal(server.ListenAndServeTLS(s.config.TLSCert, s.config.TLSKey))
 	} else {
 		log.Fatal(server.ListenAndServe())
 	}
 }
 
-func (s *Stns) NewApiHandler() http.Handler {
+func (s *Stns) newAPIHandler() http.Handler {
 	api := rest.NewApi()
 
 	api.Use(s.middleware...)
@@ -118,7 +122,7 @@ func (s *Stns) NewApiHandler() http.Handler {
 		rest.Get("/v2/:resource_name/:column/:value", h.Get),
 		rest.Get("/:resource_name/list", h.GetList),
 		rest.Get("/:resource_name/:column/:value", h.Get),
-		rest.Get("/healthcheck", s.HealthChech),
+		rest.Get("/healthcheck", s.healthCheck),
 	)
 	if err != nil {
 		log.Fatal(err)
@@ -128,19 +132,19 @@ func (s *Stns) NewApiHandler() http.Handler {
 	return api.MakeHandler()
 }
 
-func (s *Stns) HealthChech(w rest.ResponseWriter, r *rest.Request) {
+func (s *Stns) healthCheck(w rest.ResponseWriter, r *rest.Request) {
 	w.WriteJson("success")
 }
 
-func (s *Stns) NewHttpServer() *http.Server {
+func (s *Stns) newHTTPServer() *http.Server {
 	server := &http.Server{
 		Addr:    ":" + strconv.Itoa(s.config.Port),
-		Handler: s.NewApiHandler(),
+		Handler: s.newAPIHandler(),
 	}
 
 	// tls client authentication
-	if _, err := os.Stat(s.config.TlsCa); err == nil {
-		ca, err := ioutil.ReadFile(s.config.TlsCa)
+	if _, err := os.Stat(s.config.TLSCa); err == nil {
+		ca, err := ioutil.ReadFile(s.config.TLSCa)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -160,9 +164,9 @@ func (s *Stns) NewHttpServer() *http.Server {
 	return server
 }
 
-func (s *Stns) TlsKeysExists() bool {
-	if s.config.TlsCert != "" && s.config.TlsKey != "" {
-		for _, v := range []string{s.config.TlsCert, s.config.TlsKey} {
+func (s *Stns) tlsKeysExists() bool {
+	if s.config.TLSCert != "" && s.config.TLSKey != "" {
+		for _, v := range []string{s.config.TLSCert, s.config.TLSKey} {
 			if _, err := os.Stat(v); err != nil {
 				log.Fatal(err)
 			}

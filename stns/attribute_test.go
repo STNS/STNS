@@ -8,7 +8,7 @@ import (
 func TestGetByName(t *testing.T) {
 	users := Attributes{
 		"test1": &Attribute{
-			Id: 1,
+			ID: 1,
 			User: &User{LinkUsers: []string{"foo", "bar"},
 				Password: "foo",
 			},
@@ -16,14 +16,14 @@ func TestGetByName(t *testing.T) {
 		},
 		"test3": &Attribute{},
 		"test4": &Attribute{
-			Id: 4,
+			ID: 4,
 		},
 	}
 
 	_users := users.GetByName("test1")
 
 	for n, u := range _users {
-		if u.Id != 1 {
+		if u.ID != 1 {
 			t.Error("ummatch user id")
 		}
 
@@ -59,19 +59,19 @@ func TestGetByName(t *testing.T) {
 		t.Error("ummatch user id test4")
 	}
 }
-func TestGetById(t *testing.T) {
+func TestGetByID(t *testing.T) {
 	users := Attributes{
 		"test1": &Attribute{
-			Id: 1,
+			ID: 1,
 		},
 		"test3": &Attribute{},
 		"test4": &Attribute{
-			Id: 4,
+			ID: 4,
 		},
 	}
-	_users := users.GetById("1")
+	_users := users.GetByID("1")
 	for n, u := range _users {
-		if u.Id != 1 {
+		if u.ID != 1 {
 			t.Error("ummatch user id")
 		}
 
@@ -80,18 +80,18 @@ func TestGetById(t *testing.T) {
 		}
 	}
 
-	notfound := users.GetById("2")
+	notfound := users.GetByID("2")
 	if notfound != nil {
 		t.Error("ummatch user id")
 	}
 
-	t3 := users.GetById("3")
+	t3 := users.GetByID("3")
 
 	if t3 != nil {
 		t.Error("ummatch user id test3")
 	}
 
-	t4 := users.GetById("4")
+	t4 := users.GetByID("4")
 	if t4 == nil {
 		t.Error("ummatch user id test4")
 	}

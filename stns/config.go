@@ -8,12 +8,13 @@ import (
 	"github.com/BurntSushi/toml"
 )
 
+// Config config object
 type Config struct {
 	Port     int    `toml:"port"`
 	Include  string `toml:"include"`
-	TlsCa    string `toml:"tls_ca"`
-	TlsCert  string `toml:"tls_cert"`
-	TlsKey   string `toml:"tls_key"`
+	TLSCa    string `toml:"tls_ca"`
+	TLSCert  string `toml:"tls_cert"`
+	TLSKey   string `toml:"tls_key"`
 	User     string `toml:"user"`
 	Password string `toml:"password"`
 	Users    Attributes
@@ -21,8 +22,10 @@ type Config struct {
 	Sudoers  Attributes
 }
 
-var MinUserId, MinGroupId int
+var minUserID int
+var minGroupID int
 
+// LoadConfig from /etc/stns/stns.conf
 func LoadConfig(configFile string) (Config, error) {
 	var config Config
 	defaultConfig(&config)
@@ -37,8 +40,8 @@ func LoadConfig(configFile string) (Config, error) {
 			return Config{}, err
 		}
 	}
-	setMinId(&MinUserId, config.Users)
-	setMinId(&MinGroupId, config.Groups)
+	setMinID(&minUserID, config.Users)
+	setMinID(&minGroupID, config.Groups)
 	mergeLinkAttribute("user", config.Users)
 	mergeLinkAttribute("group", config.Groups)
 	return config, nil
@@ -63,15 +66,15 @@ func includeConfigFile(config *Config, include string) error {
 	return nil
 }
 
-func setMinId(min *int, attrs Attributes) {
+func setMinID(min *int, attrs Attributes) {
 	*min = 0
 	if len(attrs) > 0 {
 		for _, a := range attrs {
 			switch {
 			case *min == 0:
-				*min = a.Id
-			case *min > a.Id:
-				*min = a.Id
+				*min = a.ID
+			case *min > a.ID:
+				*min = a.ID
 			}
 		}
 	}
@@ -91,7 +94,7 @@ func mergeLinkAttribute(rtype string, attr Attributes) {
 				for _, val := range linkValues {
 					mergeValue = append(mergeValue, val...)
 				}
-				linker.SetLinkValue(RemoveDuplicates(mergeValue))
+				linker.SetLinkValue(removeDuplicates(mergeValue))
 			}
 		}
 	}
@@ -118,8 +121,8 @@ func recursiveSetLinkValue(attr Attributes, rtype, name string, result map[strin
 	if linker != nil && !reflect.ValueOf(linker).IsNil() && len(linker.LinkValue()) > 0 {
 		result[name] = linker.LinkValue()
 		if linker.LinkParams() != nil || !reflect.ValueOf(linker.LinkParams()).IsNil() {
-			for _, next_name := range linker.LinkParams() {
-				recursiveSetLinkValue(attr, rtype, next_name, result)
+			for _, nextName := range linker.LinkParams() {
+				recursiveSetLinkValue(attr, rtype, nextName, result)
 			}
 		}
 	}
@@ -134,7 +137,7 @@ func member(n string, xs []string) bool {
 	return false
 }
 
-func RemoveDuplicates(xs []string) []string {
+func removeDuplicates(xs []string) []string {
 	ys := make([]string, 0, len(xs))
 	for _, x := range xs {
 		if !member(x, ys) {

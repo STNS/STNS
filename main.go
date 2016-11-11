@@ -46,6 +46,6 @@ func main() {
 		log.SetOutput(f)
 	}
 
-	server := stns.Create(config, *configFile, *pidFile, *verbose)
+	server := stns.NewServer(config, *configFile, *pidFile, *verbose)
 	server.Start()
 }
