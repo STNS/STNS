@@ -15,8 +15,8 @@ type responser interface {
 // ----------------------------------------
 // v1
 // ----------------------------------------
-type v1_ResponseFormat struct {
-	Items Attributes `json:"items"`
+type v1ResponseFormat struct {
+	Items Attributes
 	query *Query
 	w     rest.ResponseWriter
 	r     *rest.Request
@@ -67,8 +67,8 @@ func (self *v2_ResponseFormat) Response() {
 // ----------------------------------------
 // v3
 // ----------------------------------------
-type v3_ResponseFormat struct {
-	Items Attributes `json:"items"`
+type v3ResponseFormat struct {
+	Items Attributes
 	query *Query
 	w     rest.ResponseWriter
 	r     *rest.Request
