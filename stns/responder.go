@@ -165,7 +165,7 @@ func (res *v3ResponseFormat) Response() {
 		return
 	}
 
-	res.w.Header().Set("X-STNS-MIN-ID", strconv.Itoa(res.query.GetMinID()))
+	res.w.Header().Set("STNS-MIN-ID", strconv.Itoa(res.query.GetMinID()))
 
 	resource := newV3Resource(res.query)
 	resources := []interface{}{}
