@@ -7,6 +7,9 @@ before_install:
 - bundle install
 - mkdir -p docker/tmp
 script:
+- go vet ./...
+- go get -u github.com/golang/lint/golint
+- golint ./...
 - bundle exec rake test_pkg
 go:
-  - 1.6.2
+  - 1.7.1

@@ -6,9 +6,10 @@ import (
 	"log"
 	"os"
 
-	"github.com/STNS/STNS/settings"
 	"github.com/STNS/STNS/stns"
 )
+
+var version = "1.0.0"
 
 func main() {
 	configFile := flag.String("conf", "/etc/stns/stns.conf", "config file path")
@@ -26,7 +27,7 @@ func main() {
 	if len(flag.Args()) > 0 {
 		switch flag.Args()[0] {
 		case "version":
-			fmt.Println("STNS version " + settings.VERSION)
+			fmt.Println("STNS version " + version)
 			os.Exit(0)
 		case "check-conf":
 			fmt.Println("configuration file " + *configFile + " test is successful")
@@ -46,6 +47,6 @@ func main() {
 		log.SetOutput(f)
 	}
 
-	server := stns.Create(config, *configFile, *pidFile, *verbose)
+	server := stns.NewServer(config, *configFile, *pidFile, *verbose)
 	server.Start()
 }

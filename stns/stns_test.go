@@ -12,24 +12,24 @@ import (
 
 func TestHandlerV1User(t *testing.T) {
 	config, _ := LoadConfig("./fixtures/stns_01.conf")
-	s := Create(config, "", "", false)
+	s := NewServer(config, "", "", false)
 	s.SetMiddleWare(rest.DefaultCommonStack)
 
-	recorded := test.RunRequest(t, s.NewApiHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/user/name/example", nil))
+	recorded := test.RunRequest(t, s.newAPIHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/user/name/example", nil))
 	recorded.CodeIs(200)
 	recorded.ContentTypeIsJson()
 	recorded.BodyIs(`{"example":{"id":1000,"password":"p@ssword","group_id":2000,"directory":"/home/example","shell":"/bin/bash","gecos":"","keys":["ssh-rsa aaa"],"link_users":null}}`)
-	recorded = test.RunRequest(t, s.NewApiHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/user/name/example3", nil))
+	recorded = test.RunRequest(t, s.newAPIHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/user/name/example3", nil))
 	recorded.CodeIs(404)
 
-	recorded = test.RunRequest(t, s.NewApiHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/user/id/1000", nil))
+	recorded = test.RunRequest(t, s.newAPIHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/user/id/1000", nil))
 	recorded.CodeIs(200)
 	recorded.ContentTypeIsJson()
 	recorded.BodyIs(`{"example":{"id":1000,"password":"p@ssword","group_id":2000,"directory":"/home/example","shell":"/bin/bash","gecos":"","keys":["ssh-rsa aaa"],"link_users":null}}`)
-	recorded = test.RunRequest(t, s.NewApiHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/user/id/1001", nil))
+	recorded = test.RunRequest(t, s.newAPIHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/user/id/1001", nil))
 	recorded.CodeIs(404)
 
-	recorded = test.RunRequest(t, s.NewApiHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/user/list", nil))
+	recorded = test.RunRequest(t, s.newAPIHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/user/list", nil))
 	recorded.CodeIs(200)
 	recorded.ContentTypeIsJson()
 	recorded.BodyIs(`{"example":{"id":1000,"password":"p@ssword","group_id":2000,"directory":"/home/example","shell":"/bin/bash","gecos":"","keys":["ssh-rsa aaa"],"link_users":null}}`)
@@ -37,25 +37,25 @@ func TestHandlerV1User(t *testing.T) {
 
 func TestHandlerV1Group(t *testing.T) {
 	config, _ := LoadConfig("./fixtures/stns_01.conf")
-	s := Create(config, "", "", false)
+	s := NewServer(config, "", "", false)
 	s.SetMiddleWare(rest.DefaultCommonStack)
 
-	recorded := test.RunRequest(t, s.NewApiHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/group/name/example_group", nil))
+	recorded := test.RunRequest(t, s.newAPIHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/group/name/example_group", nil))
 	recorded.CodeIs(200)
 	recorded.ContentTypeIsJson()
 	recorded.BodyIs(`{"example_group":{"id":3000,"users":["example"],"link_groups":null}}`)
-	recorded = test.RunRequest(t, s.NewApiHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/group/name/example_group3", nil))
+	recorded = test.RunRequest(t, s.newAPIHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/group/name/example_group3", nil))
 	recorded.CodeIs(404)
 
-	recorded = test.RunRequest(t, s.NewApiHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/group/id/3000", nil))
+	recorded = test.RunRequest(t, s.newAPIHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/group/id/3000", nil))
 	recorded.CodeIs(200)
 	recorded.ContentTypeIsJson()
 	recorded.BodyIs(`{"example_group":{"id":3000,"users":["example"],"link_groups":null}}`)
 
-	recorded = test.RunRequest(t, s.NewApiHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/group/id/3001", nil))
+	recorded = test.RunRequest(t, s.newAPIHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/group/id/3001", nil))
 	recorded.CodeIs(404)
 
-	recorded = test.RunRequest(t, s.NewApiHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/group/list", nil))
+	recorded = test.RunRequest(t, s.newAPIHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/group/list", nil))
 	recorded.CodeIs(200)
 	recorded.ContentTypeIsJson()
 	recorded.BodyIs(`{"example_group":{"id":3000,"users":["example"],"link_groups":null}}`)
@@ -63,20 +63,20 @@ func TestHandlerV1Group(t *testing.T) {
 
 func TestHandlerV1Sudo(t *testing.T) {
 	config, _ := LoadConfig("./fixtures/stns_01.conf")
-	s := Create(config, "", "", false)
+	s := NewServer(config, "", "", false)
 	s.SetMiddleWare(rest.DefaultCommonStack)
 
-	recorded := test.RunRequest(t, s.NewApiHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/sudo/name/example_sudo", nil))
+	recorded := test.RunRequest(t, s.newAPIHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/sudo/name/example_sudo", nil))
 	recorded.CodeIs(200)
 	recorded.ContentTypeIsJson()
 	recorded.BodyIs(`{"example_sudo":{"id":0,"password":"p@ssword","group_id":0,"directory":"","shell":"","gecos":"","keys":null,"link_users":null}}`)
-	recorded = test.RunRequest(t, s.NewApiHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/sudo/name/example_notfound", nil))
+	recorded = test.RunRequest(t, s.newAPIHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/sudo/name/example_notfound", nil))
 	recorded.CodeIs(404)
 
-	recorded = test.RunRequest(t, s.NewApiHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/sudo/id/1001", nil))
+	recorded = test.RunRequest(t, s.newAPIHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/sudo/id/1001", nil))
 	recorded.CodeIs(404)
 
-	recorded = test.RunRequest(t, s.NewApiHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/sudo/list", nil))
+	recorded = test.RunRequest(t, s.newAPIHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/sudo/list", nil))
 	recorded.CodeIs(200)
 	recorded.ContentTypeIsJson()
 	recorded.BodyIs(`{"example_sudo":{"id":0,"password":"p@ssword","group_id":0,"directory":"","shell":"","gecos":"","keys":null,"link_users":null}}`)
@@ -84,24 +84,24 @@ func TestHandlerV1Sudo(t *testing.T) {
 
 func TestHandlerV2User(t *testing.T) {
 	config, _ := LoadConfig("./fixtures/stns_01.conf")
-	s := Create(config, "", "", false)
+	s := NewServer(config, "", "", false)
 	s.SetMiddleWare(rest.DefaultCommonStack)
 
-	recorded := test.RunRequest(t, s.NewApiHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v2/user/name/example", nil))
+	recorded := test.RunRequest(t, s.newAPIHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v2/user/name/example", nil))
 	recorded.CodeIs(200)
 	recorded.ContentTypeIsJson()
 	recorded.BodyIs(`{"metadata":{"api_version":2.1,"result":"success","min_id":1000},"items":{"example":{"id":1000,"password":"p@ssword","group_id":2000,"directory":"/home/example","shell":"/bin/bash","gecos":"","keys":["ssh-rsa aaa"],"link_users":null}}}`)
-	recorded = test.RunRequest(t, s.NewApiHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v2/user/name/example3", nil))
+	recorded = test.RunRequest(t, s.newAPIHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v2/user/name/example3", nil))
 	recorded.CodeIs(404)
 
-	recorded = test.RunRequest(t, s.NewApiHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v2/user/id/1000", nil))
+	recorded = test.RunRequest(t, s.newAPIHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v2/user/id/1000", nil))
 	recorded.CodeIs(200)
 	recorded.ContentTypeIsJson()
 	recorded.BodyIs(`{"metadata":{"api_version":2.1,"result":"success","min_id":1000},"items":{"example":{"id":1000,"password":"p@ssword","group_id":2000,"directory":"/home/example","shell":"/bin/bash","gecos":"","keys":["ssh-rsa aaa"],"link_users":null}}}`)
-	recorded = test.RunRequest(t, s.NewApiHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v2/user/id/1001", nil))
+	recorded = test.RunRequest(t, s.newAPIHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v2/user/id/1001", nil))
 	recorded.CodeIs(404)
 
-	recorded = test.RunRequest(t, s.NewApiHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v2/user/list", nil))
+	recorded = test.RunRequest(t, s.newAPIHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v2/user/list", nil))
 	recorded.CodeIs(200)
 	recorded.ContentTypeIsJson()
 	recorded.BodyIs(`{"metadata":{"api_version":2.1,"result":"success","min_id":1000},"items":{"example":{"id":1000,"password":"p@ssword","group_id":2000,"directory":"/home/example","shell":"/bin/bash","gecos":"","keys":["ssh-rsa aaa"],"link_users":null}}}`)
@@ -109,25 +109,25 @@ func TestHandlerV2User(t *testing.T) {
 
 func TestHandlerV2Group(t *testing.T) {
 	config, _ := LoadConfig("./fixtures/stns_01.conf")
-	s := Create(config, "", "", false)
+	s := NewServer(config, "", "", false)
 	s.SetMiddleWare(rest.DefaultCommonStack)
 
-	recorded := test.RunRequest(t, s.NewApiHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v2/group/name/example_group", nil))
+	recorded := test.RunRequest(t, s.newAPIHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v2/group/name/example_group", nil))
 	recorded.CodeIs(200)
 	recorded.ContentTypeIsJson()
 	recorded.BodyIs(`{"metadata":{"api_version":2.1,"result":"success","min_id":3000},"items":{"example_group":{"id":3000,"users":["example"],"link_groups":null}}}`)
-	recorded = test.RunRequest(t, s.NewApiHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v2/group/name/example_group3", nil))
+	recorded = test.RunRequest(t, s.newAPIHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v2/group/name/example_group3", nil))
 	recorded.CodeIs(404)
 
-	recorded = test.RunRequest(t, s.NewApiHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v2/group/id/3000", nil))
+	recorded = test.RunRequest(t, s.newAPIHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v2/group/id/3000", nil))
 	recorded.CodeIs(200)
 	recorded.ContentTypeIsJson()
 	recorded.BodyIs(`{"metadata":{"api_version":2.1,"result":"success","min_id":3000},"items":{"example_group":{"id":3000,"users":["example"],"link_groups":null}}}`)
 
-	recorded = test.RunRequest(t, s.NewApiHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v2/group/id/3001", nil))
+	recorded = test.RunRequest(t, s.newAPIHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v2/group/id/3001", nil))
 	recorded.CodeIs(404)
 
-	recorded = test.RunRequest(t, s.NewApiHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v2/group/list", nil))
+	recorded = test.RunRequest(t, s.newAPIHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v2/group/list", nil))
 	recorded.CodeIs(200)
 	recorded.ContentTypeIsJson()
 	recorded.BodyIs(`{"metadata":{"api_version":2.1,"result":"success","min_id":3000},"items":{"example_group":{"id":3000,"users":["example"],"link_groups":null}}}`)
@@ -135,21 +135,21 @@ func TestHandlerV2Group(t *testing.T) {
 
 func TestHandlerV2Sudo(t *testing.T) {
 	config, _ := LoadConfig("./fixtures/stns_01.conf")
-	s := Create(config, "", "", false)
+	s := NewServer(config, "", "", false)
 	s.SetMiddleWare(rest.DefaultCommonStack)
 
-	recorded := test.RunRequest(t, s.NewApiHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v2/sudo/name/example_sudo", nil))
+	recorded := test.RunRequest(t, s.newAPIHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v2/sudo/name/example_sudo", nil))
 	recorded.CodeIs(200)
 	recorded.ContentTypeIsJson()
 	recorded.BodyIs(`{"metadata":{"api_version":2.1,"result":"success","min_id":0},"items":{"example_sudo":{"id":0,"password":"p@ssword","group_id":0,"directory":"","shell":"","gecos":"","keys":null,"link_users":null}}}`)
 
-	recorded = test.RunRequest(t, s.NewApiHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v2/sudo/name/example_notfound", nil))
+	recorded = test.RunRequest(t, s.newAPIHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v2/sudo/name/example_notfound", nil))
 	recorded.CodeIs(404)
 
-	recorded = test.RunRequest(t, s.NewApiHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v2/sudo/id/1001", nil))
+	recorded = test.RunRequest(t, s.newAPIHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v2/sudo/id/1001", nil))
 	recorded.CodeIs(404)
 
-	recorded = test.RunRequest(t, s.NewApiHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v2/sudo/list", nil))
+	recorded = test.RunRequest(t, s.newAPIHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v2/sudo/list", nil))
 	recorded.CodeIs(200)
 	recorded.ContentTypeIsJson()
 	recorded.BodyIs(`{"metadata":{"api_version":2.1,"result":"success","min_id":0},"items":{"example_sudo":{"id":0,"password":"p@ssword","group_id":0,"directory":"","shell":"","gecos":"","keys":null,"link_users":null}}}`)
@@ -157,26 +157,26 @@ func TestHandlerV2Sudo(t *testing.T) {
 
 func TestHandlerV3User(t *testing.T) {
 	config, _ := LoadConfig("./fixtures/stns_01.conf")
-	s := Create(config, "", "", false)
+	s := NewServer(config, "", "", false)
 	s.SetMiddleWare(rest.DefaultCommonStack)
 
-	recorded := test.RunRequest(t, s.NewApiHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v3/user/name/example", nil))
+	recorded := test.RunRequest(t, s.newAPIHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v3/user/name/example", nil))
 	recorded.CodeIs(200)
 	recorded.HeaderIs("X-STNS-MIN-ID", "1000")
 	recorded.ContentTypeIsJson()
 	recorded.BodyIs(`{"id":1000,"name":"example","password":"p@ssword","group_id":2000,"directory":"/home/example","shell":"/bin/bash","gecos":"","keys":["ssh-rsa aaa"]}`)
-	recorded = test.RunRequest(t, s.NewApiHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v3/user/name/example3", nil))
+	recorded = test.RunRequest(t, s.newAPIHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v3/user/name/example3", nil))
 	recorded.CodeIs(404)
 
-	recorded = test.RunRequest(t, s.NewApiHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v3/user/id/1000", nil))
+	recorded = test.RunRequest(t, s.newAPIHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v3/user/id/1000", nil))
 	recorded.CodeIs(200)
 	recorded.HeaderIs("X-STNS-MIN-ID", "1000")
 	recorded.ContentTypeIsJson()
 	recorded.BodyIs(`{"id":1000,"name":"example","password":"p@ssword","group_id":2000,"directory":"/home/example","shell":"/bin/bash","gecos":"","keys":["ssh-rsa aaa"]}`)
-	recorded = test.RunRequest(t, s.NewApiHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v3/user/id/1001", nil))
+	recorded = test.RunRequest(t, s.newAPIHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v3/user/id/1001", nil))
 	recorded.CodeIs(404)
 
-	recorded = test.RunRequest(t, s.NewApiHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v3/user/list", nil))
+	recorded = test.RunRequest(t, s.newAPIHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v3/user/list", nil))
 	recorded.CodeIs(200)
 	recorded.HeaderIs("X-STNS-MIN-ID", "1000")
 	recorded.ContentTypeIsJson()
@@ -185,27 +185,27 @@ func TestHandlerV3User(t *testing.T) {
 
 func TestHandlerv3Group(t *testing.T) {
 	config, _ := LoadConfig("./fixtures/stns_01.conf")
-	s := Create(config, "", "", false)
+	s := NewServer(config, "", "", false)
 	s.SetMiddleWare(rest.DefaultCommonStack)
 
-	recorded := test.RunRequest(t, s.NewApiHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v3/group/name/example_group", nil))
+	recorded := test.RunRequest(t, s.newAPIHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v3/group/name/example_group", nil))
 	recorded.CodeIs(200)
 	recorded.HeaderIs("X-STNS-MIN-ID", "3000")
 	recorded.ContentTypeIsJson()
 	recorded.BodyIs(`{"id":3000,"name":"example_group","users":["example"]}`)
-	recorded = test.RunRequest(t, s.NewApiHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v3/group/name/example_group3", nil))
+	recorded = test.RunRequest(t, s.newAPIHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v3/group/name/example_group3", nil))
 	recorded.CodeIs(404)
 
-	recorded = test.RunRequest(t, s.NewApiHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v3/group/id/3000", nil))
+	recorded = test.RunRequest(t, s.newAPIHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v3/group/id/3000", nil))
 	recorded.CodeIs(200)
 	recorded.HeaderIs("X-STNS-MIN-ID", "3000")
 	recorded.ContentTypeIsJson()
 	recorded.BodyIs(`{"id":3000,"name":"example_group","users":["example"]}`)
 
-	recorded = test.RunRequest(t, s.NewApiHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v3/group/id/3001", nil))
+	recorded = test.RunRequest(t, s.newAPIHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v3/group/id/3001", nil))
 	recorded.CodeIs(404)
 
-	recorded = test.RunRequest(t, s.NewApiHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v3/group/list", nil))
+	recorded = test.RunRequest(t, s.newAPIHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v3/group/list", nil))
 	recorded.CodeIs(200)
 	recorded.HeaderIs("X-STNS-MIN-ID", "3000")
 	recorded.ContentTypeIsJson()
@@ -214,22 +214,22 @@ func TestHandlerv3Group(t *testing.T) {
 
 func TestHandlerv3Sudo(t *testing.T) {
 	config, _ := LoadConfig("./fixtures/stns_01.conf")
-	s := Create(config, "", "", false)
+	s := NewServer(config, "", "", false)
 	s.SetMiddleWare(rest.DefaultCommonStack)
 
-	recorded := test.RunRequest(t, s.NewApiHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v3/sudo/name/example_sudo", nil))
+	recorded := test.RunRequest(t, s.newAPIHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v3/sudo/name/example_sudo", nil))
 	recorded.CodeIs(200)
 	recorded.HeaderIs("X-STNS-MIN-ID", "0")
 	recorded.ContentTypeIsJson()
 	recorded.BodyIs(`{"name":"example_sudo","password":"p@ssword"}`)
 
-	recorded = test.RunRequest(t, s.NewApiHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v3/sudo/name/example_notfound", nil))
+	recorded = test.RunRequest(t, s.newAPIHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v3/sudo/name/example_notfound", nil))
 	recorded.CodeIs(404)
 
-	recorded = test.RunRequest(t, s.NewApiHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v3/sudo/id/1001", nil))
+	recorded = test.RunRequest(t, s.newAPIHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v3/sudo/id/1001", nil))
 	recorded.CodeIs(404)
 
-	recorded = test.RunRequest(t, s.NewApiHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v3/sudo/list", nil))
+	recorded = test.RunRequest(t, s.newAPIHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v3/sudo/list", nil))
 	recorded.CodeIs(200)
 	recorded.HeaderIs("X-STNS-MIN-ID", "0")
 	recorded.ContentTypeIsJson()
@@ -238,48 +238,48 @@ func TestHandlerv3Sudo(t *testing.T) {
 
 func TestBasicAuth(t *testing.T) {
 	config, _ := LoadConfig("./fixtures/stns_02.conf")
-	s := Create(config, "", "", false)
+	s := NewServer(config, "", "", false)
 	s.SetMiddleWare(rest.DefaultCommonStack)
 
 	// simple request fails
-	recorded := test.RunRequest(t, s.NewApiHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/user/name/example", nil))
+	recorded := test.RunRequest(t, s.newAPIHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/user/name/example", nil))
 	recorded.CodeIs(401)
 
 	// auth with wrong cred and right method fails
 	wrongCredReq := test.MakeSimpleRequest("GET", "http://localhost:9999/user/name/example", nil)
 	encoded := base64.StdEncoding.EncodeToString([]byte("admin:AdmIn"))
 	wrongCredReq.Header.Set("Authorization", "Basic "+encoded)
-	recorded = test.RunRequest(t, s.NewApiHandler(), wrongCredReq)
+	recorded = test.RunRequest(t, s.newAPIHandler(), wrongCredReq)
 	recorded.CodeIs(401)
 
 	rightCredReq := test.MakeSimpleRequest("GET", "http://localhost:9999/user/name/example", nil)
 	encoded = base64.StdEncoding.EncodeToString([]byte("admin:Admin"))
 	rightCredReq.Header.Set("Authorization", "Basic "+encoded)
-	recorded = test.RunRequest(t, s.NewApiHandler(), rightCredReq)
+	recorded = test.RunRequest(t, s.newAPIHandler(), rightCredReq)
 	recorded.CodeIs(200)
 }
-func TestNewHttpServerTlsAuth(t *testing.T) {
+func TestNewHTTPServerTLSAuth(t *testing.T) {
 	config, _ := LoadConfig("./fixtures/stns_03.conf")
-	s := Create(config, "", "", false)
-	h := s.NewHttpServer()
+	s := NewServer(config, "", "", false)
+	h := s.newHTTPServer()
 	stns_test.Assert(t, h.TLSConfig.ClientAuth == tls.RequireAndVerifyClientCert, "unmatch auth tls config")
 }
 
-func TestNewHttpServerTlsNonAuth(t *testing.T) {
+func TestNewHTTPServerTLSNonAuth(t *testing.T) {
 	config, _ := LoadConfig("./fixtures/stns_02.conf")
-	s := Create(config, "", "", false)
-	h := s.NewHttpServer()
+	s := NewServer(config, "", "", false)
+	h := s.newHTTPServer()
 	stns_test.Assert(t, h.TLSConfig == nil, "unmatch non auth tls config")
 }
 
-func TestTlsKeysNotExists(t *testing.T) {
+func TestTLSKeysNotExists(t *testing.T) {
 	config, _ := LoadConfig("./fixtures/stns_02.conf")
-	s := Create(config, "", "", false)
-	stns_test.Assert(t, s.TlsKeysExists() == false, "unmatch tls keys not exists")
+	s := NewServer(config, "", "", false)
+	stns_test.Assert(t, s.tlsKeysExists() == false, "unmatch tls keys not exists")
 }
 
-func TestTlsKeysExists(t *testing.T) {
+func TestTLSKeysExists(t *testing.T) {
 	config, _ := LoadConfig("./fixtures/stns_03.conf")
-	s := Create(config, "", "", false)
-	stns_test.Assert(t, s.TlsKeysExists() == true, "unmatch tls keys not exists")
+	s := NewServer(config, "", "", false)
+	stns_test.Assert(t, s.tlsKeysExists() == true, "unmatch tls keys not exists")
 }
