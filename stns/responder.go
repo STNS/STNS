@@ -124,33 +124,41 @@ func newV3Resource(q *Query) v3Resource {
 
 func (user v3Users) buildResource(n string, u *Attribute) interface{} {
 	if n != "" && u.ID != 0 {
-		return &v3User{
-			Name:      n,
-			ID:        u.ID,
-			Password:  u.Password,
-			GroupID:   u.GroupID,
-			Directory: u.Directory,
-			Shell:     u.Shell,
-			Gecos:     u.Gecos,
-			Keys:      u.Keys,
+		user := &v3User{
+			Name: n,
+			ID:   u.ID,
 		}
+
+		if u.User != nil {
+			user.Password = u.Password
+			user.GroupID = u.GroupID
+			user.Directory = u.Directory
+			user.Shell = u.Shell
+			user.Gecos = u.Gecos
+			user.Keys = u.Keys
+		}
+		return user
 	}
 	return nil
 }
 
 func (user v3Groups) buildResource(n string, g *Attribute) interface{} {
 	if g.ID != 0 {
-		return &v3Group{
-			Name:  n,
-			ID:    g.ID,
-			Users: g.Users,
+		group := &v3Group{
+			Name: n,
+			ID:   g.ID,
 		}
+
+		if g.Group != nil {
+			group.Users = g.Users
+		}
+		return group
 	}
 	return nil
 }
 
 func (user v3Sudoers) buildResource(n string, u *Attribute) interface{} {
-	if n != "" && u.User.Password != "" {
+	if u.User != nil {
 		return &v3Sudo{
 			Name:     n,
 			Password: u.Password,
