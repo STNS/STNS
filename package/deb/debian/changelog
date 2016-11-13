@@ -1,3 +1,9 @@
+stns (0.3.0) STABLE; urgency=low
+
+  * Add v3 api
+
+ -- pyama86 <>  Mon, 14 Nov 2016 01:00:00 +0000
+
 stns (0.2.2) STABLE; urgency=low
 
   * Fix map pointer to map because of map is reference(sona-tar)
