@@ -123,7 +123,7 @@ func newV3Resource(q *Query) v3Resource {
 }
 
 func (user v3Users) buildResource(n string, u *Attribute) interface{} {
-	if u.User != nil {
+	if n != "" && u.ID != 0 {
 		return &v3User{
 			Name:      n,
 			ID:        u.ID,
@@ -139,7 +139,7 @@ func (user v3Users) buildResource(n string, u *Attribute) interface{} {
 }
 
 func (user v3Groups) buildResource(n string, g *Attribute) interface{} {
-	if g.Group != nil {
+	if g.ID != 0 {
 		return &v3Group{
 			Name:  n,
 			ID:    g.ID,
@@ -150,7 +150,7 @@ func (user v3Groups) buildResource(n string, g *Attribute) interface{} {
 }
 
 func (user v3Sudoers) buildResource(n string, u *Attribute) interface{} {
-	if u.User != nil {
+	if n != "" && u.User.Password != "" {
 		return &v3Sudo{
 			Name:     n,
 			Password: u.Password,
@@ -171,7 +171,12 @@ func (res *v3ResponseFormat) Response() {
 	resources := []interface{}{}
 
 	for n, u := range res.Items {
-		resources = append(resources, resource.buildResource(n, u))
+		r := resource.buildResource(n, u)
+
+		if r != nil {
+			resources = append(resources, r)
+		}
+
 		if res.query.column != "list" {
 			break
 		}
