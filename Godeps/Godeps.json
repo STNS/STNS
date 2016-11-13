@@ -1,7 +1,7 @@
 {
 	"ImportPath": "github.com/STNS/STNS",
-	"GoVersion": "go1.6",
-	"GodepVersion": "v66",
+	"GoVersion": "go1.7",
+	"GodepVersion": "v75",
 	"Packages": [
 		"./..."
 	],
