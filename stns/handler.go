@@ -1,6 +1,10 @@
 package stns
 
-import "github.com/ant0ine/go-json-rest/rest"
+import (
+	"net/url"
+
+	"github.com/ant0ine/go-json-rest/rest"
+)
 
 // Handler handler object
 type Handler struct {
@@ -8,7 +12,7 @@ type Handler struct {
 }
 
 func (h *Handler) getQuery(r *rest.Request) *Query {
-	value := r.PathParam("value")
+	value, _ := url.QueryUnescape(r.PathParam("value"))
 	column := r.PathParam("column")
 	resourceName := r.PathParam("resource_name")
 	return &Query{h.config, resourceName, column, value}
