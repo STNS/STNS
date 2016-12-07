@@ -283,3 +283,15 @@ func TestTLSKeysExists(t *testing.T) {
 	s := NewServer(config, "", "", false)
 	stns_test.Assert(t, s.tlsKeysExists() == true, "unmatch tls keys not exists")
 }
+
+func TestHandlerPeriodInUsername(t *testing.T) {
+	config, _ := LoadConfig("./fixtures/stns_04.conf")
+	s := NewServer(config, "", "", false)
+	s.SetMiddleWare(rest.DefaultCommonStack)
+
+	recorded := test.RunRequest(t, s.newAPIHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v3/user/name/example%2e1", nil))
+	recorded.CodeIs(200)
+	recorded.HeaderIs("STNS-MIN-ID", "1000")
+	recorded.ContentTypeIsJson()
+	recorded.BodyIs(`{"id":1000,"name":"example.1","password":"p@ssword","group_id":2000,"directory":"/home/example","shell":"/bin/bash","gecos":"","keys":["ssh-rsa aaa"]}`)
+}
