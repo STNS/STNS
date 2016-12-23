@@ -40,10 +40,34 @@ func LoadConfig(configFile string) (Config, error) {
 			return Config{}, err
 		}
 	}
-	setMinID(&minUserID, config.Users)
-	setMinID(&minGroupID, config.Groups)
-	mergeLinkAttribute("user", config.Users)
-	mergeLinkAttribute("group", config.Groups)
+
+	type setup struct {
+		t     string
+		attr  Attributes
+		minID *int
+	}
+
+	s := []setup{
+		setup{
+			t:     "user",
+			attr:  config.Users,
+			minID: &minUserID,
+		},
+		setup{
+			t:     "group",
+			attr:  config.Groups,
+			minID: &minGroupID,
+		},
+	}
+
+	for _, r := range s {
+		setMinID(r.minID, r.attr)
+		mergeLinkAttribute(r.t, r.attr)
+		if err := checkDuplicateId(r.t, r.attr); err != nil {
+			return Config{}, err
+		}
+	}
+
 	return config, nil
 }
 
@@ -145,4 +169,16 @@ func removeDuplicates(xs []string) []string {
 		}
 	}
 	return ys
+}
+
+func checkDuplicateId(t string, attr Attributes) error {
+	b := map[int]bool{}
+
+	for _, a := range attr {
+		if a.ID != 0 && b[a.ID] {
+			return fmt.Errorf("Duplicate id is not allowed %s_id:%d", t, a.ID)
+		}
+		b[a.ID] = true
+	}
+	return nil
 }
