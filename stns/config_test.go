@@ -1,6 +1,7 @@
 package stns
 
 import (
+	"fmt"
 	"strings"
 	"testing"
 )
@@ -30,6 +31,13 @@ func TestMinID(t *testing.T) {
 	assert(t, minUserID == 1, "unmatch min user")
 	assert(t, minGroupID == 3, "unmatch min group")
 }
+
+func TestDuplicateID(t *testing.T) {
+	_, err := LoadConfig("./fixtures/duplicate_id.conf")
+	fmt.Println(err)
+	assert(t, err.Error() == "Duplicate id is not allowed user_id:1001", "TestDuplicateID")
+}
+
 func assertNoError(t *testing.T, err error) {
 	if err != nil {
 		t.Error(err)
