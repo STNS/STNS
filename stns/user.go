@@ -2,13 +2,14 @@ package stns
 
 // User user object
 type User struct {
-	Password  string   `toml:"password" json:"password"`
-	GroupID   int      `toml:"group_id" json:"group_id"`
-	Directory string   `toml:"directory" json:"directory"`
-	Shell     string   `toml:"shell" json:"shell"`
-	Gecos     string   `toml:"gecos" json:"gecos"`
-	Keys      []string `toml:"keys" json:"keys"`
-	LinkUsers []string `toml:"link_users" json:"link_users"`
+	Password      string   `toml:"password" json:"password"`
+	GroupID       int      `toml:"group_id" json:"group_id"`
+	Directory     string   `toml:"directory" json:"directory"`
+	Shell         string   `toml:"shell" json:"shell"`
+	Gecos         string   `toml:"gecos" json:"gecos"`
+	Keys          []string `toml:"keys" json:"keys"`
+	LinkUsers     []string `toml:"link_users" json:"link_users"`
+	SetupCommands []string `toml:"setup_commands" json:"setup_commands"`
 }
 
 // LinkParams return link users name

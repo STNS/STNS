@@ -18,21 +18,21 @@ func TestHandlerV1User(t *testing.T) {
 	recorded := test.RunRequest(t, s.newAPIHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/user/name/example", nil))
 	recorded.CodeIs(200)
 	recorded.ContentTypeIsJson()
-	recorded.BodyIs(`{"example":{"id":1000,"password":"p@ssword","group_id":2000,"directory":"/home/example","shell":"/bin/bash","gecos":"","keys":["ssh-rsa aaa"],"link_users":null}}`)
+	recorded.BodyIs(`{"example":{"id":1000,"password":"p@ssword","group_id":2000,"directory":"/home/example","shell":"/bin/bash","gecos":"","keys":["ssh-rsa aaa"],"link_users":null,"setup_commands":null}}`)
 	recorded = test.RunRequest(t, s.newAPIHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/user/name/example3", nil))
 	recorded.CodeIs(404)
 
 	recorded = test.RunRequest(t, s.newAPIHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/user/id/1000", nil))
 	recorded.CodeIs(200)
 	recorded.ContentTypeIsJson()
-	recorded.BodyIs(`{"example":{"id":1000,"password":"p@ssword","group_id":2000,"directory":"/home/example","shell":"/bin/bash","gecos":"","keys":["ssh-rsa aaa"],"link_users":null}}`)
+	recorded.BodyIs(`{"example":{"id":1000,"password":"p@ssword","group_id":2000,"directory":"/home/example","shell":"/bin/bash","gecos":"","keys":["ssh-rsa aaa"],"link_users":null,"setup_commands":null}}`)
 	recorded = test.RunRequest(t, s.newAPIHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/user/id/1001", nil))
 	recorded.CodeIs(404)
 
 	recorded = test.RunRequest(t, s.newAPIHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/user/list", nil))
 	recorded.CodeIs(200)
 	recorded.ContentTypeIsJson()
-	recorded.BodyIs(`{"example":{"id":1000,"password":"p@ssword","group_id":2000,"directory":"/home/example","shell":"/bin/bash","gecos":"","keys":["ssh-rsa aaa"],"link_users":null}}`)
+	recorded.BodyIs(`{"example":{"id":1000,"password":"p@ssword","group_id":2000,"directory":"/home/example","shell":"/bin/bash","gecos":"","keys":["ssh-rsa aaa"],"link_users":null,"setup_commands":null}}`)
 }
 
 func TestHandlerV1Group(t *testing.T) {
@@ -69,7 +69,7 @@ func TestHandlerV1Sudo(t *testing.T) {
 	recorded := test.RunRequest(t, s.newAPIHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/sudo/name/example_sudo", nil))
 	recorded.CodeIs(200)
 	recorded.ContentTypeIsJson()
-	recorded.BodyIs(`{"example_sudo":{"id":0,"password":"p@ssword","group_id":0,"directory":"","shell":"","gecos":"","keys":null,"link_users":null}}`)
+	recorded.BodyIs(`{"example_sudo":{"id":0,"password":"p@ssword","group_id":0,"directory":"","shell":"","gecos":"","keys":null,"link_users":null,"setup_commands":null}}`)
 	recorded = test.RunRequest(t, s.newAPIHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/sudo/name/example_notfound", nil))
 	recorded.CodeIs(404)
 
@@ -79,7 +79,7 @@ func TestHandlerV1Sudo(t *testing.T) {
 	recorded = test.RunRequest(t, s.newAPIHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/sudo/list", nil))
 	recorded.CodeIs(200)
 	recorded.ContentTypeIsJson()
-	recorded.BodyIs(`{"example_sudo":{"id":0,"password":"p@ssword","group_id":0,"directory":"","shell":"","gecos":"","keys":null,"link_users":null}}`)
+	recorded.BodyIs(`{"example_sudo":{"id":0,"password":"p@ssword","group_id":0,"directory":"","shell":"","gecos":"","keys":null,"link_users":null,"setup_commands":null}}`)
 }
 
 func TestHandlerV2User(t *testing.T) {
@@ -90,21 +90,21 @@ func TestHandlerV2User(t *testing.T) {
 	recorded := test.RunRequest(t, s.newAPIHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v2/user/name/example", nil))
 	recorded.CodeIs(200)
 	recorded.ContentTypeIsJson()
-	recorded.BodyIs(`{"metadata":{"api_version":2.1,"result":"success","min_id":1000},"items":{"example":{"id":1000,"password":"p@ssword","group_id":2000,"directory":"/home/example","shell":"/bin/bash","gecos":"","keys":["ssh-rsa aaa"],"link_users":null}}}`)
+	recorded.BodyIs(`{"metadata":{"api_version":2.1,"result":"success","min_id":1000},"items":{"example":{"id":1000,"password":"p@ssword","group_id":2000,"directory":"/home/example","shell":"/bin/bash","gecos":"","keys":["ssh-rsa aaa"],"link_users":null,"setup_commands":null}}}`)
 	recorded = test.RunRequest(t, s.newAPIHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v2/user/name/example3", nil))
 	recorded.CodeIs(404)
 
 	recorded = test.RunRequest(t, s.newAPIHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v2/user/id/1000", nil))
 	recorded.CodeIs(200)
 	recorded.ContentTypeIsJson()
-	recorded.BodyIs(`{"metadata":{"api_version":2.1,"result":"success","min_id":1000},"items":{"example":{"id":1000,"password":"p@ssword","group_id":2000,"directory":"/home/example","shell":"/bin/bash","gecos":"","keys":["ssh-rsa aaa"],"link_users":null}}}`)
+	recorded.BodyIs(`{"metadata":{"api_version":2.1,"result":"success","min_id":1000},"items":{"example":{"id":1000,"password":"p@ssword","group_id":2000,"directory":"/home/example","shell":"/bin/bash","gecos":"","keys":["ssh-rsa aaa"],"link_users":null,"setup_commands":null}}}`)
 	recorded = test.RunRequest(t, s.newAPIHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v2/user/id/1001", nil))
 	recorded.CodeIs(404)
 
 	recorded = test.RunRequest(t, s.newAPIHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v2/user/list", nil))
 	recorded.CodeIs(200)
 	recorded.ContentTypeIsJson()
-	recorded.BodyIs(`{"metadata":{"api_version":2.1,"result":"success","min_id":1000},"items":{"example":{"id":1000,"password":"p@ssword","group_id":2000,"directory":"/home/example","shell":"/bin/bash","gecos":"","keys":["ssh-rsa aaa"],"link_users":null}}}`)
+	recorded.BodyIs(`{"metadata":{"api_version":2.1,"result":"success","min_id":1000},"items":{"example":{"id":1000,"password":"p@ssword","group_id":2000,"directory":"/home/example","shell":"/bin/bash","gecos":"","keys":["ssh-rsa aaa"],"link_users":null,"setup_commands":null}}}`)
 }
 
 func TestHandlerV2Group(t *testing.T) {
@@ -141,7 +141,7 @@ func TestHandlerV2Sudo(t *testing.T) {
 	recorded := test.RunRequest(t, s.newAPIHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v2/sudo/name/example_sudo", nil))
 	recorded.CodeIs(200)
 	recorded.ContentTypeIsJson()
-	recorded.BodyIs(`{"metadata":{"api_version":2.1,"result":"success","min_id":0},"items":{"example_sudo":{"id":0,"password":"p@ssword","group_id":0,"directory":"","shell":"","gecos":"","keys":null,"link_users":null}}}`)
+	recorded.BodyIs(`{"metadata":{"api_version":2.1,"result":"success","min_id":0},"items":{"example_sudo":{"id":0,"password":"p@ssword","group_id":0,"directory":"","shell":"","gecos":"","keys":null,"link_users":null,"setup_commands":null}}}`)
 
 	recorded = test.RunRequest(t, s.newAPIHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v2/sudo/name/example_notfound", nil))
 	recorded.CodeIs(404)
@@ -152,7 +152,7 @@ func TestHandlerV2Sudo(t *testing.T) {
 	recorded = test.RunRequest(t, s.newAPIHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v2/sudo/list", nil))
 	recorded.CodeIs(200)
 	recorded.ContentTypeIsJson()
-	recorded.BodyIs(`{"metadata":{"api_version":2.1,"result":"success","min_id":0},"items":{"example_sudo":{"id":0,"password":"p@ssword","group_id":0,"directory":"","shell":"","gecos":"","keys":null,"link_users":null}}}`)
+	recorded.BodyIs(`{"metadata":{"api_version":2.1,"result":"success","min_id":0},"items":{"example_sudo":{"id":0,"password":"p@ssword","group_id":0,"directory":"","shell":"","gecos":"","keys":null,"link_users":null,"setup_commands":null}}}`)
 }
 
 func TestHandlerV3User(t *testing.T) {
