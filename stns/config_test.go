@@ -21,9 +21,11 @@ func TestLoadConfig(t *testing.T) {
 	assert(t, config.Users["example"].Keys[0] == "ssh-rsa aaa", "unmatch key")
 	assert(t, config.Users["example"].LinkUsers[0] == "example2", "unmach link_users")
 	assert(t, config.Users["example"].LinkUsers[1] == "example3", "unmach link_users")
+	assert(t, config.Users["example"].SetupCommands[0] == "commands", "unmatch commands")
 	assert(t, config.Groups["pepabo"].ID == 3001, "unmatch group id")
 	assert(t, config.Groups["pepabo"].Users[0] == "example", "unmatch group users")
 	assert(t, config.Sudoers["example"].Password == "p@ssword", "unmatch password")
+	assert(t, config.Users["example"].LinkUsers[1] == "example3", "unmach link_users")
 }
 
 func TestMinID(t *testing.T) {
