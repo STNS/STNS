@@ -65,6 +65,7 @@ end
   }
 ].each do |h|
   h[:arch].each_with_index do |arch,index|
+    desc "#{h[:os]}_build_#{arch}"
     task "#{h[:os]}_build_#{arch}" do
       docker_run(h[:os], arch, "build")
     end unless h[:os] == "centos"
