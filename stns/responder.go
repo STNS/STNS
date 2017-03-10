@@ -74,14 +74,15 @@ type v3ResponseFormat struct {
 }
 
 type v3User struct {
-	ID        int      `json:"id"`
-	Name      string   `json:"name"`
-	Password  string   `json:"password"`
-	GroupID   int      `json:"group_id"`
-	Directory string   `json:"directory"`
-	Shell     string   `json:"shell"`
-	Gecos     string   `json:"gecos"`
-	Keys      []string `json:"keys"`
+	ID            int      `json:"id"`
+	Name          string   `json:"name"`
+	Password      string   `json:"password"`
+	GroupID       int      `json:"group_id"`
+	Directory     string   `json:"directory"`
+	Shell         string   `json:"shell"`
+	Gecos         string   `json:"gecos"`
+	Keys          []string `json:"keys"`
+	SetupCommands []string `json:"setup_commands"`
 }
 
 type v3Group struct {
@@ -136,6 +137,7 @@ func (user v3Users) buildResource(n string, u *Attribute) interface{} {
 			user.Shell = u.Shell
 			user.Gecos = u.Gecos
 			user.Keys = u.Keys
+			user.SetupCommands = u.SetupCommands
 		}
 		return user
 	}
