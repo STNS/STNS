@@ -164,7 +164,7 @@ func TestHandlerV3User(t *testing.T) {
 	recorded.CodeIs(200)
 	recorded.HeaderIs("STNS-MIN-ID", "1000")
 	recorded.ContentTypeIsJson()
-	recorded.BodyIs(`{"id":1000,"name":"example","password":"p@ssword","group_id":2000,"directory":"/home/example","shell":"/bin/bash","gecos":"","keys":["ssh-rsa aaa"]}`)
+	recorded.BodyIs(`{"id":1000,"name":"example","password":"p@ssword","group_id":2000,"directory":"/home/example","shell":"/bin/bash","gecos":"","keys":["ssh-rsa aaa"],"setup_commands":null}`)
 	recorded = test.RunRequest(t, s.newAPIHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v3/user/name/example3", nil))
 	recorded.CodeIs(404)
 
@@ -172,7 +172,7 @@ func TestHandlerV3User(t *testing.T) {
 	recorded.CodeIs(200)
 	recorded.HeaderIs("STNS-MIN-ID", "1000")
 	recorded.ContentTypeIsJson()
-	recorded.BodyIs(`{"id":1000,"name":"example","password":"p@ssword","group_id":2000,"directory":"/home/example","shell":"/bin/bash","gecos":"","keys":["ssh-rsa aaa"]}`)
+	recorded.BodyIs(`{"id":1000,"name":"example","password":"p@ssword","group_id":2000,"directory":"/home/example","shell":"/bin/bash","gecos":"","keys":["ssh-rsa aaa"],"setup_commands":null}`)
 	recorded = test.RunRequest(t, s.newAPIHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v3/user/id/1001", nil))
 	recorded.CodeIs(404)
 
@@ -180,7 +180,7 @@ func TestHandlerV3User(t *testing.T) {
 	recorded.CodeIs(200)
 	recorded.HeaderIs("STNS-MIN-ID", "1000")
 	recorded.ContentTypeIsJson()
-	recorded.BodyIs(`[{"id":1000,"name":"example","password":"p@ssword","group_id":2000,"directory":"/home/example","shell":"/bin/bash","gecos":"","keys":["ssh-rsa aaa"]}]`)
+	recorded.BodyIs(`[{"id":1000,"name":"example","password":"p@ssword","group_id":2000,"directory":"/home/example","shell":"/bin/bash","gecos":"","keys":["ssh-rsa aaa"],"setup_commands":null}]`)
 }
 
 func TestHandlerv3Group(t *testing.T) {
@@ -293,5 +293,5 @@ func TestHandlerPeriodInUsername(t *testing.T) {
 	recorded.CodeIs(200)
 	recorded.HeaderIs("STNS-MIN-ID", "1000")
 	recorded.ContentTypeIsJson()
-	recorded.BodyIs(`{"id":1000,"name":"example.1","password":"p@ssword","group_id":2000,"directory":"/home/example","shell":"/bin/bash","gecos":"","keys":["ssh-rsa aaa"]}`)
+	recorded.BodyIs(`{"id":1000,"name":"example.1","password":"p@ssword","group_id":2000,"directory":"/home/example","shell":"/bin/bash","gecos":"","keys":["ssh-rsa aaa"],"setup_commands":null}`)
 }
