@@ -72,6 +72,8 @@ type v3ResponseFormat struct {
 
 type v3User struct {
 	ID            int      `json:"id"`
+	PrevID        int      `json:"prev_id"`
+	NextID        int      `json:"next_id"`
 	Name          string   `json:"name"`
 	Password      string   `json:"password"`
 	GroupID       int      `json:"group_id"`
@@ -83,9 +85,11 @@ type v3User struct {
 }
 
 type v3Group struct {
-	ID    int      `json:"id"`
-	Name  string   `json:"name"`
-	Users []string `json:"users"`
+	ID     int      `json:"id"`
+	PrevID int      `json:"prev_id"`
+	NextID int      `json:"next_id"`
+	Name   string   `json:"name"`
+	Users  []string `json:"users"`
 }
 
 type v3Sudo struct {
@@ -123,8 +127,10 @@ func newV3Resource(q *Query) v3Resource {
 func (user v3Users) buildResource(n string, u *Attribute) interface{} {
 	if n != "" && u.ID != 0 {
 		user := &v3User{
-			Name: n,
-			ID:   u.ID,
+			Name:   n,
+			ID:     u.ID,
+			PrevID: u.PrevID,
+			NextID: u.NextID,
 		}
 
 		if u.User != nil {
@@ -144,8 +150,10 @@ func (user v3Users) buildResource(n string, u *Attribute) interface{} {
 func (user v3Groups) buildResource(n string, g *Attribute) interface{} {
 	if g.ID != 0 {
 		group := &v3Group{
-			Name: n,
-			ID:   g.ID,
+			Name:   n,
+			ID:     g.ID,
+			PrevID: g.PrevID,
+			NextID: g.NextID,
 		}
 
 		if g.Group != nil {

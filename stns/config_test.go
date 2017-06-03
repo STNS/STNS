@@ -23,10 +23,14 @@ func TestLoadConfig(t *testing.T) {
 	assert(t, config.Users["example"].LinkUsers[0] == "example2", "unmach link_users")
 	assert(t, config.Users["example"].LinkUsers[1] == "example3", "unmach link_users")
 	assert(t, config.Users["example"].SetupCommands[0] == "commands", "unmatch commands")
+	assert(t, config.Users["example"].NextID == 1002, "example unmatch next id")
+	assert(t, config.Users["example"].PrevID == 0, "example unmatch prev id")
 	assert(t, config.Groups["pepabo"].ID == 3001, "unmatch group id")
 	assert(t, config.Groups["pepabo"].Users[0] == "example", "unmatch group users")
 	assert(t, config.Sudoers["example"].Password == "p@ssword", "unmatch password")
 	assert(t, config.Users["example"].LinkUsers[1] == "example3", "unmach link_users")
+	assert(t, config.Users["example2"].NextID == 0, "example2 unmatch next id")
+	assert(t, config.Users["example2"].PrevID == 1001, "example 2unmatch prev id")
 }
 
 func TestDuplicateID(t *testing.T) {
@@ -39,7 +43,7 @@ func TestSortConfig(t *testing.T) {
 	assertNoError(t, err)
 	i := 3
 	for _, v := range config.Users.SortByID() {
-		assert(t, v.Key == "example"+strconv.Itoa(i), fmt.Sprintf("unmatch id expect: %s, got:%s", "example"+strconv.Itoa(i), v.Key))
+		assert(t, v.Name == "example"+strconv.Itoa(i), fmt.Sprintf("unmatch id expect: %s, got:%s", "example"+strconv.Itoa(i), v.Name))
 		i--
 	}
 }
