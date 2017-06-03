@@ -12,4 +12,4 @@ script:
 - golint ./...
 - bundle exec rake test_pkg
 go:
-  - 1.7.4
+  - 1.8.3
