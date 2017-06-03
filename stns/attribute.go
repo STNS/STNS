@@ -78,7 +78,7 @@ func (p SortAttributes) PrevID(id int) int {
 			if k > 0 {
 				return p[k-1].ID
 			} else {
-				return 0
+				return -1
 			}
 		}
 	}
@@ -91,7 +91,7 @@ func (p SortAttributes) NextID(id int) int {
 			if len(p)-1 > k {
 				return p[k+1].ID
 			} else {
-				return 0
+				return p[k].ID
 			}
 		}
 	}
