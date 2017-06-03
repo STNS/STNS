@@ -292,12 +292,7 @@ func TestHandlerPrevNextID(t *testing.T) {
 	s := NewServer(config, "", "", false)
 	s.SetMiddleWare(rest.DefaultCommonStack)
 
-	recorded := test.RunRequest(t, s.newAPIHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v3/user/list", nil))
-	recorded.CodeIs(200)
-	recorded.ContentTypeIsJson()
-	recorded.BodyIs(`[{"id":1001,"prev_id":0,"next_id":1002,"name":"example1","password":"","group_id":0,"directory":"","shell":"","gecos":"","keys":null,"setup_commands":null},{"id":1002,"prev_id":1001,"next_id":1003,"name":"example2","password":"","group_id":0,"directory":"","shell":"","gecos":"","keys":null,"setup_commands":null},{"id":1003,"prev_id":1002,"next_id":0,"name":"example3","password":"","group_id":0,"directory":"","shell":"","gecos":"","keys":null,"setup_commands":null}]`)
-
-	recorded = test.RunRequest(t, s.newAPIHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v3/user/id/1001", nil))
+	recorded := test.RunRequest(t, s.newAPIHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v3/user/id/1001", nil))
 	recorded.CodeIs(200)
 	recorded.ContentTypeIsJson()
 	recorded.BodyIs(`{"id":1001,"prev_id":0,"next_id":1002,"name":"example1","password":"","group_id":0,"directory":"","shell":"","gecos":"","keys":null,"setup_commands":null}`)
