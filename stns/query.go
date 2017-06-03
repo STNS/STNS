@@ -33,13 +33,3 @@ func (q *Query) Get() Attributes {
 	}
 	return nil
 }
-
-// GetMinID get the minimum id of the specified resource
-func (q *Query) GetMinID() int {
-	if q.resource == "user" {
-		return minUserID
-	} else if q.resource == "group" {
-		return minGroupID
-	}
-	return 0
-}

@@ -2,6 +2,7 @@ package stns
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 	"testing"
 )
@@ -28,16 +29,19 @@ func TestLoadConfig(t *testing.T) {
 	assert(t, config.Users["example"].LinkUsers[1] == "example3", "unmach link_users")
 }
 
-func TestMinID(t *testing.T) {
-	LoadConfig("./fixtures/min_id.conf")
-	assert(t, minUserID == 1, "unmatch min user")
-	assert(t, minGroupID == 3, "unmatch min group")
-}
-
 func TestDuplicateID(t *testing.T) {
 	_, err := LoadConfig("./fixtures/duplicate_id.conf")
-	fmt.Println(err)
 	assert(t, err.Error() == "Duplicate id is not allowed user_id:1001", "TestDuplicateID")
+}
+
+func TestSortConfig(t *testing.T) {
+	config, err := LoadConfig("./fixtures/sort_id.conf")
+	assertNoError(t, err)
+	i := 3
+	for _, v := range config.Users.SortByID() {
+		assert(t, v.Key == "example"+strconv.Itoa(i), fmt.Sprintf("unmatch id expect: %s, got:%s", "example"+strconv.Itoa(i), v.Key))
+		i--
+	}
 }
 
 func assertNoError(t *testing.T, err error) {

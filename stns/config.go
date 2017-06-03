@@ -22,9 +22,6 @@ type Config struct {
 	Sudoers  Attributes
 }
 
-var minUserID int
-var minGroupID int
-
 // LoadConfig from /etc/stns/stns.conf
 func LoadConfig(configFile string) (Config, error) {
 	var config Config
@@ -42,32 +39,33 @@ func LoadConfig(configFile string) (Config, error) {
 	}
 
 	type setup struct {
-		t     string
-		attr  Attributes
-		minID *int
+		t    string
+		attr Attributes
 	}
 
 	s := []setup{
 		setup{
-			t:     "user",
-			attr:  config.Users,
-			minID: &minUserID,
+			t:    "user",
+			attr: config.Users,
 		},
 		setup{
-			t:     "group",
-			attr:  config.Groups,
-			minID: &minGroupID,
+			t:    "group",
+			attr: config.Groups,
 		},
 	}
 
 	for _, r := range s {
-		setMinID(r.minID, r.attr)
 		mergeLinkAttribute(r.t, r.attr)
 		if err := checkDuplicateId(r.t, r.attr); err != nil {
 			return Config{}, err
 		}
-	}
 
+		sorted := r.attr.SortByID()
+		for k, a := range r.attr {
+			r.attr[k].PrevID = sorted.PrevID(a.ID)
+			r.attr[k].NextID = sorted.NextID(a.ID)
+		}
+	}
 	return config, nil
 }
 
@@ -88,20 +86,6 @@ func includeConfigFile(config *Config, include string) error {
 		}
 	}
 	return nil
-}
-
-func setMinID(min *int, attrs Attributes) {
-	*min = 0
-	if len(attrs) > 0 {
-		for _, a := range attrs {
-			switch {
-			case *min == 0:
-				*min = a.ID
-			case *min > a.ID:
-				*min = a.ID
-			}
-		}
-	}
 }
 
 func mergeLinkAttribute(rtype string, attr Attributes) {

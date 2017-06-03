@@ -2,7 +2,6 @@ package stns
 
 import (
 	"net/http"
-	"strconv"
 
 	"github.com/ant0ine/go-json-rest/rest"
 )
@@ -35,7 +34,6 @@ func (res *v1ResponseFormat) Response() {
 type v2MetaData struct {
 	APIVersion float64 `json:"api_version"`
 	Result     string  `json:"result"`
-	MinID      int     `json:"min_id"`
 }
 
 type v2ResponseFormat struct {
@@ -55,7 +53,6 @@ func (res *v2ResponseFormat) Response() {
 		MetaData: &v2MetaData{
 			APIVersion: 2.1,
 			Result:     "success",
-			MinID:      res.query.GetMinID(),
 		},
 		Items: res.Items,
 	}
@@ -174,8 +171,6 @@ func (res *v3ResponseFormat) Response() {
 		rest.NotFound(res.w, res.r)
 		return
 	}
-
-	res.w.Header().Set("STNS-MIN-ID", strconv.Itoa(res.query.GetMinID()))
 
 	resource := newV3Resource(res.query)
 	resources := []interface{}{}
