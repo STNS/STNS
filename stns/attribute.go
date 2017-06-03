@@ -8,8 +8,8 @@ import (
 // Attribute attribute object
 type Attribute struct {
 	ID     int `toml:"id" json:"id"`
-	PrevID int `json:"-"`
-	NextID int `json:"-"`
+	PrevID int `json:"prev_id"`
+	NextID int `json:"next_id"`
 	*User
 	*Group
 }
