@@ -7,9 +7,7 @@ import (
 
 // Attribute attribute object
 type Attribute struct {
-	ID     int `toml:"id" json:"id"`
-	PrevID int `json:"prev_id"`
-	NextID int `json:"next_id"`
+	ID int `toml:"id" json:"id"`
 	*User
 	*Group
 }
@@ -49,34 +47,38 @@ func (u Attributes) GetByID(_id string) Attributes {
 	return nil
 }
 
-func (u Attributes) SortByID() SortAttributes {
-	pl := make(SortAttributes, len(u))
-	i := 0
-	for k, v := range u {
-		pl[i] = SortAttributePair{k, v.ID}
-		i++
+func (u Attributes) appendWithSortByID(id int) []int {
+	r := []int{id}
+	for _, v := range u {
+		r = append(r, v.ID)
 	}
-	sort.Sort(sort.Reverse(pl))
-	return pl
-
+	nodup := removeDupInts(r)
+	sort.Sort(sort.IntSlice(nodup))
+	return nodup
 }
 
-type SortAttributePair struct {
-	Name string
-	ID   int
+func (u Attributes) PrevID(id int) int {
+	list := u.appendWithSortByID(id)
+	for i, v := range list {
+		if v == id {
+			if i > 0 {
+				return list[i-1]
+			} else {
+				return id
+			}
+		}
+	}
+	return 0
 }
 
-type SortAttributes []SortAttributePair
-
-func (p SortAttributes) Len() int           { return len(p) }
-func (p SortAttributes) Less(i, j int) bool { return p[i].ID > p[j].ID }
-func (p SortAttributes) Swap(i, j int)      { p[i], p[j] = p[j], p[i] }
-
-func (p SortAttributes) PrevID(id int) int {
-	for k, v := range p {
-		if v.ID == id {
-			if k > 0 {
-				return p[k-1].ID
+func (u Attributes) NextID(id int) int {
+	list := u.appendWithSortByID(id)
+	for i, v := range list {
+		if v == id {
+			if i < len(list)-1 {
+				return list[i+1]
+			} else if i == len(list)-1 {
+				return list[i]
 			} else {
 				return -1
 			}
@@ -84,16 +86,21 @@ func (p SortAttributes) PrevID(id int) int {
 	}
 	return 0
 }
-
-func (p SortAttributes) NextID(id int) int {
-	for k, v := range p {
-		if v.ID == id {
-			if len(p)-1 > k {
-				return p[k+1].ID
-			} else {
-				return p[k].ID
-			}
+func iMember(n int, xs []int) bool {
+	for _, x := range xs {
+		if n == x {
+			return true
 		}
 	}
-	return 0
+	return false
+}
+
+func removeDupInts(xs []int) []int {
+	ys := make([]int, 0, len(xs))
+	for _, x := range xs {
+		if !iMember(x, ys) {
+			ys = append(ys, x)
+		}
+	}
+	return ys
 }
