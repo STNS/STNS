@@ -59,12 +59,6 @@ func LoadConfig(configFile string) (Config, error) {
 		if err := checkDuplicateId(r.t, r.attr); err != nil {
 			return Config{}, err
 		}
-
-		sorted := r.attr.SortByID()
-		for k, a := range r.attr {
-			r.attr[k].PrevID = sorted.PrevID(a.ID)
-			r.attr[k].NextID = sorted.NextID(a.ID)
-		}
 	}
 	return config, nil
 }
@@ -102,7 +96,7 @@ func mergeLinkAttribute(rtype string, attr Attributes) {
 				for _, val := range linkValues {
 					mergeValue = append(mergeValue, val...)
 				}
-				linker.SetLinkValue(removeDuplicates(mergeValue))
+				linker.SetLinkValue(removeDuplicateStrings(mergeValue))
 			}
 		}
 	}
@@ -145,7 +139,7 @@ func member(n string, xs []string) bool {
 	return false
 }
 
-func removeDuplicates(xs []string) []string {
+func removeDuplicateStrings(xs []string) []string {
 	ys := make([]string, 0, len(xs))
 	for _, x := range xs {
 		if !member(x, ys) {

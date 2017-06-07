@@ -1,8 +1,6 @@
 package stns
 
 import (
-	"fmt"
-	"strconv"
 	"strings"
 	"testing"
 )
@@ -23,30 +21,15 @@ func TestLoadConfig(t *testing.T) {
 	assert(t, config.Users["example"].LinkUsers[0] == "example2", "unmach link_users")
 	assert(t, config.Users["example"].LinkUsers[1] == "example3", "unmach link_users")
 	assert(t, config.Users["example"].SetupCommands[0] == "commands", "unmatch commands")
-	assert(t, config.Users["example"].NextID == 1002, "example unmatch next id")
-	assert(t, config.Users["example"].PrevID == -1, "example unmatch prev id")
 	assert(t, config.Groups["pepabo"].ID == 3001, "unmatch group id")
 	assert(t, config.Groups["pepabo"].Users[0] == "example", "unmatch group users")
 	assert(t, config.Sudoers["example"].Password == "p@ssword", "unmatch password")
 	assert(t, config.Users["example"].LinkUsers[1] == "example3", "unmach link_users")
-
-	assert(t, config.Users["example2"].NextID == 1002, "example2 unmatch next id")
-	assert(t, config.Users["example2"].PrevID == 1001, "example 2unmatch prev id")
 }
 
 func TestDuplicateID(t *testing.T) {
 	_, err := LoadConfig("./fixtures/duplicate_id.conf")
 	assert(t, err.Error() == "Duplicate id is not allowed user_id:1001", "TestDuplicateID")
-}
-
-func TestSortConfig(t *testing.T) {
-	config, err := LoadConfig("./fixtures/sort_id.conf")
-	assertNoError(t, err)
-	i := 3
-	for _, v := range config.Users.SortByID() {
-		assert(t, v.Name == "example"+strconv.Itoa(i), fmt.Sprintf("unmatch id expect: %s, got:%s", "example"+strconv.Itoa(i), v.Name))
-		i--
-	}
 }
 
 func assertNoError(t *testing.T, err error) {

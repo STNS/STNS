@@ -2,12 +2,13 @@ package stns
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/ant0ine/go-json-rest/rest"
 )
 
 type responser interface {
-	Response()
+	Response(*Config)
 }
 
 // ----------------------------------------
@@ -20,7 +21,7 @@ type v1ResponseFormat struct {
 	r     *rest.Request
 }
 
-func (res *v1ResponseFormat) Response() {
+func (res *v1ResponseFormat) Response(c *Config) {
 	if res.Items == nil {
 		rest.NotFound(res.w, res.r)
 	} else {
@@ -44,7 +45,7 @@ type v2ResponseFormat struct {
 	r        *rest.Request
 }
 
-func (res *v2ResponseFormat) Response() {
+func (res *v2ResponseFormat) Response(c *Config) {
 	if res.Items == nil {
 		res.w.WriteHeader(http.StatusNotFound)
 	}
@@ -72,8 +73,6 @@ type v3ResponseFormat struct {
 
 type v3User struct {
 	ID            int      `json:"id"`
-	PrevID        int      `json:"prev_id"`
-	NextID        int      `json:"next_id"`
 	Name          string   `json:"name"`
 	Password      string   `json:"password"`
 	GroupID       int      `json:"group_id"`
@@ -85,11 +84,9 @@ type v3User struct {
 }
 
 type v3Group struct {
-	ID     int      `json:"id"`
-	PrevID int      `json:"prev_id"`
-	NextID int      `json:"next_id"`
-	Name   string   `json:"name"`
-	Users  []string `json:"users"`
+	ID    int      `json:"id"`
+	Name  string   `json:"name"`
+	Users []string `json:"users"`
 }
 
 type v3Sudo struct {
@@ -124,13 +121,30 @@ func newV3Resource(q *Query) v3Resource {
 	return nil
 }
 
+func setPrevNextHeader(res *v3ResponseFormat, c *Config) {
+	if res.query.column == "id" {
+		v, err := strconv.Atoi(res.query.value)
+		if err != nil {
+			return
+		}
+
+		switch res.query.resource {
+		case "user":
+			res.w.Header().Set("STNS-PREV-ID", strconv.Itoa(c.Users.PrevID(v)))
+			res.w.Header().Set("STNS-NEXT-ID", strconv.Itoa(c.Users.NextID(v)))
+		case "group":
+			res.w.Header().Set("STNS-PREV-ID", strconv.Itoa(c.Groups.PrevID(v)))
+			res.w.Header().Set("STNS-NEXT-ID", strconv.Itoa(c.Groups.NextID(v)))
+		}
+	}
+
+}
+
 func (user v3Users) buildResource(n string, u *Attribute) interface{} {
 	if n != "" && u.ID != 0 {
 		user := &v3User{
-			Name:   n,
-			ID:     u.ID,
-			PrevID: u.PrevID,
-			NextID: u.NextID,
+			Name: n,
+			ID:   u.ID,
 		}
 
 		if u.User != nil {
@@ -150,10 +164,8 @@ func (user v3Users) buildResource(n string, u *Attribute) interface{} {
 func (user v3Groups) buildResource(n string, g *Attribute) interface{} {
 	if g.ID != 0 {
 		group := &v3Group{
-			Name:   n,
-			ID:     g.ID,
-			PrevID: g.PrevID,
-			NextID: g.NextID,
+			Name: n,
+			ID:   g.ID,
 		}
 
 		if g.Group != nil {
@@ -174,8 +186,9 @@ func (user v3Sudoers) buildResource(n string, u *Attribute) interface{} {
 	return nil
 }
 
-func (res *v3ResponseFormat) Response() {
+func (res *v3ResponseFormat) Response(c *Config) {
 	if len(res.Items) == 0 {
+		setPrevNextHeader(res, c)
 		rest.NotFound(res.w, res.r)
 		return
 	}

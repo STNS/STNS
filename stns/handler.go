@@ -38,5 +38,5 @@ func (h *Handler) GetList(w rest.ResponseWriter, r *rest.Request) {
 // Response proxy to the reponsder
 func (h *Handler) Response(q *Query, w rest.ResponseWriter, r *rest.Request) {
 	res := newResponder(q, w, r)
-	res.Response()
+	res.Response(h.config)
 }
