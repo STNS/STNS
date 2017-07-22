@@ -47,8 +47,8 @@ func (u Attributes) GetByID(_id string) Attributes {
 	return nil
 }
 
-func (u Attributes) appendWithSortByID(id int) []int {
-	r := []int{id}
+func (u Attributes) sortByID() []int {
+	r := []int{}
 	for _, v := range u {
 		r = append(r, v.ID)
 	}
@@ -57,35 +57,22 @@ func (u Attributes) appendWithSortByID(id int) []int {
 	return nodup
 }
 
-func (u Attributes) PrevID(id int) int {
-	list := u.appendWithSortByID(id)
-	for i, v := range list {
-		if v == id {
-			if i > 0 {
-				return list[i-1]
-			} else {
-				return id
-			}
-		}
+func (u Attributes) PrevID() int {
+	list := u.sortByID()
+	if len(list) > 0 {
+		return list[0]
 	}
 	return 0
 }
 
-func (u Attributes) NextID(id int) int {
-	list := u.appendWithSortByID(id)
-	for i, v := range list {
-		if v == id {
-			if i < len(list)-1 {
-				return list[i+1]
-			} else if i == len(list)-1 {
-				return list[i]
-			} else {
-				return -1
-			}
-		}
+func (u Attributes) NextID() int {
+	list := u.sortByID()
+	if len(list) > 0 {
+		return list[len(list)-1]
 	}
 	return 0
 }
+
 func iMember(n int, xs []int) bool {
 	for _, x := range xs {
 		if n == x {

@@ -295,8 +295,8 @@ func TestHandlerPrevNextID(t *testing.T) {
 	recorded := test.RunRequest(t, s.newAPIHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v3/user/id/1000", nil))
 	recorded.CodeIs(404)
 	recorded.ContentTypeIsJson()
-	recorded.HeaderIs("STNS-PREV-ID", "1000")
-	recorded.HeaderIs("STNS-NEXT-ID", "1001")
+	recorded.HeaderIs("STNS-PREV-ID", "1001")
+	recorded.HeaderIs("STNS-NEXT-ID", "1003")
 
 	recorded = test.RunRequest(t, s.newAPIHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v3/user/id/1001", nil))
 	recorded.CodeIs(200)
@@ -313,14 +313,14 @@ func TestHandlerPrevNextID(t *testing.T) {
 	recorded = test.RunRequest(t, s.newAPIHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v3/user/id/1004", nil))
 	recorded.CodeIs(404)
 	recorded.ContentTypeIsJson()
-	recorded.HeaderIs("STNS-PREV-ID", "1003")
-	recorded.HeaderIs("STNS-NEXT-ID", "1004")
+	recorded.HeaderIs("STNS-PREV-ID", "1001")
+	recorded.HeaderIs("STNS-NEXT-ID", "1003")
 
 	recorded = test.RunRequest(t, s.newAPIHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v3/group/id/1000", nil))
 	recorded.CodeIs(404)
 	recorded.ContentTypeIsJson()
-	recorded.HeaderIs("STNS-PREV-ID", "1000")
-	recorded.HeaderIs("STNS-NEXT-ID", "1001")
+	recorded.HeaderIs("STNS-PREV-ID", "1001")
+	recorded.HeaderIs("STNS-NEXT-ID", "1003")
 
 	recorded = test.RunRequest(t, s.newAPIHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v3/group/id/1001", nil))
 	recorded.CodeIs(200)
@@ -337,6 +337,6 @@ func TestHandlerPrevNextID(t *testing.T) {
 	recorded = test.RunRequest(t, s.newAPIHandler(), test.MakeSimpleRequest("GET", "http://localhost:9999/v3/group/id/1004", nil))
 	recorded.CodeIs(404)
 	recorded.ContentTypeIsJson()
-	recorded.HeaderIs("STNS-PREV-ID", "1003")
-	recorded.HeaderIs("STNS-NEXT-ID", "1004")
+	recorded.HeaderIs("STNS-PREV-ID", "1001")
+	recorded.HeaderIs("STNS-NEXT-ID", "1003")
 }

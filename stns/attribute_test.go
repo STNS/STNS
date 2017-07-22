@@ -108,10 +108,10 @@ func TestAttributePrevID(t *testing.T) {
 		"test3": &Attribute{ID: 5},
 	}
 
-	test.Assert(t, 1 == users.PrevID(1), fmt.Sprintf("AttributePrevID expected: %d got: %d", 1, users.PrevID(1)))
-	test.Assert(t, 1 == users.PrevID(2), fmt.Sprintf("AttributePrevID expected: %d got: %d", 1, users.PrevID(2)))
-	test.Assert(t, 3 == users.PrevID(5), fmt.Sprintf("AttributePrevID expected: %d got: %d", 3, users.PrevID(5)))
-	test.Assert(t, 5 == users.PrevID(6), fmt.Sprintf("AttributePrevID expected: %d got: %d", 5, users.PrevID(6)))
+	test.Assert(t, 1 == users.PrevID(), fmt.Sprintf("AttributePrevID expected: %d got: %d", 1, users.PrevID()))
+	test.Assert(t, 1 == users.PrevID(), fmt.Sprintf("AttributePrevID expected: %d got: %d", 1, users.PrevID()))
+	test.Assert(t, 1 == users.PrevID(), fmt.Sprintf("AttributePrevID expected: %d got: %d", 3, users.PrevID()))
+	test.Assert(t, 1 == users.PrevID(), fmt.Sprintf("AttributePrevID expected: %d got: %d", 5, users.PrevID()))
 }
 
 func TestAttributeNextID(t *testing.T) {
@@ -121,8 +121,8 @@ func TestAttributeNextID(t *testing.T) {
 		"test3": &Attribute{ID: 5},
 	}
 
-	test.Assert(t, 3 == users.NextID(1), fmt.Sprintf("AttributeNextID expected: %d got: %d", 3, users.NextID(1)))
-	test.Assert(t, 3 == users.NextID(2), fmt.Sprintf("AttributeNextID expected: %d got: %d", 3, users.NextID(2)))
-	test.Assert(t, 5 == users.NextID(4), fmt.Sprintf("AttributeNextID expected: %d got: %d", 5, users.NextID(4)))
-	test.Assert(t, 6 == users.NextID(6), fmt.Sprintf("AttributeNextID expected: %d got: %d", 6, users.NextID(6)))
+	test.Assert(t, 5 == users.NextID(), fmt.Sprintf("AttributeNextID expected: %d got: %d", 3, users.NextID()))
+	test.Assert(t, 5 == users.NextID(), fmt.Sprintf("AttributeNextID expected: %d got: %d", 3, users.NextID()))
+	test.Assert(t, 5 == users.NextID(), fmt.Sprintf("AttributeNextID expected: %d got: %d", 5, users.NextID()))
+	test.Assert(t, 5 == users.NextID(), fmt.Sprintf("AttributeNextID expected: %d got: %d", 6, users.NextID()))
 }

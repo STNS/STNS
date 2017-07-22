@@ -123,18 +123,13 @@ func newV3Resource(q *Query) v3Resource {
 
 func setPrevNextHeader(res *v3ResponseFormat, c *Config) {
 	if res.query.column == "id" {
-		v, err := strconv.Atoi(res.query.value)
-		if err != nil {
-			return
-		}
-
 		switch res.query.resource {
 		case "user":
-			res.w.Header().Set("STNS-PREV-ID", strconv.Itoa(c.Users.PrevID(v)))
-			res.w.Header().Set("STNS-NEXT-ID", strconv.Itoa(c.Users.NextID(v)))
+			res.w.Header().Set("STNS-PREV-ID", strconv.Itoa(c.Users.PrevID()))
+			res.w.Header().Set("STNS-NEXT-ID", strconv.Itoa(c.Users.NextID()))
 		case "group":
-			res.w.Header().Set("STNS-PREV-ID", strconv.Itoa(c.Groups.PrevID(v)))
-			res.w.Header().Set("STNS-NEXT-ID", strconv.Itoa(c.Groups.NextID(v)))
+			res.w.Header().Set("STNS-PREV-ID", strconv.Itoa(c.Groups.PrevID()))
+			res.w.Header().Set("STNS-NEXT-ID", strconv.Itoa(c.Groups.NextID()))
 		}
 	}
 
