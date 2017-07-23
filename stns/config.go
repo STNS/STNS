@@ -10,16 +10,20 @@ import (
 
 // Config config object
 type Config struct {
-	Port     int    `toml:"port"`
-	Include  string `toml:"include"`
-	TLSCa    string `toml:"tls_ca"`
-	TLSCert  string `toml:"tls_cert"`
-	TLSKey   string `toml:"tls_key"`
-	User     string `toml:"user"`
-	Password string `toml:"password"`
-	Users    Attributes
-	Groups   Attributes
-	Sudoers  Attributes
+	Port       int    `toml:"port"`
+	Include    string `toml:"include"`
+	TLSCa      string `toml:"tls_ca"`
+	TLSCert    string `toml:"tls_cert"`
+	TLSKey     string `toml:"tls_key"`
+	User       string `toml:"user"`
+	Password   string `toml:"password"`
+	Users      Attributes
+	Groups     Attributes
+	Sudoers    Attributes
+	UserMaxID  int `toml:"-"`
+	UserMinID  int `toml:"-"`
+	GroupMaxID int `toml:"-"`
+	GroupMinID int `toml:"-"`
 }
 
 // LoadConfig from /etc/stns/stns.conf
@@ -60,6 +64,11 @@ func LoadConfig(configFile string) (Config, error) {
 			return Config{}, err
 		}
 	}
+
+	config.UserMaxID = config.Users.MaxID()
+	config.UserMinID = config.Users.MinID()
+	config.GroupMaxID = config.Groups.MaxID()
+	config.GroupMinID = config.Groups.MinID()
 	return config, nil
 }
 

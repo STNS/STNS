@@ -57,7 +57,7 @@ func (u Attributes) sortByID() []int {
 	return nodup
 }
 
-func (u Attributes) PrevID() int {
+func (u Attributes) MinID() int {
 	list := u.sortByID()
 	if len(list) > 0 {
 		return list[0]
@@ -65,7 +65,7 @@ func (u Attributes) PrevID() int {
 	return 0
 }
 
-func (u Attributes) NextID() int {
+func (u Attributes) MaxID() int {
 	list := u.sortByID()
 	if len(list) > 0 {
 		return list[len(list)-1]

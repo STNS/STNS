@@ -125,11 +125,11 @@ func setPrevNextHeader(res *v3ResponseFormat, c *Config) {
 	if res.query.column == "id" {
 		switch res.query.resource {
 		case "user":
-			res.w.Header().Set("STNS-PREV-ID", strconv.Itoa(c.Users.PrevID()))
-			res.w.Header().Set("STNS-NEXT-ID", strconv.Itoa(c.Users.NextID()))
+			res.w.Header().Set("STNS-PREV-ID", strconv.Itoa(c.UserMinID))
+			res.w.Header().Set("STNS-NEXT-ID", strconv.Itoa(c.UserMaxID))
 		case "group":
-			res.w.Header().Set("STNS-PREV-ID", strconv.Itoa(c.Groups.PrevID()))
-			res.w.Header().Set("STNS-NEXT-ID", strconv.Itoa(c.Groups.NextID()))
+			res.w.Header().Set("STNS-PREV-ID", strconv.Itoa(c.GroupMinID))
+			res.w.Header().Set("STNS-NEXT-ID", strconv.Itoa(c.GroupMaxID))
 		}
 	}
 

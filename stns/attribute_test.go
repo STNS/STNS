@@ -1,11 +1,8 @@
 package stns
 
 import (
-	"fmt"
 	"reflect"
 	"testing"
-
-	"github.com/STNS/STNS/test"
 )
 
 func TestGetByName(t *testing.T) {
@@ -99,30 +96,4 @@ func TestGetByID(t *testing.T) {
 	if t4 == nil {
 		t.Error("ummatch user id test4")
 	}
-}
-
-func TestAttributePrevID(t *testing.T) {
-	users := Attributes{
-		"test1": &Attribute{ID: 1},
-		"test2": &Attribute{ID: 3},
-		"test3": &Attribute{ID: 5},
-	}
-
-	test.Assert(t, 1 == users.PrevID(), fmt.Sprintf("AttributePrevID expected: %d got: %d", 1, users.PrevID()))
-	test.Assert(t, 1 == users.PrevID(), fmt.Sprintf("AttributePrevID expected: %d got: %d", 1, users.PrevID()))
-	test.Assert(t, 1 == users.PrevID(), fmt.Sprintf("AttributePrevID expected: %d got: %d", 3, users.PrevID()))
-	test.Assert(t, 1 == users.PrevID(), fmt.Sprintf("AttributePrevID expected: %d got: %d", 5, users.PrevID()))
-}
-
-func TestAttributeNextID(t *testing.T) {
-	users := Attributes{
-		"test1": &Attribute{ID: 1},
-		"test2": &Attribute{ID: 3},
-		"test3": &Attribute{ID: 5},
-	}
-
-	test.Assert(t, 5 == users.NextID(), fmt.Sprintf("AttributeNextID expected: %d got: %d", 3, users.NextID()))
-	test.Assert(t, 5 == users.NextID(), fmt.Sprintf("AttributeNextID expected: %d got: %d", 3, users.NextID()))
-	test.Assert(t, 5 == users.NextID(), fmt.Sprintf("AttributeNextID expected: %d got: %d", 5, users.NextID()))
-	test.Assert(t, 5 == users.NextID(), fmt.Sprintf("AttributeNextID expected: %d got: %d", 6, users.NextID()))
 }
