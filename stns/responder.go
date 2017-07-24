@@ -121,15 +121,15 @@ func newV3Resource(q *Query) v3Resource {
 	return nil
 }
 
-func setPrevNextHeader(res *v3ResponseFormat, c *Config) {
+func setMinMaxHeader(res *v3ResponseFormat, c *Config) {
 	if res.query.column == "id" {
 		switch res.query.resource {
 		case "user":
-			res.w.Header().Set("STNS-PREV-ID", strconv.Itoa(c.UserMinID))
-			res.w.Header().Set("STNS-NEXT-ID", strconv.Itoa(c.UserMaxID))
+			res.w.Header().Set("STNS-MIN-ID", strconv.Itoa(c.UserMinID))
+			res.w.Header().Set("STNS-MAX-ID", strconv.Itoa(c.UserMaxID))
 		case "group":
-			res.w.Header().Set("STNS-PREV-ID", strconv.Itoa(c.GroupMinID))
-			res.w.Header().Set("STNS-NEXT-ID", strconv.Itoa(c.GroupMaxID))
+			res.w.Header().Set("STNS-MIN-ID", strconv.Itoa(c.GroupMinID))
+			res.w.Header().Set("STNS-MAX-ID", strconv.Itoa(c.GroupMaxID))
 		}
 	}
 
@@ -183,7 +183,7 @@ func (user v3Sudoers) buildResource(n string, u *Attribute) interface{} {
 
 func (res *v3ResponseFormat) Response(c *Config) {
 	if len(res.Items) == 0 {
-		setPrevNextHeader(res, c)
+		setMinMaxHeader(res, c)
 		rest.NotFound(res.w, res.r)
 		return
 	}
