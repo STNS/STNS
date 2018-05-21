@@ -1,5 +1,0 @@
-FROM pyama/stns:ubuntu-<%= arch %>
-ADD . /go/src/github.com/STNS/STNS
-WORKDIR /go/src/github.com/STNS/STNS
-RUN godep restore
-CMD go test ./... && go build -o binary/stns.bin -ldflags "-X main.version=`git describe --tags`"
