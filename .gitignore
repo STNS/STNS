@@ -1,14 +1,3 @@
-Godeps/Readme
-Godeps/_workspace
-RPM/BUILD/
-RPM/BUILDROOT/
-releases/*
 .DS_Store
-/keys
-/binary/*
-/vendor/*
-package/deb/debian/*
-package/stns*.*
-.rake_tasks
-docker/tmp
-bin/*
+gin-bin
+vendor/

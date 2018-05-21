@@ -1,15 +1,7 @@
 language: go
-sudo: required
-services:
-  - docker
 before_install:
 - sudo apt-get -qq update
-- bundle install
-- mkdir -p docker/tmp
 script:
-- go vet ./...
-- go get -u github.com/golang/lint/golint
-- golint ./...
-- bundle exec rake test_pkg
+- make ci
 go:
-  - 1.8.3
+  - 1.10.2
