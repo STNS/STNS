@@ -7,7 +7,7 @@ RESET=\033[0m
 BOLD=\033[1m
 
 default: build
-ci: depsdev test vet lint ## Run test and more...
+ci: depsdev test lint ## Run test and more...
 
 deps: ## Install dependencies
 	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Installing Dependencies$(RESET)"
@@ -25,10 +25,6 @@ test: ## Run test
 	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Testing$(RESET)"
 	vgo test -v $(TEST) -timeout=30s -parallel=4
 	vgo test -race $(TEST)
-
-vet: ## Exec go vet
-	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Vetting$(RESET)"
-	vgo vet $(TEST)
 
 lint: ## Exec golint
 	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Linting$(RESET)"

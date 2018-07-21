@@ -1,5 +1,4 @@
 language: go
-sudo: required
 before_install:
 - sudo apt-get -qq update
 script:
