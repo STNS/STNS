@@ -5,3 +5,5 @@ script:
 - make ci
 go:
   - 1.10.2
+notifications:
+  slack: pepabo:urThJPQ6Vh8m3cI7riDpYAbn
