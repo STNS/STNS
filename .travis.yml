@@ -1,6 +1,8 @@
 language: go
 before_install:
 - sudo apt-get -qq update
+install:
+  - go get -u golang.org/x/vgo
 script:
 - make ci
 go:
