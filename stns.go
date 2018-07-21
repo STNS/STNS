@@ -32,7 +32,7 @@ var flags = []cli.Flag{
 	},
 	cli.StringFlag{
 		Name:   "config",
-		Value:  "",
+		Value:  "/etc/stns/stns.conf",
 		Usage:  "Server config",
 		EnvVar: "STNS_CONFIG",
 	},
