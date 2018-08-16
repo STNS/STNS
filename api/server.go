@@ -8,6 +8,7 @@ import (
 	"os/signal"
 	"time"
 
+	"github.com/STNS/STNS/middleware"
 	"github.com/STNS/STNS/stns"
 	"github.com/facebookgo/pidfile"
 	"github.com/labstack/echo"
@@ -46,6 +47,8 @@ func (s *server) Run() error {
 		return err
 	}
 	defer removePidFile()
+
+	e.Use(middleware.Config(s.config))
 
 	if s.config.UseServerStarter {
 		listeners, err := listener.ListenAll()
