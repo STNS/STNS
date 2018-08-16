@@ -14,9 +14,9 @@ type User struct {
 
 type Users map[string]*User
 
-func (us *Users) ToInterfaces() map[string]interface{} {
+func (us *Users) ToUserGroup() map[string]UserGroup {
 	if us != nil {
-		iusers := make(map[string]interface{}, len(*us))
+		iusers := make(map[string]UserGroup, len(*us))
 		for k, v := range *us {
 			iusers[k] = v
 		}

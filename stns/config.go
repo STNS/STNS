@@ -14,11 +14,11 @@ func NewConfig(confPath string) (Config, error) {
 	}
 
 	if conf.Users != nil {
-		model.EnsureName(conf.Users.ToInterfaces())
+		model.EnsureName(conf.Users.ToUserGroup())
 	}
 
 	if conf.Groups != nil {
-		model.EnsureName(conf.Groups.ToInterfaces())
+		model.EnsureName(conf.Groups.ToUserGroup())
 	}
 	return conf, nil
 }

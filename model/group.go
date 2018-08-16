@@ -7,9 +7,9 @@ type Group struct {
 }
 type Groups map[string]*Group
 
-func (gs *Groups) ToInterfaces() map[string]interface{} {
+func (gs *Groups) ToUserGroup() map[string]UserGroup {
 	if gs != nil {
-		igroups := make(map[string]interface{}, len(*gs))
+		igroups := make(map[string]UserGroup, len(*gs))
 		for k, v := range *gs {
 			igroups[k] = v
 		}

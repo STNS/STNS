@@ -6,28 +6,22 @@ type UserGroup interface {
 	setName(string)
 }
 
-func FindByID(id int, list map[string]interface{}) map[string]UserGroup {
+func FindByID(id int, list map[string]UserGroup) map[string]UserGroup {
 	res := map[string]UserGroup{}
 	if list != nil {
 		for k, v := range list {
-			l, ok := v.(UserGroup)
-			if ok {
-				if id == l.id() {
-					res[k] = l
-				}
+			if id == v.id() {
+				res[k] = v
 			}
 		}
 	}
 	return res
 }
 
-func EnsureName(list map[string]interface{}) {
+func EnsureName(list map[string]UserGroup) {
 	if list != nil {
 		for k, v := range list {
-			l, ok := v.(UserGroup)
-			if ok {
-				l.setName(k)
-			}
+			v.setName(k)
 		}
 	}
 }
