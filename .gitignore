@@ -1,3 +1,10 @@
 .DS_Store
 gin-bin
 vendor/
+binary/
+bin/
+docker/
+releases/
+releases/
+keys/
+Godeps/
