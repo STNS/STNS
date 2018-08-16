@@ -1,0 +1,8 @@
+
+[users.test]
+id = 1
+password = "test"
+
+[groups.test]
+id = 2
+users = ["test"]
