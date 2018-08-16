@@ -12,15 +12,21 @@ func NewConfig(confPath string) (Config, error) {
 	if _, err := toml.DecodeFile(confPath, &conf); err != nil {
 		return conf, err
 	}
-	conf.Users.EnsureName()
-	conf.Groups.EnsureName()
+
+	if conf.Users != nil {
+		model.EnsureName(conf.Users.ToInterfaces())
+	}
+
+	if conf.Groups != nil {
+		model.EnsureName(conf.Groups.ToInterfaces())
+	}
 	return conf, nil
 }
 
 type Config struct {
 	UseServerStarter bool
-	Users            model.Users
-	Groups           model.Groups
+	Users            *model.Users
+	Groups           *model.Groups
 }
 
 func defaultConfig(c *Config) {

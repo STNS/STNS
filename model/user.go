@@ -1,8 +1,7 @@
 package model
 
 type User struct {
-	ID            int      `toml:"id" json:"id"`
-	Name          string   `toml:"name" json:"name"`
+	Base
 	Password      string   `toml:"password" json:"password"`
 	GroupID       int      `toml:"group_id" json:"group_id"`
 	Directory     string   `toml:"directory" json:"directory"`
@@ -12,12 +11,16 @@ type User struct {
 	LinkUsers     []string `toml:"link_users" json:"link_users"`
 	SetupCommands []string `toml:"setup_commands" json:"setup_commands"`
 }
+
 type Users map[string]*User
 
-func (us *Users) EnsureName() {
+func (us *Users) ToInterfaces() map[string]interface{} {
 	if us != nil {
+		iusers := make(map[string]interface{}, len(*us))
 		for k, v := range *us {
-			v.Name = k
+			iusers[k] = v
 		}
+		return iusers
 	}
+	return nil
 }
