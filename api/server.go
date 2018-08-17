@@ -74,6 +74,10 @@ func (s *server) Run() error {
 		}
 	}()
 
+	v1 := e.Group("/v1")
+	UserEndpoints(v1)
+	GroupEndpoints(v1)
+
 	quit := make(chan os.Signal)
 	signal.Notify(quit, os.Interrupt)
 	<-quit
