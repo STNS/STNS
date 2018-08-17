@@ -2,6 +2,7 @@ package api
 
 import (
 	"context"
+	"errors"
 	"net"
 	"net/http"
 	"os"
@@ -27,6 +28,7 @@ type server struct {
 }
 
 func newServer(confPath string) (*server, error) {
+	logrus.Warn(confPath)
 	conf, err := stns.NewConfig(confPath)
 	if err != nil {
 		return nil, err
@@ -78,6 +80,10 @@ func (s *server) Run() error {
 	UserEndpoints(v1)
 	GroupEndpoints(v1)
 
+	e.GET("/", func(c echo.Context) error {
+		return c.String(http.StatusOK, "Hello! STNS!!1")
+	})
+
 	quit := make(chan os.Signal)
 	signal.Notify(quit, os.Interrupt)
 	<-quit
@@ -100,15 +106,15 @@ func LaunchServer(c *cli.Context) error {
 	if os.Getenv("STNS_LOG") != "" {
 		f, err := os.OpenFile(os.Getenv("STNS_LOG"), os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
 		if err != nil {
-			logrus.Fatal("error opening file :", err.Error())
+			return errors.New("error opening file :" + err.Error())
 		}
 		logrus.SetOutput(f)
 	}
 
-	pidfile.SetPidfilePath(c.GlobalString("pidfile"))
+	pidfile.SetPidfilePath(os.Getenv("STNS_PID"))
 	serv, err := newServer(os.Getenv("STNS_CONFIG"))
 	if err != nil {
-		return err
+		return errors.New("server init:" + err.Error())
 	}
 	return serv.Run()
 }

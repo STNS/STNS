@@ -37,9 +37,10 @@ var flags = []cli.Flag{
 		EnvVar: "STNS_CONFIG",
 	},
 	cli.StringFlag{
-		Name:  "pidfile",
-		Value: "/var/run/stns.pid",
-		Usage: "pid file path",
+		Name:   "pidfile",
+		Value:  "/var/run/stns.pid",
+		Usage:  "pid file path",
+		EnvVar: "STNS_PID",
 	},
 }
 
@@ -64,6 +65,10 @@ func appBefore(c *cli.Context) error {
 
 	if c.GlobalString("config") != "" {
 		os.Setenv("STNS_CONFIG", c.GlobalString("config"))
+	}
+
+	if c.GlobalString("pidfile") != "" {
+		os.Setenv("STNS_PID", c.GlobalString("pidfile"))
 	}
 	return nil
 }

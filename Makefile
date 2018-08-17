@@ -16,7 +16,6 @@ deps: ## Install dependencies
 
 depsdev: deps ## Installing dependencies for development
 	go get github.com/golang/lint/golint
-	go get github.com/codegangsta/gin
 	go get github.com/pierrre/gotestcover
 	go get -u github.com/tcnksm/ghr
 	go get github.com/mitchellh/gox
@@ -30,8 +29,8 @@ lint: ## Exec golint
 	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Linting$(RESET)"
 	golint -min_confidence 1.1 -set_exit_status $(TEST)
 
-server: ## Run server with gin
-	gin -appPort 8050
+server: ## Run server
+	vgo run github.com/STNS/STNS --logfile ./stns.log --pidfile ./stns.pid --config ./stns/test.toml server
 
 ghr: ## Upload to Github releases without token check
 	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Releasing for Github$(RESET)"

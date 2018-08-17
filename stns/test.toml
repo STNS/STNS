@@ -3,6 +3,14 @@
 id = 1
 password = "test"
 
-[groups.test]
+[users.foo]
 id = 2
+password = "test"
+
+[groups.test]
+id = 1
 users = ["test"]
+
+[groups.bar]
+id = 2
+users = ["foo"]

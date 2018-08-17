@@ -14,7 +14,7 @@ func TestNewConfig(t *testing.T) {
 	}
 
 	g := (*c.Groups)["test"]
-	if g.ID != 2 {
+	if g.ID != 1 {
 		t.Errorf("Config cannot parse Group")
 	}
 }
