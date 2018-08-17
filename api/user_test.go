@@ -11,12 +11,13 @@ import (
 
 func Test_getUsers(t *testing.T) {
 	tests := []struct {
-		name       string
-		config     *stns.Config
-		params     map[string]string
-		wantErr    bool
-		wantStatus int
-		wantID     int
+		name        string
+		config      *stns.Config
+		params      map[string]string
+		wantErr     bool
+		wantStatus  int
+		wantID      int
+		wantRecords int
 	}{
 		{
 			name:   "id ok",
@@ -24,9 +25,10 @@ func Test_getUsers(t *testing.T) {
 			params: map[string]string{
 				"id": "1",
 			},
-			wantErr:    false,
-			wantStatus: http.StatusOK,
-			wantID:     1,
+			wantErr:     false,
+			wantStatus:  http.StatusOK,
+			wantID:      1,
+			wantRecords: 1,
 		},
 		{
 			name:   "id notfound",
@@ -52,9 +54,10 @@ func Test_getUsers(t *testing.T) {
 			params: map[string]string{
 				"name": "user1",
 			},
-			wantErr:    false,
-			wantStatus: http.StatusOK,
-			wantID:     1,
+			wantErr:     false,
+			wantStatus:  http.StatusOK,
+			wantID:      1,
+			wantRecords: 1,
 		},
 		{
 			name:   "name notfound",
@@ -64,6 +67,14 @@ func Test_getUsers(t *testing.T) {
 			},
 			wantErr:    false,
 			wantStatus: http.StatusNotFound,
+		},
+		{
+			name:        "all ok",
+			config:      testConfig(),
+			wantErr:     false,
+			wantStatus:  http.StatusOK,
+			wantID:      1,
+			wantRecords: 2,
 		},
 	}
 	for _, tt := range tests {
@@ -84,11 +95,11 @@ func Test_getUsers(t *testing.T) {
 			}
 
 			if tt.wantID != 0 {
-				if len(users) == 0 {
+				if len(users) != tt.wantRecords {
 					t.Error("getUsers Record has not been acquired")
 				}
 
-				if len(users) > 0 && users[0].ID != tt.wantID {
+				if len(users) == 1 && users[0].ID != tt.wantID {
 					t.Errorf("getUsers ID does not match, expected %d, got %d", tt.wantID, users[0].ID)
 
 				}

@@ -28,6 +28,10 @@ func (t BackendTomlFile) FindUserByName(name string) map[string]UserGroup {
 	return tomlFileFindByName(name, t.users.ToUserGroup())
 }
 
+func (t BackendTomlFile) Users() map[string]UserGroup {
+	return t.users.ToUserGroup()
+}
+
 func tomlFileFindByID(id int, list map[string]UserGroup) map[string]UserGroup {
 	res := map[string]UserGroup{}
 	if list != nil {

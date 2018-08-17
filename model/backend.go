@@ -9,4 +9,5 @@ type UserGroup interface {
 type Backend interface {
 	FindUserByID(int) map[string]UserGroup
 	FindUserByName(string) map[string]UserGroup
+	Users() map[string]UserGroup
 }
