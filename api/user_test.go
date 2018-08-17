@@ -38,13 +38,32 @@ func Test_getUsers(t *testing.T) {
 			wantStatus: http.StatusNotFound,
 		},
 		{
-			name:   "id bad request",
+			name:   "bad request",
 			config: testConfig(),
 			params: map[string]string{
 				"ng": "999999",
 			},
 			wantErr:    false,
 			wantStatus: http.StatusBadRequest,
+		},
+		{
+			name:   "name ok",
+			config: testConfig(),
+			params: map[string]string{
+				"name": "user1",
+			},
+			wantErr:    false,
+			wantStatus: http.StatusOK,
+			wantID:     1,
+		},
+		{
+			name:   "name notfound",
+			config: testConfig(),
+			params: map[string]string{
+				"name": "hoge",
+			},
+			wantErr:    false,
+			wantStatus: http.StatusNotFound,
 		},
 	}
 	for _, tt := range tests {
@@ -65,7 +84,11 @@ func Test_getUsers(t *testing.T) {
 			}
 
 			if tt.wantID != 0 {
-				if users[0].ID != tt.wantID {
+				if len(users) == 0 {
+					t.Error("getUsers Record has not been acquired")
+				}
+
+				if len(users) > 0 && users[0].ID != tt.wantID {
 					t.Errorf("getUsers ID does not match, expected %d, got %d", tt.wantID, users[0].ID)
 
 				}

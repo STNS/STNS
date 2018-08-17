@@ -23,7 +23,7 @@ func getUsers(c echo.Context) error {
 
 			r = backend.FindUserByID(id)
 		case "name":
-			// name
+			r = backend.FindUserByName(v[0])
 		default:
 			return c.JSON(http.StatusBadRequest, nil)
 		}
