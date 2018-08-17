@@ -40,13 +40,27 @@ func testConfig() *stns.Config {
 			"user1": &model.User{
 				Base: model.Base{
 					ID:   1,
-					Name: "User1",
+					Name: "user1",
 				},
 			},
 			"user2": &model.User{
 				Base: model.Base{
 					ID:   2,
-					Name: "User2",
+					Name: "user2",
+				},
+			},
+		},
+		Groups: &model.Groups{
+			"group1": &model.Group{
+				Base: model.Base{
+					ID:   1,
+					Name: "group1",
+				},
+			},
+			"group2": &model.Group{
+				Base: model.Base{
+					ID:   2,
+					Name: "group2",
 				},
 			},
 		},
