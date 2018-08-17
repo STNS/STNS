@@ -10,12 +10,18 @@ func TestNewConfig(t *testing.T) {
 
 	u := (*c.Users)["test"]
 	if u.ID != 1 {
-		t.Errorf("Config cannot parse User")
+		t.Errorf("config cannot parse User")
+	}
+
+	// include config user
+	i := (*c.Users)["bar"]
+	if i.ID != 99 {
+		t.Errorf("include config cannot parse User")
 	}
 
 	g := (*c.Groups)["test"]
 	if g.ID != 1 {
-		t.Errorf("Config cannot parse Group")
+		t.Errorf("config cannot parse Group")
 	}
 }
 
