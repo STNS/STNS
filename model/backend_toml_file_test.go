@@ -118,3 +118,86 @@ func Test_tomlFileFindByName(t *testing.T) {
 		})
 	}
 }
+
+func Test_mergeLinkAttribute(t *testing.T) {
+	type args struct {
+		las    linkAttributers
+		result map[string][]string
+	}
+	tests := []struct {
+		name string
+		args args
+		want map[string][]string
+	}{
+		{
+			name: "user ok",
+			args: args{
+				las: linkAttributers{
+					"user1": &User{
+						Base: Base{
+							Name: "user1",
+						},
+						Keys:      []string{"user1key"},
+						LinkUsers: []string{"user2", "user3"},
+					},
+					"user2": &User{
+						Base: Base{
+							Name: "user2",
+						},
+						Keys:      []string{"user2key"},
+						LinkUsers: []string{"user3"},
+					},
+					"user3": &User{
+						Base: Base{
+							Name: "user3",
+						},
+						Keys:      []string{"user3key"},
+						LinkUsers: []string{"user1", "user2"},
+					},
+					"user4": &User{
+						Base: Base{
+							Name: "user4",
+						},
+						Keys:      []string{"user4key"},
+						LinkUsers: []string{"user1", "user2", "user3"},
+					},
+				},
+				result: map[string][]string{},
+			},
+			want: map[string][]string{
+				"user1": []string{
+					"user1key",
+					"user2key",
+					"user3key",
+				},
+				"user2": []string{
+					"user1key",
+					"user2key",
+					"user3key",
+				},
+				"user3": []string{
+					"user1key",
+					"user2key",
+					"user3key",
+				},
+				"user4": []string{
+					"user1key",
+					"user2key",
+					"user3key",
+					"user4key",
+				},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			mergeLinkAttribute(tt.args.las, nil, nil, nil)
+			for k, v := range tt.want {
+				if !reflect.DeepEqual(tt.args.las[k].value(), v) {
+					t.Errorf("mergeLinkAttribute() = user %v keys %v, want %v", k, tt.args.las[k].value(), v)
+				}
+			}
+		})
+	}
+}
