@@ -12,14 +12,6 @@ func NewConfig(confPath string) (Config, error) {
 	if _, err := toml.DecodeFile(confPath, &conf); err != nil {
 		return conf, err
 	}
-
-	if conf.Users != nil {
-		model.EnsureName(conf.Users.ToUserGroup())
-	}
-
-	if conf.Groups != nil {
-		model.EnsureName(conf.Groups.ToUserGroup())
-	}
 	return conf, nil
 }
 

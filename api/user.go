@@ -6,15 +6,11 @@ import (
 
 	"github.com/STNS/STNS/middleware"
 	"github.com/STNS/STNS/model"
-	"github.com/STNS/STNS/stns"
 	"github.com/labstack/echo"
 )
 
 func getUsers(c echo.Context) error {
-	config := c.Get(middleware.ConfigKey).(*stns.Config)
-	if config.Users == nil {
-		return c.JSON(http.StatusNotFound, nil)
-	}
+	backend := c.Get(middleware.BackendKey).(model.Backend)
 
 	var r map[string]model.UserGroup
 	for k, v := range c.QueryParams() {
@@ -25,7 +21,7 @@ func getUsers(c echo.Context) error {
 				return c.JSON(http.StatusBadRequest, nil)
 			}
 
-			r = model.FindByID(id, config.Users.ToUserGroup())
+			r = backend.FindUserByID(id)
 		case "name":
 			// name
 		default:

@@ -1,18 +1,18 @@
 package middleware
 
 import (
-	"github.com/STNS/STNS/stns"
+	"github.com/STNS/STNS/model"
 	"github.com/labstack/echo"
 )
 
 const (
-	ConfigKey = "Config"
+	BackendKey = "Backend"
 )
 
-func Config(config *stns.Config) echo.MiddlewareFunc {
+func Backend(b model.Backend) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return echo.HandlerFunc(func(c echo.Context) error {
-			c.Set(ConfigKey, config)
+			c.Set(BackendKey, b)
 			return next(c)
 		})
 	}

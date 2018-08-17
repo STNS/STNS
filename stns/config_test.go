@@ -9,12 +9,12 @@ func TestNewConfig(t *testing.T) {
 	}
 
 	u := (*c.Users)["test"]
-	if u.Name != "test" {
+	if u.ID != 1 {
 		t.Errorf("Config cannot parse User")
 	}
 
 	g := (*c.Groups)["test"]
-	if g.Name != "test" {
+	if g.ID != 2 {
 		t.Errorf("Config cannot parse Group")
 	}
 }
