@@ -1,0 +1,34 @@
+#!/bin/bash
+
+start_server() {
+  sudo make server &
+  sleep 3
+}
+
+stop_server() {
+  PID=$(cat stns.pid)
+
+  sudo kill -SIGINT $PID
+  if [ $? -ne 0 ]; then
+    echo "process not found"
+    exit 1
+  fi
+  sleep 1
+  sudo kill -0 $PID 2>/dev/null
+  if [ $? -ne 1 ]; then
+    echo "sent signal as SIGKILL"
+    sudo kill -SIGKILL $PID
+  fi
+}
+
+case "$1" in
+  start)
+    start_server
+    ;;
+  stop*)
+    stop_server
+    ;;
+  *)
+    echo $"Usage: $0 {start|stop}"
+    exit 2
+esac
