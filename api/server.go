@@ -9,6 +9,8 @@ import (
 	"os/signal"
 	"time"
 
+	emiddleware "github.com/labstack/echo/middleware"
+
 	"github.com/STNS/STNS/middleware"
 	"github.com/STNS/STNS/model"
 	"github.com/STNS/STNS/stns"
@@ -53,6 +55,7 @@ func (s *server) Run() error {
 
 	b := model.NewBackendTomlFile(s.config.Users, s.config.Groups)
 	e.Use(middleware.Backend(b))
+	e.Use(emiddleware.Recover())
 
 	if s.config.UseServerStarter {
 		listeners, err := listener.ListenAll()
