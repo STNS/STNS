@@ -10,7 +10,7 @@ require (
 	github.com/labstack/echo v3.2.1+incompatible
 	github.com/labstack/gommon v0.2.1 // indirect
 	github.com/lestrrat/go-server-starter v0.0.0-20180220115249-6ac0b358431b
-	github.com/lib/pq v0.0.0-20180523175426-90697d60dd84 // indirect
+	github.com/lib/pq v0.0.0-20180523175426-90697d60dd84
 	github.com/mattn/go-colorable v0.0.9 // indirect
 	github.com/mattn/go-isatty v0.0.3 // indirect
 	github.com/sirupsen/logrus v1.0.6

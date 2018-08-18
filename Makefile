@@ -39,5 +39,10 @@ ghr: ## Upload to Github releases without token check
 dist: build ## Upload to Github releases
 	@test -z $(GITHUB_TOKEN) || test -z $(GITHUB_API) || $(MAKE) ghr
 
+integration: ## Run integration test after Server wakeup
+	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Integration Testing$(RESET)"
+	./misc/server start
+	vgo test $(VERBOSE) -integration $(TEST) $(TEST_OPTIONS)
+	./misc/server stop
 
 .PHONY: default dist test deps 
