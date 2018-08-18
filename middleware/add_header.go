@@ -11,10 +11,6 @@ import (
 func AddHeader(backend model.Backend) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return echo.HandlerFunc(func(c echo.Context) error {
-			if err := next(c); err != nil {
-				return err
-			}
-
 			if strings.Index(c.Path(), "/users") > 0 {
 				c.Response().Header().Add("USER-HIGHEST-ID", strconv.Itoa(backend.HighestUserID()))
 				c.Response().Header().Add("USER-LOWEST-ID", strconv.Itoa(backend.LowestUserID()))
@@ -22,6 +18,10 @@ func AddHeader(backend model.Backend) echo.MiddlewareFunc {
 				c.Response().Header().Add("GROUP-HIGHEST-ID", strconv.Itoa(backend.HighestGroupID()))
 				c.Response().Header().Add("GROUP-LOWEST-ID", strconv.Itoa(backend.LowestGroupID()))
 			}
+			if err := next(c); err != nil {
+				return err
+			}
+
 			return nil
 		})
 	}
