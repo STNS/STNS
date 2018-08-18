@@ -46,6 +46,22 @@ func (t BackendTomlFile) Groups() map[string]UserGroup {
 	return t.groups.ToUserGroup()
 }
 
+func (t BackendTomlFile) HighestUserID() int {
+	return tomlHighLowID(0, t.users.ToUserGroup())
+}
+
+func (t BackendTomlFile) LowestUserID() int {
+	return tomlHighLowID(1, t.users.ToUserGroup())
+}
+
+func (t BackendTomlFile) HighestGroupID() int {
+	return tomlHighLowID(0, t.groups.ToUserGroup())
+}
+
+func (t BackendTomlFile) LowestGroupID() int {
+	return tomlHighLowID(1, t.groups.ToUserGroup())
+}
+
 func tomlFileFindByID(id int, list map[string]UserGroup) map[string]UserGroup {
 	res := map[string]UserGroup{}
 	if list != nil {
@@ -168,4 +184,17 @@ func uniqStrings(xs []string) []string {
 	}
 	sort.Slice(ys, func(i, j int) bool { return ys[i] < ys[j] })
 	return ys
+}
+
+// highest=0 lowest= 1
+func tomlHighLowID(highorlow int, list map[string]UserGroup) int {
+	current := 0
+	if list != nil {
+		for _, v := range list {
+			if current == 0 || (highorlow == 0 && current < v.id()) || (highorlow == 1 && current > v.id()) {
+				current = v.id()
+			}
+		}
+	}
+	return current
 }

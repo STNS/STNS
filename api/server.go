@@ -55,6 +55,7 @@ func (s *server) Run() error {
 
 	b := model.NewBackendTomlFile(s.config.Users, s.config.Groups)
 	e.Use(middleware.Backend(b))
+	e.Use(middleware.AddHeader(b))
 	e.Use(emiddleware.Recover())
 
 	if s.config.UseServerStarter {

@@ -13,4 +13,8 @@ type Backend interface {
 	FindGroupByName(string) map[string]UserGroup
 	Users() map[string]UserGroup
 	Groups() map[string]UserGroup
+	HighestUserID() int
+	LowestUserID() int
+	HighestGroupID() int
+	LowestGroupID() int
 }

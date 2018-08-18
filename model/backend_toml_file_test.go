@@ -201,3 +201,65 @@ func Test_mergeLinkAttribute(t *testing.T) {
 		})
 	}
 }
+
+func Test_tomlHighLowID(t *testing.T) {
+	type args struct {
+		list      map[string]UserGroup
+		highorlow int
+	}
+	tests := []struct {
+		name string
+		args args
+		want int
+	}{
+		{
+			name: "highest",
+			args: args{
+				highorlow: 0,
+				list: map[string]UserGroup{
+					"low": &User{
+						Base: Base{
+							ID:   1,
+							Name: "user1",
+						},
+					},
+					"high": &User{
+						Base: Base{
+							ID:   2,
+							Name: "user2",
+						},
+					},
+				},
+			},
+			want: 2,
+		},
+		{
+			name: "lowest",
+			args: args{
+				highorlow: 1,
+				list: map[string]UserGroup{
+					"low": &User{
+						Base: Base{
+							ID:   1,
+							Name: "user1",
+						},
+					},
+					"high": &User{
+						Base: Base{
+							ID:   2,
+							Name: "user2",
+						},
+					},
+				},
+			},
+			want: 1,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tomlHighLowID(tt.args.highorlow, tt.args.list); got != tt.want {
+				t.Errorf("tomlHighLowID() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
