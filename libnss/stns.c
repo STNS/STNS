@@ -45,8 +45,8 @@ void stns_load_config(char *filename, stns_conf_t *c)
   GET_TOML_BYKEY(uid_shift, toml_rtoi, 0);
   GET_TOML_BYKEY(gid_shift, toml_rtoi, 0);
   GET_TOML_BYKEY(ssl_verify, toml_rtob, 1);
-  GET_TOML_BYKEY(request_timeout, toml_rtoi, 0);
-  GET_TOML_BYKEY(request_retry, toml_rtoi, 0);
+  GET_TOML_BYKEY(request_timeout, toml_rtoi, 10);
+  GET_TOML_BYKEY(request_retry, toml_rtoi, 3);
 
   fclose(fp);
   toml_free(tab);
