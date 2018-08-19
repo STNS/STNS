@@ -55,7 +55,7 @@ int toml_utf8_to_ucs(const char *orig, int len, int64_t *ret)
   const unsigned char *buf = (const unsigned char *)orig;
   unsigned i               = *buf++;
   int64_t v;
-
+  int j;
   /* 0x00000000 - 0x0000007F:
      0xxxxxxx
   */
@@ -72,7 +72,7 @@ int toml_utf8_to_ucs(const char *orig, int len, int64_t *ret)
     if (len < 2)
       return -1;
     v = i & 0x1f;
-    for (int j = 0; j < 1; j++) {
+    for (j = 0; j < 1; j++) {
       i = *buf++;
       if (0x2 != (i >> 6))
         return -1;
@@ -88,7 +88,7 @@ int toml_utf8_to_ucs(const char *orig, int len, int64_t *ret)
     if (len < 3)
       return -1;
     v = i & 0x0F;
-    for (int j = 0; j < 2; j++) {
+    for (j = 0; j < 2; j++) {
       i = *buf++;
       if (0x2 != (i >> 6))
         return -1;
@@ -104,7 +104,7 @@ int toml_utf8_to_ucs(const char *orig, int len, int64_t *ret)
     if (len < 4)
       return -1;
     v = i & 0x07;
-    for (int j = 0; j < 3; j++) {
+    for (j = 0; j < 3; j++) {
       i = *buf++;
       if (0x2 != (i >> 6))
         return -1;
@@ -120,7 +120,7 @@ int toml_utf8_to_ucs(const char *orig, int len, int64_t *ret)
     if (len < 5)
       return -1;
     v = i & 0x03;
-    for (int j = 0; j < 4; j++) {
+    for (j = 0; j < 4; j++) {
       i = *buf++;
       if (0x2 != (i >> 6))
         return -1;
@@ -136,7 +136,7 @@ int toml_utf8_to_ucs(const char *orig, int len, int64_t *ret)
     if (len < 6)
       return -1;
     v = i & 0x01;
-    for (int j = 0; j < 5; j++) {
+    for (j = 0; j < 5; j++) {
       i = *buf++;
       if (0x2 != (i >> 6))
         return -1;
@@ -390,7 +390,7 @@ static char *normalize_string(const char *src, int srclen, int kill_line_ending_
   const char *sp = src;
   const char *sq = src + srclen;
   int ch;
-
+  int i;
   /* scan forward on src */
   for (;;) {
     if (off >= max - 10) { /* have some slack for misc stuff */
@@ -438,7 +438,7 @@ static char *normalize_string(const char *src, int srclen, int kill_line_ending_
     case 'U': {
       int64_t ucs = 0;
       int nhex    = (ch == 'u' ? 4 : 8);
-      for (int i = 0; i < nhex; i++) {
+      for (i = 0; i < nhex; i++) {
         if (sp >= sq) {
           snprintf(errbuf, errbufsz, "\\%c expects %d hex chars", ch, nhex);
           free(dst);
@@ -1060,8 +1060,8 @@ static void walk_tabpath(context_t *ctx)
 {
   /* start from root */
   toml_table_t *curtab = ctx->root;
-
-  for (int i = 0; i < ctx->tpath.top; i++) {
+  int i;
+  for (i = 0; i < ctx->tpath.top; i++) {
     const char *key = ctx->tpath.key[i];
 
     toml_keyval_t *nextval = 0;
@@ -1214,7 +1214,7 @@ static void parse_select(context_t *ctx)
 toml_table_t *toml_parse(char *conf, char *errbuf, int errbufsz)
 {
   context_t ctx;
-
+  int i;
   // clear errbuf
   if (errbufsz <= 0)
     errbufsz = 0;
@@ -1247,7 +1247,7 @@ toml_table_t *toml_parse(char *conf, char *errbuf, int errbufsz)
   if (0 != setjmp(ctx.jmp)) {
     // Got here from a long_jmp. Something bad has happened.
     // Free resources and return error.
-    for (int i = 0; i < ctx.tpath.top; i++)
+    for (i = 0; i < ctx.tpath.top; i++)
       xfree(ctx.tpath.key[i]);
     toml_free(ctx.root);
     return 0;
@@ -1282,7 +1282,7 @@ toml_table_t *toml_parse(char *conf, char *errbuf, int errbufsz)
   }
 
   /* success */
-  for (int i = 0; i < ctx.tpath.top; i++)
+  for (i = 0; i < ctx.tpath.top; i++)
     xfree(ctx.tpath.key[i]);
   return ctx.root;
 }
@@ -1345,25 +1345,26 @@ static void xfree_tab(toml_table_t *p);
 
 static void xfree_arr(toml_array_t *p)
 {
+  int i;
   if (!p)
     return;
 
   xfree(p->key);
   switch (p->kind) {
   case 'v':
-    for (int i = 0; i < p->nelem; i++)
+    for (i = 0; i < p->nelem; i++)
       xfree(p->u.val[i]);
     xfree(p->u.val);
     break;
 
   case 'a':
-    for (int i = 0; i < p->nelem; i++)
+    for (i = 0; i < p->nelem; i++)
       xfree_arr(p->u.arr[i]);
     xfree(p->u.arr);
     break;
 
   case 't':
-    for (int i = 0; i < p->nelem; i++)
+    for (i = 0; i < p->nelem; i++)
       xfree_tab(p->u.tab[i]);
     xfree(p->u.tab);
     break;
