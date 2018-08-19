@@ -1215,6 +1215,7 @@ toml_table_t *toml_parse(char *conf, char *errbuf, int errbufsz)
 {
   context_t ctx;
   int i;
+  token_t tok;
   // clear errbuf
   if (errbufsz <= 0)
     errbufsz = 0;
