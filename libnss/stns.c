@@ -48,6 +48,14 @@ void stns_load_config(char *filename, stns_conf_t *c)
   GET_TOML_BYKEY(request_timeout, toml_rtoi, 10);
   GET_TOML_BYKEY(request_retry, toml_rtoi, 3);
 
+  // 末尾の/を取り除く
+  const int len = strlen(c->api_endpoint);
+  if (len > 0) {
+    if (c->api_endpoint[len - 1] == '/') {
+      c->api_endpoint[len - 1] = '\0';
+    }
+  }
+
   fclose(fp);
   toml_free(tab);
 }
