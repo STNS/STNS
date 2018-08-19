@@ -4,7 +4,7 @@ before_install:
 - sudo apt-get -qqy install build-essential git curl libcurl4-openssl-dev libjansson-dev gdb
 script:
 - make ci
-- cd libnss && make test
+- cd libnss && sudo make test
 go:
   - 1.10.2
 notifications:
