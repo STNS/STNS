@@ -10,11 +10,23 @@
 #include <string.h>
 #include "toml.h"
 #include <syslog.h>
+#include <nss.h>
+#include <grp.h>
+#include <pwd.h>
+#include <shadow.h>
+#include <jansson.h>
+#if defined(HAVE_THREAD_H) && !defined(_AIX)
+#include <thread.h>
+#elif defined(HAVE_PTHREAD_H)
+#include <pthread.h>
+#endif
 
 #define STNS_VERSION "2.0.0"
 #define STNS_VERSION_WITH_NAME "stns/" STNS_VERSION
 // 10MB
 #define STNS_MAX_BUFFER_SIZE (10 * 1024 * 1024)
+#define STNS_CONFIG_FILE "/etc/stns/client/stns.conf"
+#define MAXBUF 1024
 
 typedef struct stns_http_response_t stns_http_response_t;
 struct stns_http_response_t {
@@ -39,5 +51,5 @@ struct stns_conf_t {
 };
 
 extern void stns_load_config(char *, stns_conf_t *);
-extern void stns_request(stns_conf_t *, char *, stns_http_response_t *);
+extern int stns_request(stns_conf_t *, char *, stns_http_response_t *);
 #endif /* STNS_H */

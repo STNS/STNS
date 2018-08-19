@@ -34,7 +34,7 @@ void stns_load_config(char *filename, stns_conf_t *c)
 
   if (!tab) {
     syslog(LOG_ERR, "%s[L%d] %s", __func__, __LINE__, errbuf);
-    return;
+    exit(1);
   }
 
   GET_TOML_BYKEY(api_endpoint, toml_rtos, NULL);
@@ -147,7 +147,7 @@ static CURLcode _stns_request(stns_conf_t *c, char *path, stns_http_response_t *
   return result;
 }
 
-void stns_request(stns_conf_t *c, char *path, stns_http_response_t *res)
+int stns_request(stns_conf_t *c, char *path, stns_http_response_t *res)
 {
   CURLcode result;
   int retry_count = c->request_retry;
@@ -162,4 +162,5 @@ void stns_request(stns_conf_t *c, char *path, stns_http_response_t *res)
       break;
     }
   }
+  return result;
 }
