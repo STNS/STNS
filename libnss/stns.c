@@ -10,7 +10,7 @@
 #define GET_TOML_BYKEY(m, method, empty)                                                                               \
   if (0 != (raw = toml_raw_in(tab, #m))) {                                                                             \
     if (0 != method(raw, &c->m)) {                                                                                     \
-      fprintf(stderr, "ERROR: cannot parse toml file %s key %s\n", filename, #m);                                      \
+      syslog(LOG_ERR, "%s[L%d] cannot parse toml file:%s key:%s", __func__, __LINE__, filename, #m);                   \
     }                                                                                                                  \
   } else {                                                                                                             \
     c->m = empty;                                                                                                      \
@@ -25,14 +25,15 @@ void stns_load_config(char *filename, stns_conf_t *c)
 
   FILE *fp = fopen(filename, "r");
   if (!fp) {
-    fprintf(stderr, "ERROR: cannot open %s: %s\n", filename, strerror(errno));
+    syslog(LOG_ERR, "%s[L%d] cannot open %s: %s", __func__, __LINE__, filename, strerror(errno));
+
     exit(1);
   }
 
   toml_table_t *tab = toml_parse_file(fp, errbuf, sizeof(errbuf));
 
   if (!tab) {
-    fprintf(stderr, "ERROR: %s\n", errbuf);
+    syslog(LOG_ERR, "%s[L%d] %s", __func__, __LINE__, errbuf);
     return;
   }
 
@@ -68,7 +69,7 @@ static size_t response_callback(void *buffer, size_t size, size_t nmemb, void *u
   stns_http_response_t *res = (stns_http_response_t *)userp;
 
   if (segsize > STNS_MAX_BUFFER_SIZE) {
-    fprintf(stderr, "Response is too large\n");
+    syslog(LOG_ERR, "%s[L%d] Response is too large", __func__, __LINE__);
     return 0;
   }
 
@@ -115,7 +116,7 @@ static CURLcode _stns_request(stns_conf_t *c, char *path, stns_http_response_t *
   }
 
 #ifdef DEBUG
-  printf("send http request: %s\n", url);
+  syslog(LOG_DEBUG, "%s[L%d] send http request: %s", __func__, __LINE__, url);
 #endif
 
   hnd = curl_easy_init();
@@ -133,7 +134,7 @@ static CURLcode _stns_request(stns_conf_t *c, char *path, stns_http_response_t *
   result = curl_easy_perform(hnd);
 
   if (result != CURLE_OK) {
-    fprintf(stderr, "http request failed: %s\n", curl_easy_strerror(result));
+    syslog(LOG_ERR, "%s[L%d] http request failed: %s", __func__, __LINE__, curl_easy_strerror(result));
   } else {
     long *code;
     curl_easy_getinfo(hnd, CURLINFO_RESPONSE_CODE, &code);

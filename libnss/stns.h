@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "toml.h"
+#include <syslog.h>
 
 #define STNS_VERSION "2.0.0"
 #define STNS_VERSION_WITH_NAME "stns/" STNS_VERSION

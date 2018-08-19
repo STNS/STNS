@@ -1254,7 +1254,7 @@ toml_table_t *toml_parse(char *conf, char *errbuf, int errbufsz)
   }
 
   /* Scan forward until EOF */
-  for (token_t tok = ctx.tok; !tok.eof; tok = ctx.tok) {
+  for (tok = ctx.tok; !tok.eof; tok = ctx.tok) {
     switch (tok.tok) {
 
     case NEWLINE:
