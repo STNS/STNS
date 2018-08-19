@@ -38,3 +38,7 @@ Test(stns_request, request_ok)
   sprintf(expect_body, "{\n  \"user-agent\": \"%s\"\n}\n", STNS_VERSION_WITH_NAME);
   cr_assert_str_eq(r.data, expect_body);
 }
+
+Test(ensure_passwd_by_name, ok)
+{
+}

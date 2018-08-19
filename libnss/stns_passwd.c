@@ -25,87 +25,80 @@
       return NSS_STATUS_UNAVAIL;                                                                                       \
     }                                                                                                                  \
                                                                                                                        \
-    return ensure_passwd(r.data, &c, value, pwd, buf, buflen, errnop);                                                 \
+    return ensure_passwd_by_##value(r.data, &c, value, pwd, buf, buflen, errnop);                                      \
   }
 
-static enum nss_status ensure_passwd(char *data, stns_conf_t *c, const char *name, struct passwd *pwd, char *buf,
-                                     size_t buflen, int *errnop)
-{
-  int i;
-  json_error_t error;
-  json_t *user;
-  json_t *users = json_loads(data, 0, &error);
+#define PASSWD_SET_ATTRBUTE(name)                                                                                      \
+  int name##_length = strlen(name) + 1;                                                                                \
+                                                                                                                       \
+  if (buflen < name##_length) {                                                                                        \
+    *errnop = ERANGE;                                                                                                  \
+    return NSS_STATUS_TRYAGAIN;                                                                                        \
+  }                                                                                                                    \
+                                                                                                                       \
+  strcpy(buf, name);                                                                                                   \
+  pwd->pw_name = buf;                                                                                                  \
+  buf += name##_length;                                                                                                \
+  buflen += name##_length;                                                                                             \
+  buflen -= name##_length;
 
-  if (users == NULL) {
-    syslog(LOG_ERR, "%s[L%d] json parse error: %s", __func__, __LINE__, error.text);
-    goto leave;
+#define PASSWD_ENSURE_PASSWD(method_key, key_type, key_name, json_type, json_key, match_method)                        \
+  static enum nss_status ensure_passwd_##method_key(char *data, stns_conf_t *c, key_type key_name, struct passwd *pwd, \
+                                                    char *buf, size_t buflen, int *errnop)                             \
+  {                                                                                                                    \
+    int i;                                                                                                             \
+    json_error_t error;                                                                                                \
+    json_t *user;                                                                                                      \
+    json_t *users = json_loads(data, 0, &error);                                                                       \
+                                                                                                                       \
+    if (users == NULL) {                                                                                               \
+      syslog(LOG_ERR, "%s[L%d] json parse error: %s", __func__, __LINE__, error.text);                                 \
+      goto leave;                                                                                                      \
+    }                                                                                                                  \
+                                                                                                                       \
+    json_array_foreach(users, i, user)                                                                                 \
+    {                                                                                                                  \
+      if (!json_is_object(user)) {                                                                                     \
+        continue;                                                                                                      \
+      }                                                                                                                \
+      key_type current = json_##json_type##_value(json_object_get(user, #json_key));                                   \
+                                                                                                                       \
+      if (match_method) {                                                                                              \
+        const json_int_t id       = json_integer_value(json_object_get(user, "id"));                                   \
+        const json_int_t group_id = json_integer_value(json_object_get(user, "group_id"));                             \
+        const char *name          = json_string_value(json_object_get(user, "name"));                                  \
+        const char *gecos         = json_string_value(json_object_get(user, "gecos"));                                 \
+        const char *dir           = json_string_value(json_object_get(user, "directory"));                             \
+        const char *shell         = json_string_value(json_object_get(user, "shell"));                                 \
+        char passwd[]             = "x";                                                                               \
+                                                                                                                       \
+        pwd->pw_uid = c->uid_shift + id;                                                                               \
+        pwd->pw_gid = c->gid_shift + group_id;                                                                         \
+                                                                                                                       \
+        PASSWD_DEFAULT(sh, shell, "/bin/bash");                                                                        \
+                                                                                                                       \
+        char b[MAXBUF];                                                                                                \
+        sprintf(b, "/home/%s", name);                                                                                  \
+        PASSWD_DEFAULT(d, dir, b);                                                                                     \
+        PASSWD_SET_ATTRBUTE(name)                                                                                      \
+        PASSWD_SET_ATTRBUTE(passwd)                                                                                    \
+        PASSWD_SET_ATTRBUTE(gecos)                                                                                     \
+        PASSWD_SET_ATTRBUTE(dir)                                                                                       \
+        PASSWD_SET_ATTRBUTE(shell)                                                                                     \
+        return NSS_STATUS_SUCCESS;                                                                                     \
+      }                                                                                                                \
+    }                                                                                                                  \
+                                                                                                                       \
+    free(data);                                                                                                        \
+    json_decref(users);                                                                                                \
+    return NSS_STATUS_NOTFOUND;                                                                                        \
+  leave:                                                                                                               \
+    free(data);                                                                                                        \
+    return NSS_STATUS_UNAVAIL;                                                                                         \
   }
 
-  json_array_foreach(users, i, user)
-  {
-    if (!json_is_object(user)) {
-      continue;
-    }
-    const char *user_name = json_string_value(json_object_get(user, "name"));
-
-    if (name != NULL && strcmp(user_name, name) == 0) {
-      const json_int_t id       = json_integer_value(json_object_get(user, "id"));
-      const json_int_t group_id = json_integer_value(json_object_get(user, "group_id"));
-      const char *gecos         = json_string_value(json_object_get(user, "gecos"));
-      const char *home_dir      = json_string_value(json_object_get(user, "directory"));
-      const char *shell         = json_string_value(json_object_get(user, "shell"));
-
-      PASSWD_DEFAULT(sh, shell, "/bin/bash");
-
-      char b[MAXBUF];
-      sprintf(b, "/home/%s", name);
-      PASSWD_DEFAULT(dir, home_dir, b);
-
-      int name_length    = strlen(name) + 1;
-      int pw_length      = strlen("x") + 1;
-      int gecos_length   = strlen(gecos) + 1;
-      int homedir_length = strlen(home_dir) + 1;
-      int shell_length   = strlen(shell) + 1;
-
-      int total_length = name_length + pw_length + gecos_length + shell_length + homedir_length;
-
-      if (buflen < total_length) {
-        *errnop = ERANGE;
-        return NSS_STATUS_TRYAGAIN;
-      }
-
-      pwd->pw_uid = c->uid_shift + id;
-      pwd->pw_gid = c->gid_shift + group_id;
-
-      strcpy(buf, name);
-      pwd->pw_name = buf;
-      buf += name_length;
-      strcpy(buf, "x");
-      pwd->pw_passwd = buf;
-      buf += pw_length;
-
-      strcpy(buf, gecos);
-      pwd->pw_name = buf;
-      buf += gecos_length;
-
-      strcpy(buf, home_dir);
-      pwd->pw_dir = buf;
-      buf += homedir_length;
-
-      strcpy(buf, shell);
-      pwd->pw_shell = buf;
-      buf += shell_length;
-      return NSS_STATUS_SUCCESS;
-    }
-  }
-
-  free(data);
-  json_decref(users);
-  return NSS_STATUS_NOTFOUND;
-leave:
-  free(data);
-  return NSS_STATUS_UNAVAIL;
-}
+PASSWD_ENSURE_PASSWD(by_name, const char *, user_name, string, name, "strcmp(current, user_name) == 0")
+PASSWD_ENSURE_PASSWD(by_uid, uid_t, uid, integer, id, "current == uid")
 
 PASSWD_GET_SINGLE(getpwnam_r, const char *name, "users?name=%s", name)
 PASSWD_GET_SINGLE(getpwuid_r, uid_t uid, "users?id=%d", uid)
