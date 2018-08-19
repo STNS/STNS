@@ -63,6 +63,7 @@ void stns_load_config(char *filename, stns_conf_t *c)
 }
 
 // base https://github.com/linyows/octopass/blob/master/octopass.c
+// size is always 1
 static size_t response_callback(void *buffer, size_t size, size_t nmemb, void *userp)
 {
   size_t segsize            = size * nmemb;
@@ -72,8 +73,6 @@ static size_t response_callback(void *buffer, size_t size, size_t nmemb, void *u
     syslog(LOG_ERR, "%s[L%d] Response is too large", __func__, __LINE__);
     return 0;
   }
-
-  res->data = realloc(res->data, res->size + segsize + 1);
 
   if (!res->data) {
     res->data = (char *)malloc(segsize);
