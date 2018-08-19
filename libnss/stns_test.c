@@ -2,7 +2,7 @@
 #include "toml.h"
 #include <criterion/criterion.h>
 
-Test(misc, failing)
+Test(stns_load_config, load_ok)
 {
   char *f = "test/stns.conf";
   stns_conf_t c;
