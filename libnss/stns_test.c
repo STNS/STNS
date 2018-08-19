@@ -20,3 +20,21 @@ Test(stns_load_config, load_ok)
   cr_assert_eq(c.request_timeout, 3);
   cr_assert_eq(c.request_retry, 3);
 }
+
+Test(stns_request, request_ok)
+{
+  char *f = "test/stns.conf";
+  char expect_body[1024];
+  stns_conf_t c;
+  stns_http_response_t r;
+
+  c.api_endpoint    = "https://httpbin.org";
+  c.request_timeout = 3;
+  c.request_retry   = 3;
+  c.auth_token      = NULL;
+  stns_request(&c, "user-agent", &r);
+
+  cr_assert_eq(r.status_code, (long *)200);
+  sprintf(expect_body, "{\n  \"user-agent\": \"%s\"\n}\n", STNS_VERSION_WITH_NAME);
+  cr_assert_str_eq(r.data, expect_body);
+}
