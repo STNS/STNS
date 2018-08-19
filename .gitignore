@@ -5,6 +5,6 @@ binary/
 bin/
 docker/
 releases/
-releases/
 keys/
 Godeps/
+libnss/tmp/*
