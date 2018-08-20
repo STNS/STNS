@@ -1,41 +1,4 @@
-#include "stns.h"
-#include "stns_passwd.h"
-#include "toml.h"
-#include <criterion/criterion.h>
-
-void readfile(char *file, char **result)
-{
-  FILE *fp;
-  char buff[MAXBUF];
-  int len;
-  int total;
-
-  fp = fopen(file, "r");
-  if (fp == NULL) {
-    return;
-  }
-
-  total   = 0;
-  *result = NULL;
-  for (;;) {
-    if (fgets(buff, MAXBUF, fp) == NULL) {
-      break;
-    }
-    len = strlen(buff);
-
-    if (!*result) {
-      *result = (char *)malloc(total + len + 1);
-    } else {
-      *result = realloc(*result, total + len + 1);
-    }
-    if (*result == NULL) {
-      break;
-    }
-    strcpy(*result + total, buff);
-    total += len;
-  }
-  fclose(fp);
-}
+#include "stns_test.h"
 
 Test(ensure_passwd_by_name, ok)
 {

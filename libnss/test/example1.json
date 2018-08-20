@@ -14,7 +14,7 @@
   {
     "id": 2,
     "name": "user2",
-    "password": "test",
+    "password": "",
     "group_id": 2,
     "directory": "",
     "gecos": "test",

@@ -1,7 +1,5 @@
 #include "stns.h"
-#include "stns_passwd.h"
-#include "toml.h"
-#include <criterion/criterion.h>
+#include "stns_test.h"
 
 Test(stns_load_config, load_ok)
 {
@@ -38,4 +36,38 @@ Test(stns_request, request_ok)
   cr_assert_eq(r.status_code, (long *)200);
   sprintf(expect_body, "{\n  \"user-agent\": \"%s\"\n}\n", STNS_VERSION_WITH_NAME);
   cr_assert_str_eq(r.data, expect_body);
+}
+
+void readfile(char *file, char **result)
+{
+  FILE *fp;
+  char buff[MAXBUF];
+  int len;
+  int total;
+
+  fp = fopen(file, "r");
+  if (fp == NULL) {
+    return;
+  }
+
+  total   = 0;
+  *result = NULL;
+  for (;;) {
+    if (fgets(buff, MAXBUF, fp) == NULL) {
+      break;
+    }
+    len = strlen(buff);
+
+    if (!*result) {
+      *result = (char *)malloc(total + len + 1);
+    } else {
+      *result = realloc(*result, total + len + 1);
+    }
+    if (*result == NULL) {
+      break;
+    }
+    strcpy(*result + total, buff);
+    total += len;
+  }
+  fclose(fp);
 }
