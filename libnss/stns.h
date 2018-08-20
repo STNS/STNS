@@ -15,11 +15,7 @@
 #include <pwd.h>
 #include <shadow.h>
 #include <jansson.h>
-#if defined(HAVE_THREAD_H) && !defined(_AIX)
-#include <thread.h>
-#elif defined(HAVE_PTHREAD_H)
 #include <pthread.h>
-#endif
 
 #define STNS_VERSION "2.0.0"
 #define STNS_VERSION_WITH_NAME "stns/" STNS_VERSION
