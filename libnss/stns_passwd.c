@@ -2,11 +2,12 @@
 
 #define PASSWD_DEFAULT(buf, name, def)                                                                                 \
   char buf[MAXBUF];                                                                                                    \
-  if (strlen(name) > 0) {                                                                                              \
+  if (name != NULL && strlen(name) > 0) {                                                                              \
     strcpy(buf, name);                                                                                                 \
   } else {                                                                                                             \
     strcpy(buf, def);                                                                                                  \
-  }
+  }                                                                                                                    \
+  name = buf;
 
 #define PASSWD_GET_SINGLE(method, first, format, value)                                                                \
   enum nss_status _nss_stns_##method(first, struct passwd *pwd, char *buf, size_t buflen, int *errnop)                 \
@@ -37,14 +38,13 @@
   }                                                                                                                    \
                                                                                                                        \
   strcpy(buf, name);                                                                                                   \
-  pwd->pw_name = buf;                                                                                                  \
+  pwd->pw_##name = buf;                                                                                                \
   buf += name##_length;                                                                                                \
-  buflen += name##_length;                                                                                             \
   buflen -= name##_length;
 
 #define PASSWD_ENSURE_PASSWD(method_key, key_type, key_name, json_type, json_key, match_method)                        \
-  static enum nss_status ensure_passwd_##method_key(char *data, stns_conf_t *c, key_type key_name, struct passwd *pwd, \
-                                                    char *buf, size_t buflen, int *errnop)                             \
+  enum nss_status ensure_passwd_by_##method_key(char *data, stns_conf_t *c, key_type key_name, struct passwd *pwd,     \
+                                                char *buf, size_t buflen, int *errnop)                                 \
   {                                                                                                                    \
     int i;                                                                                                             \
     json_error_t error;                                                                                                \
@@ -97,8 +97,8 @@
     return NSS_STATUS_UNAVAIL;                                                                                         \
   }
 
-PASSWD_ENSURE_PASSWD(by_name, const char *, user_name, string, name, "strcmp(current, user_name) == 0")
-PASSWD_ENSURE_PASSWD(by_uid, uid_t, uid, integer, id, "current == uid")
+PASSWD_ENSURE_PASSWD(name, const char *, user_name, string, name, (strcmp(current, user_name) == 0))
+PASSWD_ENSURE_PASSWD(uid, uid_t, uid, integer, id, "current == uid")
 
 PASSWD_GET_SINGLE(getpwnam_r, const char *name, "users?name=%s", name)
 PASSWD_GET_SINGLE(getpwuid_r, uid_t uid, "users?id=%d", uid)

@@ -30,7 +30,7 @@ depsdev: build_dir cache_dir ## Installing dependencies for development
 
 testdev: ## Test without dependencies installation
 	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Testing$(RESET)"
-	$(CC) -g -O0 $(SRCS) \
+	$(CC) -g3 -O0 $(SRCS) \
 		-lcurl -ljansson -lcriterion -o $(BUILD)/test && \
 		$(BUILD)/test --verbose
 

@@ -1,4 +1,5 @@
 #include "stns.h"
+#include "stns_passwd.h"
 #include "toml.h"
 #include <criterion/criterion.h>
 
@@ -37,8 +38,4 @@ Test(stns_request, request_ok)
   cr_assert_eq(r.status_code, (long *)200);
   sprintf(expect_body, "{\n  \"user-agent\": \"%s\"\n}\n", STNS_VERSION_WITH_NAME);
   cr_assert_str_eq(r.data, expect_body);
-}
-
-Test(ensure_passwd_by_name, ok)
-{
 }
