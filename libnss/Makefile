@@ -1,9 +1,10 @@
-# The base of this code is https://github.com/linyows/octopass/blob/master/Makefile
+# The base of this code is https://github.com/linyows/stns/blob/master/Makefile
 CC=gcc
 CFLAGS=-Wall -Wstrict-prototypes -Werror -fPIC -std=c99 -D_GNU_SOURCE
+LIBRARY=libnss_stns.so.2.0
+LINKS=libnss_stns.so.2 libnss_stns.so
 
 SRCS := $(wildcard *.c)
-LIBRARY=libnss_stns.so.2.0
 PREFIX=/usr
 LIBDIR=$(PREFIX)/lib64
 ifeq ($(wildcard $(LIBDIR)/.*),)
@@ -38,10 +39,28 @@ docker:
 	docker build --squash=true -t nss_develop .
 	docker run --cap-add=SYS_PTRACE --security-opt="seccomp=unconfined" -v `pwd`:/opt/stns -w /opt/stns -it nss_develop /bin/bash
 
-nss_stns: build_dir cache_dir ## Build nss_stns
+build: build_dir cache_dir ## Build nss_stns
 	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Building nss_stns$(RESET)"
 	$(CC) $(CFLAGS) -c stns.c -o $(BUILD)/stns.o
 	$(CC) -shared $(LD_SONAME) -o $(BUILD)/$(LIBRARY) \
 		$(BUILD)/stns.o \
 		-lcurl -ljansson
+
+integration_test: build install ## Run integration test
+	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Integration Testing$(RESET)"
+	test -d /usr/lib/x86_64-linux-gnu && ln -sf /usr/lib/libnss_stns.so.2.0 /usr/lib/x86_64-linux-gnu/libnss_stns.so.2.0 || true
+	cp stns.conf.example /etc/stns.conf
+	sed -i -e 's/^passwd:.*/passwd: files stns/g' /etc/nsswitch.conf
+	sed -i -e 's/^shadow:.*/shadow: files stns/g' /etc/nsswitch.conf
+	sed -i -e 's/^group:.*/group: files stns/g' /etc/nsswitch.conf
+	test/integration.sh
+
+install: install_lib ## Install stns
+
+install_lib: ## Install only shared objects
+	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Installing as Libraries$(RESET)"
+	[ -d $(LIBDIR) ] || install -d $(LIBDIR)
+	install $(BUILD)/$(LIBRARY) $(LIBDIR)
+	cd $(LIBDIR); for link in $(LINKS); do ln -sf $(LIBRARY) $$link ; done;
+
 .PHONY: depsdev test testdev

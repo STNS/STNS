@@ -28,6 +28,8 @@ Test(stns_request, request_ok)
   stns_http_response_t r;
 
   c.api_endpoint    = "https://httpbin.org";
+  c.user            = NULL;
+  c.password        = NULL;
   c.request_timeout = 3;
   c.request_retry   = 3;
   c.auth_token      = NULL;

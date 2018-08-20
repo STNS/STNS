@@ -37,7 +37,7 @@ void stns_load_config(char *filename, stns_conf_t *c)
     exit(1);
   }
 
-  GET_TOML_BYKEY(api_endpoint, toml_rtos, NULL);
+  GET_TOML_BYKEY(api_endpoint, toml_rtos, "http://localhost:1104/v1");
   GET_TOML_BYKEY(auth_token, toml_rtos, NULL);
   GET_TOML_BYKEY(user, toml_rtos, NULL);
   GET_TOML_BYKEY(password, toml_rtos, NULL);
@@ -92,7 +92,7 @@ static CURLcode _stns_request(stns_conf_t *c, char *path, stns_http_response_t *
 {
   char *auth;
   char *url;
-  CURL *hnd;
+  CURL *curl;
   CURLcode result;
   struct curl_slist *headers = NULL;
 
@@ -118,31 +118,39 @@ static CURLcode _stns_request(stns_conf_t *c, char *path, stns_http_response_t *
   syslog(LOG_DEBUG, "%s[L%d] send http request: %s", __func__, __LINE__, url);
 #endif
 
-  hnd = curl_easy_init();
-  curl_easy_setopt(hnd, CURLOPT_URL, url);
-  curl_easy_setopt(hnd, CURLOPT_NOPROGRESS, 1);
-  curl_easy_setopt(hnd, CURLOPT_USERAGENT, STNS_VERSION_WITH_NAME);
-  curl_easy_setopt(hnd, CURLOPT_HTTPHEADER, headers);
-  curl_easy_setopt(hnd, CURLOPT_SSL_VERIFYPEER, c->ssl_verify);
-  curl_easy_setopt(hnd, CURLOPT_TIMEOUT, c->request_timeout);
-  curl_easy_setopt(hnd, CURLOPT_WRITEFUNCTION, response_callback);
-  curl_easy_setopt(hnd, CURLOPT_WRITEDATA, res);
-  curl_easy_setopt(hnd, CURLOPT_NOSIGNAL, 1);
-  curl_easy_setopt(hnd, CURLOPT_FAILONERROR, 1);
+  curl = curl_easy_init();
+  curl_easy_setopt(curl, CURLOPT_URL, url);
+  curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 1);
+  curl_easy_setopt(curl, CURLOPT_USERAGENT, STNS_VERSION_WITH_NAME);
+  curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+  curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, c->ssl_verify);
+  curl_easy_setopt(curl, CURLOPT_TIMEOUT, c->request_timeout);
+  curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, response_callback);
+  curl_easy_setopt(curl, CURLOPT_WRITEDATA, res);
+  curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1);
+  curl_easy_setopt(curl, CURLOPT_FAILONERROR, 1);
 
-  result = curl_easy_perform(hnd);
+  if (c->user != NULL) {
+    curl_easy_setopt(curl, CURLOPT_USERNAME, c->user);
+  }
+
+  if (c->password != NULL) {
+    curl_easy_setopt(curl, CURLOPT_PASSWORD, c->password);
+  }
+
+  result = curl_easy_perform(curl);
 
   if (result != CURLE_OK) {
     syslog(LOG_ERR, "%s[L%d] http request failed: %s", __func__, __LINE__, curl_easy_strerror(result));
   } else {
     long *code;
-    curl_easy_getinfo(hnd, CURLINFO_RESPONSE_CODE, &code);
+    curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &code);
     res->status_code = code;
   }
 
   free(auth);
   free(url);
-  curl_easy_cleanup(hnd);
+  curl_easy_cleanup(curl);
   curl_slist_free_all(headers);
   return result;
 }
