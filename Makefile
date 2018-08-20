@@ -45,4 +45,7 @@ integration: ## Run integration test after Server wakeup
 	vgo test $(VERBOSE) -integration $(TEST) $(TEST_OPTIONS)
 	./misc/server stop
 
+build: ## Build server
+	GOOS=linux GOARCH=amd64 vgo build -o misc/stns
+
 .PHONY: default dist test deps 
