@@ -7,7 +7,7 @@ RESET=\033[0m
 BOLD=\033[1m
 
 default: build
-ci: depsdev test lint ## Run test and more...
+ci: depsdev test lint integration ## Run test and more...
 
 deps: ## Install dependencies
 	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Installing Dependencies$(RESET)"
