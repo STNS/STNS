@@ -1,23 +1,23 @@
 #!/bin/bash
 
 start_server() {
-  sudo make server &
+  make server &
   sleep 3
 }
 
 stop_server() {
   PID=$(cat stns.pid)
 
-  sudo kill -SIGINT $PID
+  kill -SIGINT $PID
   if [ $? -ne 0 ]; then
     echo "process not found"
     exit 1
   fi
   sleep 1
-  sudo kill -0 $PID 2>/dev/null
+  kill -0 $PID 2>/dev/null
   if [ $? -ne 1 ]; then
     echo "sent signal as SIGKILL"
-    sudo kill -SIGKILL $PID
+    kill -SIGKILL $PID
   fi
 }
 

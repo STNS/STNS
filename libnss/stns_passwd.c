@@ -134,7 +134,6 @@ enum nss_status _nss_stns_setpwent(void)
 {
   int curl_result;
   stns_http_response_t r;
-  json_error_t error;
   stns_conf_t c;
   stns_load_config(STNS_CONFIG_FILE, &c);
 
@@ -185,7 +184,6 @@ enum nss_status inner_nss_stns_getpwent_r(stns_conf_t *c, struct passwd *pwd, ch
 
 enum nss_status _nss_stns_getpwent_r(struct passwd *pwd, char *buf, size_t buflen, int *errnop)
 {
-  enum nss_status ret = NSS_STATUS_SUCCESS;
   stns_conf_t c;
   stns_load_config(STNS_CONFIG_FILE, &c);
   return inner_nss_stns_getpwent_r(&c, pwd, buf, buflen, errnop);

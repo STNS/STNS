@@ -19,9 +19,7 @@
 void stns_load_config(char *filename, stns_conf_t *c)
 {
   char errbuf[200];
-  const char *key;
   const char *raw;
-  toml_array_t *arr;
 
   FILE *fp = fopen(filename, "r");
   if (!fp) {
