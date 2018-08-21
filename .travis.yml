@@ -5,7 +5,7 @@ before_install:
 script:
 - make ci
 - cd libnss && sudo make test
-- cd libnss && sudo make integration_test
+- sudo make integration_test
 go:
   - 1.10.2
 notifications:
