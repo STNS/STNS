@@ -1,11 +1,12 @@
 language: go
+sudo: required
 before_install:
 - sudo apt-get -qqy update
 - sudo apt-get -qqy install build-essential git curl libcurl4-openssl-dev libjansson-dev gdb sudo
 script:
-- make ci
+- sudo make ci
 - cd libnss
-- make ci
+- sudo make ci
 go:
   - 1.10.2
 notifications:
