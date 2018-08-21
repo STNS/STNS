@@ -1,18 +1,18 @@
 include = "include.toml"
 
 [users.test]
-id = 1
+id = 10001
 password = "test"
 
 [users.foo]
-id = 2
+id = 10002
 password = "test"
 
 [groups.test]
-id = 1
+id = 10001
 users = ["test"]
 
 [groups.bar]
-id = 2
+id = 10002
 users = ["foo"]
 
