@@ -161,6 +161,9 @@ int stns_request(stns_conf_t *c, char *path, stns_http_response_t *res)
   result = _stns_request(c, path, res);
   while (1) {
     if (result != CURLE_OK && retry_count > 0) {
+      if (result == CURLE_HTTP_RETURNED_ERROR)
+        break;
+
       sleep(1);
       result = _stns_request(c, path, res);
       retry_count--;
