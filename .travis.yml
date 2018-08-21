@@ -4,9 +4,9 @@ before_install:
 - sudo apt-get -qqy update
 - sudo apt-get -qqy install build-essential git curl libcurl4-openssl-dev libjansson-dev gdb sudo
 script:
-- sudo make ci
+- sudo PATH=$PATH GOPATH=$GOPATH make ci
 - cd libnss
-- sudo make ci
+- sudo PATH=$PATH GOPATH=$GOPATH make ci
 go:
   - 1.10.2
 notifications:
