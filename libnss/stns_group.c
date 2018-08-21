@@ -1,11 +1,10 @@
 #include "stns.h"
 
-pthread_mutex_t grent_mutex = PTHREAD_MUTEX_INITIALIZER;
-static json_t *entries      = NULL;
-static int entry_idx        = 0;
+static json_t *entries = NULL;
+static int entry_idx   = 0;
 
 #define GROUP_GET_SINGLE(method, first, format, value)                                                                 \
-  enum nss_status _nss_stns_##method(first, struct group *grbuf, char *buf, size_t buflen, int *errnop)                \
+  enum nss_status _nss_stns_##method(first, struct group *rbuf, char *buf, size_t buflen, int *errnop)                 \
   {                                                                                                                    \
     int curl_result;                                                                                                   \
     stns_http_response_t r;                                                                                            \
@@ -21,7 +20,7 @@ static int entry_idx        = 0;
       return NSS_STATUS_UNAVAIL;                                                                                       \
     }                                                                                                                  \
                                                                                                                        \
-    return ensure_group_by_##value(r.data, &c, value, grbuf, buf, buflen, errnop);                                     \
+    return ensure_group_by_##value(r.data, &c, value, rbuf, buf, buflen, errnop);                                      \
   }
 
 #define GROUP_SET_ATTRBUTE(name)                                                                                       \
@@ -33,21 +32,22 @@ static int entry_idx        = 0;
   }                                                                                                                    \
                                                                                                                        \
   strcpy(buf, name);                                                                                                   \
-  grbuf->gr_##name = buf;                                                                                              \
+  rbuf->gr_##name = buf;                                                                                               \
   buf += name##_length;                                                                                                \
   buflen -= name##_length;
 
 #define GROUP_ENSURE(group)                                                                                            \
   const json_int_t id = json_integer_value(json_object_get(group, "id"));                                              \
   const char *name    = json_string_value(json_object_get(group, "name"));                                             \
-  json_t *members     = json_object_get(group, "users");                                                               \
   char passwd[]       = "x";                                                                                           \
                                                                                                                        \
-  grbuf->gr_gid = c->gid_shift + id;                                                                                   \
+  rbuf->gr_gid = c->gid_shift + id;                                                                                    \
                                                                                                                        \
   GROUP_SET_ATTRBUTE(name)                                                                                             \
   GROUP_SET_ATTRBUTE(passwd)                                                                                           \
-  grbuf->gr_mem = (char **)buf;                                                                                        \
+  rbuf->gr_mem = (char **)buf;                                                                                         \
+                                                                                                                       \
+  json_t *members = json_object_get(group, "users");                                                                   \
   int i;                                                                                                               \
   for (i = 0; i < json_array_size(members); i++) {                                                                     \
     json_t *member = json_array_get(members, i);                                                                       \
@@ -58,14 +58,14 @@ static int entry_idx        = 0;
     if (buflen <= strlen(user)) {                                                                                      \
       return NSS_STATUS_TRYAGAIN;                                                                                      \
     }                                                                                                                  \
-    grbuf->gr_mem[i] = strdup(user);                                                                                   \
-                                                                                                                       \
-    buf += strlen(grbuf->gr_mem[i]) + 1;                                                                               \
-    buflen -= strlen(grbuf->gr_mem[i]) + 1;                                                                            \
-  }
+    rbuf->gr_mem[i] = strdup(user);                                                                                    \
+    buf += strlen(rbuf->gr_mem[i]) + 1;                                                                                \
+    buflen -= strlen(rbuf->gr_mem[i]) + 1;                                                                             \
+  }                                                                                                                    \
+  rbuf->gr_mem[json_array_size(members)] = NULL;
 
 #define GROUP_ENSURE_BY(method_key, key_type, key_name, json_type, json_key, match_method)                             \
-  enum nss_status ensure_group_by_##method_key(char *data, stns_conf_t *c, key_type key_name, struct group *grbuf,     \
+  enum nss_status ensure_group_by_##method_key(char *data, stns_conf_t *c, key_type key_name, struct group *rbuf,      \
                                                char *buf, size_t buflen, int *errnop)                                  \
   {                                                                                                                    \
     int i;                                                                                                             \
@@ -105,81 +105,4 @@ GROUP_ENSURE_BY(gid, gid_t, gid, integer, id, current == gid)
 
 GROUP_GET_SINGLE(getgrnam_r, const char *name, "groups?name=%s", name)
 GROUP_GET_SINGLE(getgrgid_r, gid_t gid, "groups?id=%d", gid)
-
-enum nss_status inner_nss_stns_setgrent(char *data, stns_conf_t *c)
-{
-  pthread_mutex_lock(&grent_mutex);
-  json_error_t error;
-
-  entries = json_loads(data, 0, &error);
-
-  if (entries == NULL) {
-    syslog(LOG_ERR, "%s[L%d] json parse error: %s", __func__, __LINE__, error.text);
-    free(data);
-    pthread_mutex_unlock(&grent_mutex);
-    return NSS_STATUS_UNAVAIL;
-  }
-  entry_idx = 0;
-
-  pthread_mutex_unlock(&grent_mutex);
-  return NSS_STATUS_SUCCESS;
-}
-
-enum nss_status _nss_stns_setgrent(void)
-{
-  int curl_result;
-  stns_http_response_t r;
-  stns_conf_t c;
-  stns_load_config(STNS_CONFIG_FILE, &c);
-
-  curl_result = stns_request(&c, "groups", &r);
-  if (curl_result != CURLE_OK) {
-    return NSS_STATUS_UNAVAIL;
-  }
-
-  return inner_nss_stns_setgrent(r.data, &c);
-}
-
-enum nss_status _nss_stns_endgrent(void)
-{
-  pthread_mutex_lock(&grent_mutex);
-  json_decref(entries);
-  entry_idx = 0;
-  pthread_mutex_unlock(&grent_mutex);
-  return NSS_STATUS_SUCCESS;
-}
-
-enum nss_status inner_nss_stns_getgrent_r(stns_conf_t *c, struct group *grbuf, char *buf, size_t buflen, int *errnop)
-{
-  enum nss_status ret = NSS_STATUS_SUCCESS;
-  pthread_mutex_lock(&grent_mutex);
-
-  if (entries == NULL) {
-    ret = _nss_stns_setgrent();
-  }
-
-  if (ret != NSS_STATUS_SUCCESS) {
-    pthread_mutex_unlock(&grent_mutex);
-    return ret;
-  }
-
-  if (entry_idx >= json_array_size(entries)) {
-    *errnop = ENOENT;
-    pthread_mutex_unlock(&grent_mutex);
-    return NSS_STATUS_NOTFOUND;
-  }
-
-  json_t *group = json_array_get(entries, entry_idx);
-
-  GROUP_ENSURE(group);
-  entry_idx++;
-  pthread_mutex_unlock(&grent_mutex);
-  return NSS_STATUS_SUCCESS;
-}
-
-enum nss_status _nss_stns_getgrent_r(struct group *grbuf, char *buf, size_t buflen, int *errnop)
-{
-  stns_conf_t c;
-  stns_load_config(STNS_CONFIG_FILE, &c);
-  return inner_nss_stns_getgrent_r(&c, grbuf, buf, buflen, errnop);
-}
+STNS_SET_ENTRIES(gr, GROUP, group, groups)
