@@ -26,10 +26,10 @@ build_dir: ## Create directory for build
 depsdev: build_dir ## Installing dependencies for development
 	test -f $(BUILD)/criterion.tar.bz2 || curl -sL https://github.com/Snaipe/Criterion/releases/download/v$(CRITERION_VERSION)/criterion-v$(CRITERION_VERSION)-linux-x86_64.tar.bz2 -o $(BUILD)/criterion.tar.bz2
 	cd $(BUILD); tar xf criterion.tar.bz2; cd ../
-	test -d /usr/include/criterion || mv $(BUILD)/criterion-v$(CRITERION_VERSION)/include/criterion /usr/include/criterion && mv $(BUILD)/criterion-v$(CRITERION_VERSION)/lib/libcriterion.* $(LIBDIR)/
+	test -d /usr/include/criterion || sudo mv $(BUILD)/criterion-v$(CRITERION_VERSION)/include/criterion /usr/include/criterion && sudo mv $(BUILD)/criterion-v$(CRITERION_VERSION)/lib/libcriterion.* $(LIBDIR)/
 	test -f $(BUILD)/shunit2.tgz || curl -sL https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/shunit2/shunit2-$(SHUNIT_VERSION).tgz -o $(BUILD)/shunit2.tgz
 	cd $(BUILD); tar xf shunit2.tgz; cd ../
-	test -d /usr/include/shunit2 || mv $(BUILD)/shunit2-$(SHUNIT_VERSION)/ /usr/include/shunit2
+	test -d /usr/include/shunit2 || sudo mv $(BUILD)/shunit2-$(SHUNIT_VERSION)/ /usr/include/shunit2
 
 testdev: ## Test without dependencies installation
 	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Testing$(RESET)"

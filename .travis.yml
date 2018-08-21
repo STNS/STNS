@@ -1,7 +1,7 @@
 language: go
 before_install:
 - sudo apt-get -qqy update
-- sudo apt-get -qqy install build-essential git curl libcurl4-openssl-dev libjansson-dev gdb
+- sudo apt-get -qqy install build-essential git curl libcurl4-openssl-dev libjansson-dev gdb sudo
 script:
 - make ci
 - cd libnss
