@@ -37,7 +37,7 @@ testdev: ## Test without dependencies installation
 		-lcurl -ljansson -lcriterion -o $(BUILD)/test && \
 		$(BUILD)/test --verbose
 
-build: build_dir cache_dir ## Build nss_stns
+build: build_dir ## Build nss_stns
 	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Building nss_stns$(RESET)"
 	$(CC) $(CFLAGS) -c toml.c -o $(BUILD)/toml.o
 	$(CC) $(CFLAGS) -c stns_passwd.c -o $(BUILD)/stns_passwd.o
