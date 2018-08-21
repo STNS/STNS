@@ -49,7 +49,7 @@ build: ## Build server
 	GOOS=linux GOARCH=amd64 vgo build -o misc/stns
 
 docker:
-	docker build --squash=true -t nss_develop .
+	docker build -t nss_develop .
 	docker run --cap-add=SYS_PTRACE --security-opt="seccomp=unconfined" -v `pwd`:/go/src/github.com/STNS/STNS -w /go/src/github.com/STNS/STNS -it nss_develop /bin/bash
 
 .PHONY: default dist test deps docker
