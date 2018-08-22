@@ -77,7 +77,8 @@ extern void stns_make_lockfile(char *);
       key_type current = json_##json_type##_value(json_object_get(leaf, #json_key));                                   \
                                                                                                                        \
       if (match_method) {                                                                                              \
-        ltype##_ENSURE(leaf) free(data);                                                                               \
+        ltype##_ENSURE(leaf);                                                                                          \
+        free(data);                                                                                                    \
         json_decref(root);                                                                                             \
         return NSS_STATUS_SUCCESS;                                                                                     \
       }                                                                                                                \
@@ -87,6 +88,7 @@ extern void stns_make_lockfile(char *);
     json_decref(root);                                                                                                 \
     return NSS_STATUS_NOTFOUND;                                                                                        \
   leave:                                                                                                               \
+    free(data);                                                                                                        \
     return NSS_STATUS_UNAVAIL;                                                                                         \
   }
 
