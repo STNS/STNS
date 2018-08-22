@@ -60,14 +60,14 @@ func TestGetUserList(t *testing.T) {
 			gotCount, expectedCount)
 	}
 
-	expectedHighestID := "2"
+	expectedHighestID := "10002"
 	gotHighestID := res.Header.Get("User-Highest-Id")
 	if gotHighestID != expectedHighestID {
 		t.Errorf("GetUsers API returned wrong highest id: got %v expected %v",
 			gotHighestID, expectedHighestID)
 	}
 
-	expectedLowestID := "1"
+	expectedLowestID := "10001"
 	gotLowestID := res.Header.Get("User-Lowest-Id")
 	if gotLowestID != expectedLowestID {
 		t.Errorf("GetUsers API returned wrong lowest id: got %v expected %v",
@@ -120,7 +120,7 @@ func TestGetUserByID(t *testing.T) {
 		t.Skip()
 	}
 
-	res, err := http.Get(testEndpoint + "/users?id=1")
+	res, err := http.Get(testEndpoint + "/users?id=10001")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -185,14 +185,14 @@ func TestGetGroupList(t *testing.T) {
 			gotCount, expectedCount)
 	}
 
-	expectedHighestID := "2"
+	expectedHighestID := "10002"
 	gotHighestID := res.Header.Get("Group-Highest-Id")
 	if gotHighestID != expectedHighestID {
 		t.Errorf("GetGroups API returned wrong highest id: got %v expected %v",
 			gotHighestID, expectedHighestID)
 	}
 
-	expectedLowestID := "1"
+	expectedLowestID := "10001"
 	gotLowestID := res.Header.Get("Group-Lowest-Id")
 	if gotLowestID != expectedLowestID {
 		t.Errorf("GetGroups API returned wrong lowest id: got %v expected %v",
@@ -245,7 +245,7 @@ func TestGetGroupByID(t *testing.T) {
 		t.Skip()
 	}
 
-	res, err := http.Get(testEndpoint + "/groups?id=1")
+	res, err := http.Get(testEndpoint + "/groups?id=10001")
 	if err != nil {
 		t.Fatal(err)
 	}

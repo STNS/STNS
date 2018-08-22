@@ -7,7 +7,7 @@ RESET=\033[0m
 BOLD=\033[1m
 
 default: build
-ci: depsdev test lint ## Run test and more...
+ci: depsdev test lint integration ## Run test and more...
 
 deps: ## Install dependencies
 	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Installing Dependencies$(RESET)"
@@ -45,4 +45,11 @@ integration: ## Run integration test after Server wakeup
 	vgo test $(VERBOSE) -integration $(TEST) $(TEST_OPTIONS)
 	./misc/server stop
 
-.PHONY: default dist test deps 
+build: ## Build server
+	GOOS=linux GOARCH=amd64 vgo build -o misc/stns
+
+docker:
+	docker build -t nss_develop .
+	docker run --cap-add=SYS_PTRACE --security-opt="seccomp=unconfined" -v `pwd`:/go/src/github.com/STNS/STNS -w /go/src/github.com/STNS/STNS -it nss_develop /bin/bash
+
+.PHONY: default dist test deps docker
