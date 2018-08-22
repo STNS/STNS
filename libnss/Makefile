@@ -17,8 +17,8 @@ BUILD=tmp/libs
 CRITERION_VERSION=2.3.2
 SHUNIT_VERSION=2.1.6
 
-ci: test integration_test
-test: depsdev testdev ## Test with dependencies installation
+ci: depsdev test integration_test
+test: testdev ## Test with dependencies installation
 
 build_dir: ## Create directory for build
 	test -d $(BUILD) || mkdir -p $(BUILD)

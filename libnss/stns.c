@@ -47,6 +47,7 @@ void stns_load_config(char *filename, stns_conf_t *c)
   GET_TOML_BYKEY(ssl_verify, toml_rtob, 1);
   GET_TOML_BYKEY(request_timeout, toml_rtoi, 10);
   GET_TOML_BYKEY(request_retry, toml_rtoi, 3);
+  GET_TOML_BYKEY(request_locktime, toml_rtoi, 60);
 
   // 末尾の/を取り除く
   const int len = strlen(c->api_endpoint);
@@ -153,17 +154,45 @@ static CURLcode _stns_request(stns_conf_t *c, char *path, stns_http_response_t *
   return result;
 }
 
+int stns_request_available(char *path, stns_conf_t *c)
+{
+  struct stat st;
+  if (stat(path, &st) != 0) {
+    return 1;
+  }
+
+  unsigned long now  = time(NULL);
+  unsigned long diff = now - st.st_ctime;
+  if (diff > c->request_locktime) {
+    remove(path);
+    return 1;
+  }
+  return 0;
+}
+
+void stns_make_lockfile(char *path)
+{
+  FILE *fp;
+  fp = fopen(path, "w");
+  if (fp) {
+    fclose(fp);
+  }
+}
+
 int stns_request(stns_conf_t *c, char *path, stns_http_response_t *res)
 {
   CURLcode result;
   int retry_count = c->request_retry;
 
+  if (!stns_request_available(STNS_LOCK_FILE, c))
+    return CURLE_COULDNT_CONNECT;
+
   result = _stns_request(c, path, res);
   while (1) {
     if (result != CURLE_OK && retry_count > 0) {
-      if (result == CURLE_HTTP_RETURNED_ERROR)
+      if (result == CURLE_HTTP_RETURNED_ERROR) {
         break;
-
+      }
       sleep(1);
       result = _stns_request(c, path, res);
       retry_count--;
@@ -171,5 +200,10 @@ int stns_request(stns_conf_t *c, char *path, stns_http_response_t *res)
       break;
     }
   }
+
+  if (result == CURLE_COULDNT_CONNECT) {
+    stns_make_lockfile(STNS_LOCK_FILE);
+  }
+
   return result;
 }

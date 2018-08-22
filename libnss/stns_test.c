@@ -1,6 +1,40 @@
 #include "stns.h"
 #include "stns_test.h"
 
+void readfile(char *file, char **result)
+{
+  FILE *fp;
+  char buff[MAXBUF];
+  int len;
+  int total;
+
+  fp = fopen(file, "r");
+  if (fp == NULL) {
+    return;
+  }
+
+  total   = 0;
+  *result = NULL;
+  for (;;) {
+    if (fgets(buff, MAXBUF, fp) == NULL) {
+      break;
+    }
+    len = strlen(buff);
+
+    if (!*result) {
+      *result = (char *)malloc(total + len + 1);
+    } else {
+      *result = realloc(*result, total + len + 1);
+    }
+    if (*result == NULL) {
+      break;
+    }
+    strcpy(*result + total, buff);
+    total += len;
+  }
+  fclose(fp);
+}
+
 Test(stns_load_config, load_ok)
 {
   char *f = "test/stns.conf";
@@ -40,36 +74,16 @@ Test(stns_request, request_ok)
   cr_assert_str_eq(r.data, expect_body);
 }
 
-void readfile(char *file, char **result)
+Test(stns_request_available, ok)
 {
-  FILE *fp;
-  char buff[MAXBUF];
-  int len;
-  int total;
+  char *f = "test/stns.conf";
+  char expect_body[1024];
+  stns_conf_t c;
+  stns_http_response_t r;
 
-  fp = fopen(file, "r");
-  if (fp == NULL) {
-    return;
-  }
-
-  total   = 0;
-  *result = NULL;
-  for (;;) {
-    if (fgets(buff, MAXBUF, fp) == NULL) {
-      break;
-    }
-    len = strlen(buff);
-
-    if (!*result) {
-      *result = (char *)malloc(total + len + 1);
-    } else {
-      *result = realloc(*result, total + len + 1);
-    }
-    if (*result == NULL) {
-      break;
-    }
-    strcpy(*result + total, buff);
-    total += len;
-  }
-  fclose(fp);
+  c.request_locktime = 1;
+  stns_make_lockfile(STNS_LOCK_FILE);
+  cr_assert_eq(stns_request_available(STNS_LOCK_FILE, &c), 0);
+  sleep(3);
+  cr_assert_eq(stns_request_available(STNS_LOCK_FILE, &c), 1);
 }

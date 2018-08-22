@@ -5,6 +5,9 @@ test_id()
   assertEquals \
     "uid=10001(test) gid=0(root) groups=0(root),10001(test)" \
     "$(id test)"
+  assertEquals \
+    "" \
+    "$(id notfound)"
 }
 
 test_getent_passwd()

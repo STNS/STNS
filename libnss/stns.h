@@ -16,6 +16,8 @@
 #include <shadow.h>
 #include <jansson.h>
 #include <pthread.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 #define STNS_VERSION "2.0.0"
 #define STNS_VERSION_WITH_NAME "stns/" STNS_VERSION
@@ -23,6 +25,7 @@
 #define STNS_MAX_BUFFER_SIZE (10 * 1024 * 1024)
 #define STNS_CONFIG_FILE "/etc/stns/client/stns.conf"
 #define MAXBUF 1024
+#define STNS_LOCK_FILE "/var/tmp/.stns.lock"
 
 typedef struct stns_http_response_t stns_http_response_t;
 struct stns_http_response_t {
@@ -44,10 +47,13 @@ struct stns_conf_t {
   int ssl_verify;
   int request_timeout;
   int request_retry;
+  int request_locktime;
 };
 
 extern void stns_load_config(char *, stns_conf_t *);
 extern int stns_request(stns_conf_t *, char *, stns_http_response_t *);
+extern int stns_request_available(char *, stns_conf_t *);
+extern void stns_make_lockfile(char *);
 
 #define STNS_SET_ENTRIES(type, ltype, resource, query)                                                                 \
   pthread_mutex_t type##ent_mutex = PTHREAD_MUTEX_INITIALIZER;                                                         \
