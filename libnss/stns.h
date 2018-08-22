@@ -55,6 +55,83 @@ extern int stns_request(stns_conf_t *, char *, stns_http_response_t *);
 extern int stns_request_available(char *, stns_conf_t *);
 extern void stns_make_lockfile(char *);
 
+#define STNS_ENSURE_BY(method_key, key_type, key_name, json_type, json_key, match_method, resource, ltype)             \
+  enum nss_status ensure_##resource##_by_##method_key(char *data, stns_conf_t *c, key_type key_name,                   \
+                                                      struct resource *rbuf, char *buf, size_t buflen, int *errnop)    \
+  {                                                                                                                    \
+    int i;                                                                                                             \
+    json_error_t error;                                                                                                \
+    json_t *leaf;                                                                                                      \
+    json_t *root = json_loads(data, 0, &error);                                                                        \
+                                                                                                                       \
+    if (root == NULL) {                                                                                                \
+      syslog(LOG_ERR, "%s[L%d] json parse error: %s", __func__, __LINE__, error.text);                                 \
+      goto leave;                                                                                                      \
+    }                                                                                                                  \
+                                                                                                                       \
+    json_array_foreach(root, i, leaf)                                                                                  \
+    {                                                                                                                  \
+      if (!json_is_object(leaf)) {                                                                                     \
+        continue;                                                                                                      \
+      }                                                                                                                \
+      key_type current = json_##json_type##_value(json_object_get(leaf, #json_key));                                   \
+                                                                                                                       \
+      if (match_method) {                                                                                              \
+        ltype##_ENSURE(leaf) free(data);                                                                               \
+        json_decref(root);                                                                                             \
+        return NSS_STATUS_SUCCESS;                                                                                     \
+      }                                                                                                                \
+    }                                                                                                                  \
+                                                                                                                       \
+    free(data);                                                                                                        \
+    json_decref(root);                                                                                                 \
+    return NSS_STATUS_NOTFOUND;                                                                                        \
+  leave:                                                                                                               \
+    return NSS_STATUS_UNAVAIL;                                                                                         \
+  }
+
+#define STNS_SET_DEFAULT_VALUE(buf, name, def)                                                                         \
+  char buf[MAXBUF];                                                                                                    \
+  if (name != NULL && strlen(name) > 0) {                                                                              \
+    strcpy(buf, name);                                                                                                 \
+  } else {                                                                                                             \
+    strcpy(buf, def);                                                                                                  \
+  }                                                                                                                    \
+  name = buf;
+
+#define STNS_GET_SINGLE_VALUE_METHOD(method, first, format, value, resource)                                           \
+  enum nss_status _nss_stns_##method(first, struct resource *rbuf, char *buf, size_t buflen, int *errnop)              \
+  {                                                                                                                    \
+    int curl_result;                                                                                                   \
+    stns_http_response_t r;                                                                                            \
+    stns_conf_t c;                                                                                                     \
+    char url[MAXBUF];                                                                                                  \
+                                                                                                                       \
+    stns_load_config(STNS_CONFIG_FILE, &c);                                                                            \
+                                                                                                                       \
+    sprintf(url, format, value);                                                                                       \
+    curl_result = stns_request(&c, url, &r);                                                                           \
+                                                                                                                       \
+    if (curl_result != CURLE_OK) {                                                                                     \
+      return NSS_STATUS_UNAVAIL;                                                                                       \
+    }                                                                                                                  \
+                                                                                                                       \
+    return ensure_##resource##_by_##value(r.data, &c, value, rbuf, buf, buflen, errnop);                               \
+  }
+
+#define SET_ATTRBUTE(type, name, attr)                                                                                 \
+  int name##_length = strlen(name) + 1;                                                                                \
+                                                                                                                       \
+  if (buflen < name##_length) {                                                                                        \
+    *errnop = ERANGE;                                                                                                  \
+    return NSS_STATUS_TRYAGAIN;                                                                                        \
+  }                                                                                                                    \
+                                                                                                                       \
+  strcpy(buf, name);                                                                                                   \
+  rbuf->type##_##attr = buf;                                                                                           \
+  buf += name##_length;                                                                                                \
+  buflen -= name##_length;
+
 #define STNS_SET_ENTRIES(type, ltype, resource, query)                                                                 \
   pthread_mutex_t type##ent_mutex = PTHREAD_MUTEX_INITIALIZER;                                                         \
   enum nss_status inner_nss_stns_set##type##ent(char *data, stns_conf_t *c)                                            \
