@@ -2,10 +2,10 @@
 CC=gcc
 CFLAGS=-Wall -Wstrict-prototypes -Werror -fPIC -std=c99 -D_GNU_SOURCE
 LIBRARY=libnss_stns.so.2.0
+KEY_WRAPPER=stns-key-wrapper
 LINKS=libnss_stns.so.2 libnss_stns.so
 LD_SONAME=-Wl,-soname,libnss_stns.so.2
 
-SRCS := $(wildcard *.c)
 PREFIX=/usr
 LIBDIR=$(PREFIX)/lib64
 ifeq ($(wildcard $(LIBDIR)/.*),)
@@ -33,10 +33,10 @@ depsdev: build_dir ## Installing dependencies for development
 
 testdev: ## Test without dependencies installation
 	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Testing$(RESET)"
-	$(CC) -g3 -O0 $(SRCS) \
+	$(CC) -g3 -O0 stns.c stns_group.c toml.c stns_shadow.c stns_passwd.c stns_test.c stns_group_test.c stns_shadow_test.c stns_passwd_test.c \
 		-lcurl -ljansson -lcriterion -o $(BUILD)/test && \
 		$(BUILD)/test --verbose
-build: nss_build
+build: nss_build key_wrapper_build
 nss_build: build_dir ## Build nss_stns
 	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Building nss_stns$(RESET)"
 	$(CC) $(CFLAGS) -c toml.c -o $(BUILD)/toml.o
@@ -50,6 +50,16 @@ nss_build: build_dir ## Build nss_stns
 		$(BUILD)/toml.o \
 		$(BUILD)/stns_group.o \
 		$(BUILD)/stns_shadow.o \
+		-lcurl -ljansson
+key_wrapper_build: build_dir ## Build nss_stns
+	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Building nss_stns$(RESET)"
+	$(CC) $(CFLAGS) -c toml.c -o $(BUILD)/toml.o
+	$(CC) $(CFLAGS) -c stns_key_wrapper.c -o $(BUILD)/stns_key_wrapper.o
+	$(CC) $(CFLAGS) -c stns.c -o $(BUILD)/stns.o
+	$(CC) -o $(BUILD)/$(KEY_WRAPPER) \
+		$(BUILD)/stns.o \
+		$(BUILD)/stns_key_wrapper.o \
+		$(BUILD)/toml.o \
 		-lcurl -ljansson
 
 integration_test: build install depsdev ## Run integration test
