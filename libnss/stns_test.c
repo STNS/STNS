@@ -46,6 +46,7 @@ Test(stns_load_config, load_ok)
   cr_assert_str_eq(c.user, "test_user");
   cr_assert_str_eq(c.password, "test_password");
   cr_assert_str_eq(c.chain_ssh_wrapper, "/usr/libexec/openssh/ssh-ldap-wrapper");
+  cr_assert_str_eq(c.query_wrapper, "/usr/local/bin/stns-wrapper");
   cr_assert_str_eq(c.http_proxy, "http://your.proxy.com");
   cr_assert_eq(c.ssl_verify, 1);
   cr_assert_eq(c.uid_shift, 1000);
@@ -54,7 +55,7 @@ Test(stns_load_config, load_ok)
   cr_assert_eq(c.request_retry, 3);
 }
 
-Test(stns_request, request_ok)
+Test(stns_request, http_request)
 {
   char expect_body[1024];
   stns_conf_t c;
@@ -63,6 +64,7 @@ Test(stns_request, request_ok)
   c.api_endpoint    = "https://httpbin.org";
   c.user            = NULL;
   c.password        = NULL;
+  c.query_wrapper   = NULL;
   c.request_timeout = 3;
   c.request_retry   = 3;
   c.auth_token      = NULL;
@@ -71,6 +73,31 @@ Test(stns_request, request_ok)
   cr_assert_eq(r.status_code, (long *)200);
   sprintf(expect_body, "{\n  \"user-agent\": \"%s\"\n}\n", STNS_VERSION_WITH_NAME);
   cr_assert_str_eq(r.data, expect_body);
+}
+
+Test(stns_request, wrapper_request_ok)
+{
+  stns_conf_t c;
+  stns_http_response_t r;
+  int res;
+
+  c.query_wrapper = "test/dummy_arg.sh";
+
+  res = stns_request(&c, "test", &r);
+  cr_assert_str_eq(r.data, "ok\n");
+  cr_assert_eq(res, 1);
+}
+
+Test(stns_request, wrapper_request_ng)
+{
+  stns_conf_t c;
+  stns_http_response_t r;
+  int res;
+
+  c.query_wrapper = "test/dummy_arg.sh";
+
+  res = stns_request(&c, NULL, &r);
+  cr_assert_eq(res, 0);
 }
 
 Test(stns_request_available, ok)
@@ -90,7 +117,7 @@ Test(stns_exec_cmd, ok)
 {
   char expect_body[1024];
   char *result = malloc(1);
-  int r        = stns_exec_cmd("test/dummy.sh", result);
+  int r        = stns_exec_cmd("test/dummy.sh", NULL, result);
 
   cr_assert_eq(r, 1);
   cr_expect_str_eq(result, "aaabbbccc\nddd\n");

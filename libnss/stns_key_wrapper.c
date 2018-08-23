@@ -89,7 +89,7 @@ int main(int argc, char *argv[])
 
   if (c.chain_ssh_wrapper != NULL) {
     char *result = malloc(1);
-    if (stns_exec_cmd(c.chain_ssh_wrapper, result)) {
+    if (stns_exec_cmd(c.chain_ssh_wrapper, argv[optind], result)) {
       key_size = strlen(result);
       keys     = (char *)realloc(keys, key_size + strlen(keys) + 1);
       memcpy(&(keys[size]), result, (size_t)key_size);

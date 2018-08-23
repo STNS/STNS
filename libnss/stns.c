@@ -39,6 +39,7 @@ void stns_load_config(char *filename, stns_conf_t *c)
   GET_TOML_BYKEY(auth_token, toml_rtos, NULL);
   GET_TOML_BYKEY(user, toml_rtos, NULL);
   GET_TOML_BYKEY(password, toml_rtos, NULL);
+  GET_TOML_BYKEY(query_wrapper, toml_rtos, NULL);
   GET_TOML_BYKEY(chain_ssh_wrapper, toml_rtos, NULL);
   GET_TOML_BYKEY(http_proxy, toml_rtos, NULL);
 
@@ -86,8 +87,35 @@ static size_t response_callback(void *buffer, size_t size, size_t nmemb, void *u
   return segsize;
 }
 
+static int _stns_wrapper_request(stns_conf_t *c, char *path, stns_http_response_t *res)
+{
+  int rsize    = 0;
+  char *result = malloc(1);
+  res->data    = NULL;
+  res->size    = 0;
+
+  if (stns_exec_cmd(c->query_wrapper, path, result)) {
+    rsize = strlen(result);
+
+    if (res->data) {
+      res->data = (char *)realloc(res->data, rsize + 1);
+    } else {
+      res->data = (char *)malloc(rsize + 1);
+    }
+
+    memcpy(&(res->data[0]), result, (size_t)rsize);
+    res->data[rsize] = '\0';
+  } else {
+    free(result);
+    return 0;
+  }
+
+  free(result);
+  return 1;
+}
+
 // base https://github.com/linyows/octopass/blob/master/octopass.c
-static CURLcode _stns_request(stns_conf_t *c, char *path, stns_http_response_t *res)
+static CURLcode _stns_http_request(stns_conf_t *c, char *path, stns_http_response_t *res)
 {
   char *auth;
   char *url;
@@ -187,18 +215,22 @@ int stns_request(stns_conf_t *c, char *path, stns_http_response_t *res)
   if (!stns_request_available(STNS_LOCK_FILE, c))
     return CURLE_COULDNT_CONNECT;
 
-  result = _stns_request(c, path, res);
-  while (1) {
-    if (result != CURLE_OK && retry_count > 0) {
-      if (result == CURLE_HTTP_RETURNED_ERROR) {
+  if (c->query_wrapper == NULL) {
+    result = _stns_http_request(c, path, res);
+    while (1) {
+      if (result != CURLE_OK && retry_count > 0) {
+        if (result == CURLE_HTTP_RETURNED_ERROR) {
+          break;
+        }
+        sleep(1);
+        result = _stns_http_request(c, path, res);
+        retry_count--;
+      } else {
         break;
       }
-      sleep(1);
-      result = _stns_request(c, path, res);
-      retry_count--;
-    } else {
-      break;
     }
+  } else {
+    result = _stns_wrapper_request(c, path, res);
   }
 
   if (result == CURLE_COULDNT_CONNECT) {
@@ -208,12 +240,22 @@ int stns_request(stns_conf_t *c, char *path, stns_http_response_t *res)
   return result;
 }
 
-int stns_exec_cmd(char *cmd, char *result)
+int stns_exec_cmd(char *cmd, char *arg, char *result)
 {
   FILE *fp;
-  if ((fp = popen(cmd, "r")) == NULL) {
-    return -1;
+  char *c;
+
+  if (arg != NULL) {
+    c = malloc(strlen(cmd) + strlen(arg) + 2);
+    sprintf(c, "%s %s", cmd, arg);
+  } else {
+    c = cmd;
   }
+
+  if ((fp = popen(c, "r")) == NULL) {
+    return 0;
+  }
+
   char buf[MAXBUF];
   int total_len = 0;
   int len       = 0;
@@ -229,5 +271,10 @@ int stns_exec_cmd(char *cmd, char *result)
     total_len += len;
   }
   result[total_len] = '\0';
+  pclose(fp);
+
+  if (total_len == 0) {
+    return 0;
+  }
   return 1;
 }
