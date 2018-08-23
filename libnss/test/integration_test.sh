@@ -55,4 +55,22 @@ test_getent_shadow()
     "$(getent shadow test)"
 }
 
+test_key_wrapper()
+{
+  assertEquals \
+    "key1
+key2
+aaabbbccc
+ddd" \
+    "$(tmp/libs/stns-key-wrapper test test)"
+
+  assertEquals \
+    "http request failed user: fuga" \
+    "$((tmp/libs/stns-key-wrapper fuga)2>&1)"
+
+  assertEquals \
+    "User name is a required parameter" \
+    "$((tmp/libs/stns-key-wrapper)2>&1)"
+}
+
 . /usr/include/shunit2/src/shunit2

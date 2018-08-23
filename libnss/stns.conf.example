@@ -1,1 +1,2 @@
 api_endpoint = "http://localhost:1104/v1"
+chain_ssh_wrapper = "test/dummy.sh"

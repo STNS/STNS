@@ -207,3 +207,27 @@ int stns_request(stns_conf_t *c, char *path, stns_http_response_t *res)
 
   return result;
 }
+
+int stns_exec_cmd(char *cmd, char *result)
+{
+  FILE *fp;
+  if ((fp = popen(cmd, "r")) == NULL) {
+    return -1;
+  }
+  char buf[MAXBUF];
+  int total_len = 0;
+  int len       = 0;
+
+  while (fgets(buf, sizeof(buf), fp) != NULL) {
+    len = strlen(buf);
+    if (result) {
+      result = (char *)realloc(result, total_len + len + 1);
+    } else {
+      return 0;
+    }
+    strcpy(result + total_len, buf);
+    total_len += len;
+  }
+  result[total_len] = '\0';
+  return 1;
+}

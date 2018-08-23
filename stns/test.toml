@@ -3,6 +3,7 @@ include = "include.toml"
 [users.test]
 id = 10001
 password = "test"
+keys = ["key1", "key2"]
 
 [users.foo]
 id = 10002

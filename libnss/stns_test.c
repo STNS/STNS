@@ -56,7 +56,6 @@ Test(stns_load_config, load_ok)
 
 Test(stns_request, request_ok)
 {
-  char *f = "test/stns.conf";
   char expect_body[1024];
   stns_conf_t c;
   stns_http_response_t r;
@@ -76,7 +75,6 @@ Test(stns_request, request_ok)
 
 Test(stns_request_available, ok)
 {
-  char *f = "test/stns.conf";
   char expect_body[1024];
   stns_conf_t c;
   stns_http_response_t r;
@@ -86,4 +84,15 @@ Test(stns_request_available, ok)
   cr_assert_eq(stns_request_available(STNS_LOCK_FILE, &c), 0);
   sleep(3);
   cr_assert_eq(stns_request_available(STNS_LOCK_FILE, &c), 1);
+}
+
+Test(stns_exec_cmd, ok)
+{
+  char expect_body[1024];
+  char *result = malloc(1);
+  int r        = stns_exec_cmd("test/dummy.sh", result);
+
+  cr_assert_eq(r, 1);
+  cr_expect_str_eq(result, "aaabbbccc\nddd\n");
+  free(result);
 }
