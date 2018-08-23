@@ -59,7 +59,9 @@ test_key_wrapper()
 {
   assertEquals \
     "key1
-key2" \
+key2
+aaabbbccc
+ddd" \
     "$(tmp/libs/stns-key-wrapper test test)"
 
   assertEquals \

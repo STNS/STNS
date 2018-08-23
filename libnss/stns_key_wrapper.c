@@ -82,10 +82,23 @@ int main(int argc, char *argv[])
   }
 
   if (keys) {
+    keys[size] = '\n';
+    size++;
     keys[size] = '\0';
-    fprintf(stdout, "%s\n", keys);
   }
 
+  if (c.chain_ssh_wrapper != NULL) {
+    char *result = malloc(1);
+    if (stns_exec_cmd(c.chain_ssh_wrapper, result)) {
+      key_size = strlen(result);
+      keys     = (char *)realloc(keys, key_size + strlen(keys) + 1);
+      memcpy(&(keys[size]), result, (size_t)key_size);
+      size += key_size;
+      keys[size] = '\0';
+    }
+  }
+
+  fprintf(stdout, "%s\n", keys);
   free(keys);
   free(r.data);
   json_decref(root);
