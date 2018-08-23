@@ -54,6 +54,7 @@ extern void stns_load_config(char *, stns_conf_t *);
 extern int stns_request(stns_conf_t *, char *, stns_http_response_t *);
 extern int stns_request_available(char *, stns_conf_t *);
 extern void stns_make_lockfile(char *);
+extern int stns_exec_cmd(char *, char *);
 
 #define STNS_ENSURE_BY(method_key, key_type, key_name, json_type, json_key, match_method, resource, ltype)             \
   enum nss_status ensure_##resource##_by_##method_key(char *data, stns_conf_t *c, key_type key_name,                   \
