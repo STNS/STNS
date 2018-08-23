@@ -18,7 +18,7 @@
 #include <pthread.h>
 #include <sys/stat.h>
 #include <unistd.h>
-
+#include <ctype.h>
 #define STNS_VERSION "2.0.0"
 #define STNS_VERSION_WITH_NAME "stns/" STNS_VERSION
 // 10MB

@@ -7,6 +7,37 @@
 #include <string.h>
 #include <unistd.h>
 
+pthread_mutex_t user_mutex  = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t group_mutex = PTHREAD_MUTEX_INITIALIZER;
+
+int highest_user_id  = 0;
+int lowest_user_id   = 0;
+int highest_group_id = 0;
+int lowest_group_id  = 0;
+
+#define SET_HIGH_LOW_ID(highest_or_lowest, user_or_group)                                                              \
+  void set_##highest_or_lowest##_##user_or_group##_id(int id)                                                          \
+  {                                                                                                                    \
+    pthread_mutex_lock(&user_or_group##_mutex);                                                                        \
+    highest_or_lowest##_##user_or_group##_id = id;                                                                     \
+    pthread_mutex_unlock(&user_or_group##_mutex);                                                                      \
+  }
+
+#define GET_HIGH_LOW_ID(highest_or_lowest, user_or_group)                                                              \
+  int get_##highest_or_lowest##_##user_or_group##_id(int id)                                                           \
+  {                                                                                                                    \
+    int r;                                                                                                             \
+    pthread_mutex_lock(&user_or_group##_mutex);                                                                        \
+    r = highest_or_lowest##_##user_or_group##_id;                                                                      \
+    pthread_mutex_unlock(&user_or_group##_mutex);                                                                      \
+    return r;                                                                                                          \
+  }
+
+SET_HIGH_LOW_ID(highest, user);
+SET_HIGH_LOW_ID(lowest, user);
+SET_HIGH_LOW_ID(highest, group);
+SET_HIGH_LOW_ID(lowest, group);
+
 #define GET_TOML_BYKEY(m, method, empty)                                                                               \
   if (0 != (raw = toml_raw_in(tab, #m))) {                                                                             \
     if (0 != method(raw, &c->m)) {                                                                                     \
@@ -114,6 +145,48 @@ static int _stns_wrapper_request(stns_conf_t *c, char *path, stns_http_response_
   return 1;
 }
 
+static void trim(char *s)
+{
+  int i, j;
+
+  for (i = strlen(s) - 1; i >= 0 && isspace(s[i]); i--)
+    ;
+  s[i + 1] = '\0';
+  for (i = 0; isspace(s[i]); i++)
+    ;
+  if (i > 0) {
+    j = 0;
+    while (s[i])
+      s[j++] = s[i++];
+    s[j]     = '\0';
+  }
+}
+
+static size_t header_callback(char *buffer, size_t size, size_t nitems, void *userdata)
+{
+  char *tp;
+  tp = strtok(buffer, ":");
+  if (strcmp(tp, "User-Highest-Id") == 0) {
+    tp = strtok(NULL, ".");
+    trim(tp);
+    set_highest_user_id(atoi(tp));
+  } else if (strcmp(tp, "User-Lowest-Id") == 0) {
+    tp = strtok(NULL, ".");
+    trim(tp);
+    set_lowest_user_id(atoi(tp));
+  } else if (strcmp(tp, "Group-Highest-Id") == 0) {
+    tp = strtok(NULL, ".");
+    trim(tp);
+    set_highest_group_id(atoi(tp));
+  } else if (strcmp(tp, "Group-Lowest-Id") == 0) {
+    tp = strtok(NULL, ".");
+    trim(tp);
+    set_lowest_group_id(atoi(tp));
+  }
+
+  return nitems * size;
+}
+
 // base https://github.com/linyows/octopass/blob/master/octopass.c
 static CURLcode _stns_http_request(stns_conf_t *c, char *path, stns_http_response_t *res)
 {
@@ -153,6 +226,7 @@ static CURLcode _stns_http_request(stns_conf_t *c, char *path, stns_http_respons
   curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, c->ssl_verify);
   curl_easy_setopt(curl, CURLOPT_TIMEOUT, c->request_timeout);
   curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, response_callback);
+  curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, header_callback);
   curl_easy_setopt(curl, CURLOPT_WRITEDATA, res);
   curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1);
   curl_easy_setopt(curl, CURLOPT_FAILONERROR, 1);
