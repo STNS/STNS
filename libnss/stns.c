@@ -9,43 +9,20 @@
 
 pthread_mutex_t user_mutex  = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t group_mutex = PTHREAD_MUTEX_INITIALIZER;
+int highest_user_id         = 0;
+int lowest_user_id          = 0;
+int highest_group_id        = 0;
+int lowest_group_id         = 0;
 
-int highest_user_id  = 0;
-int lowest_user_id   = 0;
-int highest_group_id = 0;
-int lowest_group_id  = 0;
+SET_GET_HIGH_LOW_ID(highest, user);
+SET_GET_HIGH_LOW_ID(lowest, user);
+SET_GET_HIGH_LOW_ID(highest, group);
+SET_GET_HIGH_LOW_ID(lowest, group);
 
-#define SET_HIGH_LOW_ID(highest_or_lowest, user_or_group)                                                              \
-  void set_##highest_or_lowest##_##user_or_group##_id(int id)                                                          \
-  {                                                                                                                    \
-    pthread_mutex_lock(&user_or_group##_mutex);                                                                        \
-    highest_or_lowest##_##user_or_group##_id = id;                                                                     \
-    pthread_mutex_unlock(&user_or_group##_mutex);                                                                      \
-  }
-
-#define GET_HIGH_LOW_ID(highest_or_lowest, user_or_group)                                                              \
-  int get_##highest_or_lowest##_##user_or_group##_id(int id)                                                           \
-  {                                                                                                                    \
-    int r;                                                                                                             \
-    pthread_mutex_lock(&user_or_group##_mutex);                                                                        \
-    r = highest_or_lowest##_##user_or_group##_id;                                                                      \
-    pthread_mutex_unlock(&user_or_group##_mutex);                                                                      \
-    return r;                                                                                                          \
-  }
-
-SET_HIGH_LOW_ID(highest, user);
-SET_HIGH_LOW_ID(lowest, user);
-SET_HIGH_LOW_ID(highest, group);
-SET_HIGH_LOW_ID(lowest, group);
-
-#define GET_TOML_BYKEY(m, method, empty)                                                                               \
-  if (0 != (raw = toml_raw_in(tab, #m))) {                                                                             \
-    if (0 != method(raw, &c->m)) {                                                                                     \
-      syslog(LOG_ERR, "%s[L%d] cannot parse toml file:%s key:%s", __func__, __LINE__, filename, #m);                   \
-    }                                                                                                                  \
-  } else {                                                                                                             \
-    c->m = empty;                                                                                                      \
-  }
+ID_QUERY_AVAILABLE(user, high, <)
+ID_QUERY_AVAILABLE(user, low, >)
+ID_QUERY_AVAILABLE(group, high, <)
+ID_QUERY_AVAILABLE(group, low, >)
 
 void stns_load_config(char *filename, stns_conf_t *c)
 {
@@ -162,26 +139,23 @@ static void trim(char *s)
   }
 }
 
+#define SET_TRIM_ID(high_or_low, user_or_group)                                                                        \
+  tp = strtok(NULL, ".");                                                                                              \
+  trim(tp);                                                                                                            \
+  set_##high_or_low##est_##user_or_group##_id(atoi(tp));
+
 static size_t header_callback(char *buffer, size_t size, size_t nitems, void *userdata)
 {
   char *tp;
   tp = strtok(buffer, ":");
   if (strcmp(tp, "User-Highest-Id") == 0) {
-    tp = strtok(NULL, ".");
-    trim(tp);
-    set_highest_user_id(atoi(tp));
+    SET_TRIM_ID(high, user)
   } else if (strcmp(tp, "User-Lowest-Id") == 0) {
-    tp = strtok(NULL, ".");
-    trim(tp);
-    set_lowest_user_id(atoi(tp));
+    SET_TRIM_ID(low, user)
   } else if (strcmp(tp, "Group-Highest-Id") == 0) {
-    tp = strtok(NULL, ".");
-    trim(tp);
-    set_highest_group_id(atoi(tp));
+    SET_TRIM_ID(high, group)
   } else if (strcmp(tp, "Group-Lowest-Id") == 0) {
-    tp = strtok(NULL, ".");
-    trim(tp);
-    set_lowest_group_id(atoi(tp));
+    SET_TRIM_ID(low, group)
   }
 
   return nitems * size;

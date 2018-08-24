@@ -34,6 +34,6 @@ static int entry_idx   = 0;
 STNS_ENSURE_BY(name, const char *, group_name, string, name, (strcmp(current, group_name) == 0), group, GROUP)
 STNS_ENSURE_BY(gid, gid_t, gid, integer, id, current == gid, group, GROUP)
 
-STNS_GET_SINGLE_VALUE_METHOD(getgrnam_r, const char *name, "groups?name=%s", name, group)
-STNS_GET_SINGLE_VALUE_METHOD(getgrgid_r, gid_t gid, "groups?id=%d", gid, group)
+STNS_GET_SINGLE_VALUE_METHOD(getgrnam_r, const char *name, "groups?name=%s", name, group, )
+STNS_GET_SINGLE_VALUE_METHOD(getgrgid_r, gid_t gid, "groups?id=%d", gid, group, GROUP_ID_QUERY_AVAILABLE)
 STNS_SET_ENTRIES(gr, GROUP, group, groups)

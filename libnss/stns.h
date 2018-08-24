@@ -103,7 +103,7 @@ extern int stns_exec_cmd(char *, char *, char *);
   }                                                                                                                    \
   name = buf;
 
-#define STNS_GET_SINGLE_VALUE_METHOD(method, first, format, value, resource)                                           \
+#define STNS_GET_SINGLE_VALUE_METHOD(method, first, format, value, resource, query_available)                          \
   enum nss_status _nss_stns_##method(first, struct resource *rbuf, char *buf, size_t buflen, int *errnop)              \
   {                                                                                                                    \
     int curl_result;                                                                                                   \
@@ -112,7 +112,7 @@ extern int stns_exec_cmd(char *, char *, char *);
     char url[MAXBUF];                                                                                                  \
                                                                                                                        \
     stns_load_config(STNS_CONFIG_FILE, &c);                                                                            \
-                                                                                                                       \
+    query_available;                                                                                                   \
     sprintf(url, format, value);                                                                                       \
     curl_result = stns_request(&c, url, &r);                                                                           \
                                                                                                                        \
@@ -217,4 +217,50 @@ extern int stns_exec_cmd(char *, char *, char *);
     return inner_nss_stns_get##type##ent_r(&c, rbuf, buf, buflen, errnop);                                             \
   }
 
+extern int user_highest_query_available(int);
+extern int user_lowest_query_available(int);
+extern int group_highest_query_available(int);
+extern int group_lowest_query_available(int);
+
+#define USER_ID_QUERY_AVAILABLE                                                                                        \
+  if (!user_highest_query_available(uid) || !user_lowest_query_available(uid))                                         \
+    return NSS_STATUS_NOTFOUND;
+
+#define GROUP_ID_QUERY_AVAILABLE                                                                                       \
+  if (!group_highest_query_available(gid) || !group_lowest_query_available(gid))                                       \
+    return NSS_STATUS_NOTFOUND;
+
+#define SET_GET_HIGH_LOW_ID(highest_or_lowest, user_or_group)                                                          \
+  void set_##highest_or_lowest##_##user_or_group##_id(int id)                                                          \
+  {                                                                                                                    \
+    pthread_mutex_lock(&user_or_group##_mutex);                                                                        \
+    highest_or_lowest##_##user_or_group##_id = id;                                                                     \
+    pthread_mutex_unlock(&user_or_group##_mutex);                                                                      \
+  }                                                                                                                    \
+  int get_##highest_or_lowest##_##user_or_group##_id()                                                                 \
+  {                                                                                                                    \
+    int r;                                                                                                             \
+    pthread_mutex_lock(&user_or_group##_mutex);                                                                        \
+    r = highest_or_lowest##_##user_or_group##_id;                                                                      \
+    pthread_mutex_unlock(&user_or_group##_mutex);                                                                      \
+    return r;                                                                                                          \
+  }
+
+#define GET_TOML_BYKEY(m, method, empty)                                                                               \
+  if (0 != (raw = toml_raw_in(tab, #m))) {                                                                             \
+    if (0 != method(raw, &c->m)) {                                                                                     \
+      syslog(LOG_ERR, "%s[L%d] cannot parse toml file:%s key:%s", __func__, __LINE__, filename, #m);                   \
+    }                                                                                                                  \
+  } else {                                                                                                             \
+    c->m = empty;                                                                                                      \
+  }
+
+#define ID_QUERY_AVAILABLE(user_or_group, high_or_low, inequality)                                                     \
+  int user_or_group##_##high_or_low##est_query_available(int id)                                                       \
+  {                                                                                                                    \
+    int r = get_##high_or_low##est_##user_or_group##_id();                                                             \
+    if (r != 0 && r inequality id)                                                                                     \
+      return 0;                                                                                                        \
+    return 1;                                                                                                          \
+  }
 #endif /* STNS_H */
