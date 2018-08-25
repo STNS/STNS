@@ -56,6 +56,10 @@ extern int stns_request(stns_conf_t *, char *, stns_http_response_t *);
 extern int stns_request_available(char *, stns_conf_t *);
 extern void stns_make_lockfile(char *);
 extern int stns_exec_cmd(char *, char *, char *);
+extern int stns_user_highest_query_available(int);
+extern int stns_user_lowest_query_available(int);
+extern int stns_group_highest_query_available(int);
+extern int stns_group_lowest_query_available(int);
 
 #define STNS_ENSURE_BY(method_key, key_type, key_name, json_type, json_key, match_method, resource, ltype)             \
   enum nss_status ensure_##resource##_by_##method_key(char *data, stns_conf_t *c, key_type key_name,                   \
@@ -217,17 +221,12 @@ extern int stns_exec_cmd(char *, char *, char *);
     return inner_nss_stns_get##type##ent_r(&c, rbuf, buf, buflen, errnop);                                             \
   }
 
-extern int user_highest_query_available(int);
-extern int user_lowest_query_available(int);
-extern int group_highest_query_available(int);
-extern int group_lowest_query_available(int);
-
 #define USER_ID_QUERY_AVAILABLE                                                                                        \
-  if (!user_highest_query_available(uid) || !user_lowest_query_available(uid))                                         \
+  if (!stns_user_highest_query_available(uid) || !stns_user_lowest_query_available(uid))                               \
     return NSS_STATUS_NOTFOUND;
 
 #define GROUP_ID_QUERY_AVAILABLE                                                                                       \
-  if (!group_highest_query_available(gid) || !group_lowest_query_available(gid))                                       \
+  if (!stns_group_highest_query_available(gid) || !stns_group_lowest_query_available(gid))                             \
     return NSS_STATUS_NOTFOUND;
 
 #define SET_GET_HIGH_LOW_ID(highest_or_lowest, user_or_group)                                                          \
@@ -256,7 +255,7 @@ extern int group_lowest_query_available(int);
   }
 
 #define ID_QUERY_AVAILABLE(user_or_group, high_or_low, inequality)                                                     \
-  int user_or_group##_##high_or_low##est_query_available(int id)                                                       \
+  int stns_##user_or_group##_##high_or_low##est_query_available(int id)                                                \
   {                                                                                                                    \
     int r = get_##high_or_low##est_##user_or_group##_id();                                                             \
     if (r != 0 && r inequality id)                                                                                     \

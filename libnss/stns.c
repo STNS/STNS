@@ -70,6 +70,45 @@ void stns_load_config(char *filename, stns_conf_t *c)
   toml_free(tab);
 }
 
+static void trim(char *s)
+{
+  int i, j;
+
+  for (i = strlen(s) - 1; i >= 0 && isspace(s[i]); i--)
+    ;
+  s[i + 1] = '\0';
+  for (i = 0; isspace(s[i]); i++)
+    ;
+  if (i > 0) {
+    j = 0;
+    while (s[i])
+      s[j++] = s[i++];
+    s[j] = '\0';
+  }
+}
+
+#define SET_TRIM_ID(high_or_low, user_or_group)                                                                        \
+  tp = strtok(NULL, ".");                                                                                              \
+  trim(tp);                                                                                                            \
+  set_##high_or_low##est_##user_or_group##_id(atoi(tp));
+
+static size_t header_callback(char *buffer, size_t size, size_t nitems, void *userdata)
+{
+  char *tp;
+  tp = strtok(buffer, ":");
+  if (strcmp(tp, "User-Highest-Id") == 0) {
+    SET_TRIM_ID(high, user)
+  } else if (strcmp(tp, "User-Lowest-Id") == 0) {
+    SET_TRIM_ID(low, user)
+  } else if (strcmp(tp, "Group-Highest-Id") == 0) {
+    SET_TRIM_ID(high, group)
+  } else if (strcmp(tp, "Group-Lowest-Id") == 0) {
+    SET_TRIM_ID(low, group)
+  }
+
+  return nitems * size;
+}
+
 // base https://github.com/linyows/octopass/blob/master/octopass.c
 // size is always 1
 static size_t response_callback(void *buffer, size_t size, size_t nmemb, void *userp)
@@ -120,45 +159,6 @@ static int _stns_wrapper_request(stns_conf_t *c, char *path, stns_http_response_
 
   free(result);
   return 1;
-}
-
-static void trim(char *s)
-{
-  int i, j;
-
-  for (i = strlen(s) - 1; i >= 0 && isspace(s[i]); i--)
-    ;
-  s[i + 1] = '\0';
-  for (i = 0; isspace(s[i]); i++)
-    ;
-  if (i > 0) {
-    j = 0;
-    while (s[i])
-      s[j++] = s[i++];
-    s[j]     = '\0';
-  }
-}
-
-#define SET_TRIM_ID(high_or_low, user_or_group)                                                                        \
-  tp = strtok(NULL, ".");                                                                                              \
-  trim(tp);                                                                                                            \
-  set_##high_or_low##est_##user_or_group##_id(atoi(tp));
-
-static size_t header_callback(char *buffer, size_t size, size_t nitems, void *userdata)
-{
-  char *tp;
-  tp = strtok(buffer, ":");
-  if (strcmp(tp, "User-Highest-Id") == 0) {
-    SET_TRIM_ID(high, user)
-  } else if (strcmp(tp, "User-Lowest-Id") == 0) {
-    SET_TRIM_ID(low, user)
-  } else if (strcmp(tp, "Group-Highest-Id") == 0) {
-    SET_TRIM_ID(high, group)
-  } else if (strcmp(tp, "Group-Lowest-Id") == 0) {
-    SET_TRIM_ID(low, group)
-  }
-
-  return nitems * size;
 }
 
 // base https://github.com/linyows/octopass/blob/master/octopass.c
