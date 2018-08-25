@@ -7,14 +7,22 @@
 #include <string.h>
 #include <unistd.h>
 
-#define GET_TOML_BYKEY(m, method, empty)                                                                               \
-  if (0 != (raw = toml_raw_in(tab, #m))) {                                                                             \
-    if (0 != method(raw, &c->m)) {                                                                                     \
-      syslog(LOG_ERR, "%s[L%d] cannot parse toml file:%s key:%s", __func__, __LINE__, filename, #m);                   \
-    }                                                                                                                  \
-  } else {                                                                                                             \
-    c->m = empty;                                                                                                      \
-  }
+pthread_mutex_t user_mutex  = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t group_mutex = PTHREAD_MUTEX_INITIALIZER;
+int highest_user_id         = 0;
+int lowest_user_id          = 0;
+int highest_group_id        = 0;
+int lowest_group_id         = 0;
+
+SET_GET_HIGH_LOW_ID(highest, user);
+SET_GET_HIGH_LOW_ID(lowest, user);
+SET_GET_HIGH_LOW_ID(highest, group);
+SET_GET_HIGH_LOW_ID(lowest, group);
+
+ID_QUERY_AVAILABLE(user, high, <)
+ID_QUERY_AVAILABLE(user, low, >)
+ID_QUERY_AVAILABLE(group, high, <)
+ID_QUERY_AVAILABLE(group, low, >)
 
 void stns_load_config(char *filename, stns_conf_t *c)
 {
@@ -60,6 +68,45 @@ void stns_load_config(char *filename, stns_conf_t *c)
 
   fclose(fp);
   toml_free(tab);
+}
+
+static void trim(char *s)
+{
+  int i, j;
+
+  for (i = strlen(s) - 1; i >= 0 && isspace(s[i]); i--)
+    ;
+  s[i + 1] = '\0';
+  for (i = 0; isspace(s[i]); i++)
+    ;
+  if (i > 0) {
+    j = 0;
+    while (s[i])
+      s[j++] = s[i++];
+    s[j] = '\0';
+  }
+}
+
+#define SET_TRIM_ID(high_or_low, user_or_group)                                                                        \
+  tp = strtok(NULL, ".");                                                                                              \
+  trim(tp);                                                                                                            \
+  set_##user_or_group##_##high_or_low##est_id(atoi(tp));
+
+static size_t header_callback(char *buffer, size_t size, size_t nitems, void *userdata)
+{
+  char *tp;
+  tp = strtok(buffer, ":");
+  if (strcmp(tp, "User-Highest-Id") == 0) {
+    SET_TRIM_ID(high, user)
+  } else if (strcmp(tp, "User-Lowest-Id") == 0) {
+    SET_TRIM_ID(low, user)
+  } else if (strcmp(tp, "Group-Highest-Id") == 0) {
+    SET_TRIM_ID(high, group)
+  } else if (strcmp(tp, "Group-Lowest-Id") == 0) {
+    SET_TRIM_ID(low, group)
+  }
+
+  return nitems * size;
 }
 
 // base https://github.com/linyows/octopass/blob/master/octopass.c
@@ -153,6 +200,7 @@ static CURLcode _stns_http_request(stns_conf_t *c, char *path, stns_http_respons
   curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, c->ssl_verify);
   curl_easy_setopt(curl, CURLOPT_TIMEOUT, c->request_timeout);
   curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, response_callback);
+  curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, header_callback);
   curl_easy_setopt(curl, CURLOPT_WRITEDATA, res);
   curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1);
   curl_easy_setopt(curl, CURLOPT_FAILONERROR, 1);

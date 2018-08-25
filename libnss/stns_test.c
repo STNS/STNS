@@ -123,3 +123,21 @@ Test(stns_exec_cmd, ok)
   cr_expect_str_eq(result, "aaabbbccc\nddd\n");
   free(result);
 }
+
+Test(query_available, ok)
+{
+  set_user_highest_id(10);
+  set_user_lowest_id(3);
+  set_group_highest_id(10);
+  set_group_lowest_id(3);
+
+  cr_assert_eq(stns_user_highest_query_available(1), 1);
+  cr_assert_eq(stns_user_highest_query_available(11), 0);
+  cr_assert_eq(stns_user_lowest_query_available(4), 1);
+  cr_assert_eq(stns_user_lowest_query_available(2), 0);
+
+  cr_assert_eq(stns_group_highest_query_available(1), 1);
+  cr_assert_eq(stns_group_highest_query_available(11), 0);
+  cr_assert_eq(stns_group_lowest_query_available(4), 1);
+  cr_assert_eq(stns_group_lowest_query_available(2), 0);
+}

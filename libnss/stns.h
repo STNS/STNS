@@ -18,7 +18,7 @@
 #include <pthread.h>
 #include <sys/stat.h>
 #include <unistd.h>
-
+#include <ctype.h>
 #define STNS_VERSION "2.0.0"
 #define STNS_VERSION_WITH_NAME "stns/" STNS_VERSION
 // 10MB
@@ -56,6 +56,15 @@ extern int stns_request(stns_conf_t *, char *, stns_http_response_t *);
 extern int stns_request_available(char *, stns_conf_t *);
 extern void stns_make_lockfile(char *);
 extern int stns_exec_cmd(char *, char *, char *);
+extern int stns_user_highest_query_available(int);
+extern int stns_user_lowest_query_available(int);
+extern int stns_group_highest_query_available(int);
+extern int stns_group_lowest_query_available(int);
+
+extern void set_user_highest_id(int);
+extern void set_user_lowest_id(int);
+extern void set_group_highest_id(int);
+extern void set_group_lowest_id(int);
 
 #define STNS_ENSURE_BY(method_key, key_type, key_name, json_type, json_key, match_method, resource, ltype)             \
   enum nss_status ensure_##resource##_by_##method_key(char *data, stns_conf_t *c, key_type key_name,                   \
@@ -103,7 +112,7 @@ extern int stns_exec_cmd(char *, char *, char *);
   }                                                                                                                    \
   name = buf;
 
-#define STNS_GET_SINGLE_VALUE_METHOD(method, first, format, value, resource)                                           \
+#define STNS_GET_SINGLE_VALUE_METHOD(method, first, format, value, resource, query_available)                          \
   enum nss_status _nss_stns_##method(first, struct resource *rbuf, char *buf, size_t buflen, int *errnop)              \
   {                                                                                                                    \
     int curl_result;                                                                                                   \
@@ -112,7 +121,7 @@ extern int stns_exec_cmd(char *, char *, char *);
     char url[MAXBUF];                                                                                                  \
                                                                                                                        \
     stns_load_config(STNS_CONFIG_FILE, &c);                                                                            \
-                                                                                                                       \
+    query_available;                                                                                                   \
     sprintf(url, format, value);                                                                                       \
     curl_result = stns_request(&c, url, &r);                                                                           \
                                                                                                                        \
@@ -216,5 +225,47 @@ extern int stns_exec_cmd(char *, char *, char *);
     stns_load_config(STNS_CONFIG_FILE, &c);                                                                            \
     return inner_nss_stns_get##type##ent_r(&c, rbuf, buf, buflen, errnop);                                             \
   }
+
+#define SET_GET_HIGH_LOW_ID(highest_or_lowest, user_or_group)                                                          \
+  void set_##user_or_group##_##highest_or_lowest##_id(int id)                                                          \
+  {                                                                                                                    \
+    pthread_mutex_lock(&user_or_group##_mutex);                                                                        \
+    highest_or_lowest##_##user_or_group##_id = id;                                                                     \
+    pthread_mutex_unlock(&user_or_group##_mutex);                                                                      \
+  }                                                                                                                    \
+  int get_##user_or_group##_##highest_or_lowest##_id(void)                                                             \
+  {                                                                                                                    \
+    int r;                                                                                                             \
+    pthread_mutex_lock(&user_or_group##_mutex);                                                                        \
+    r = highest_or_lowest##_##user_or_group##_id;                                                                      \
+    pthread_mutex_unlock(&user_or_group##_mutex);                                                                      \
+    return r;                                                                                                          \
+  }
+
+#define GET_TOML_BYKEY(m, method, empty)                                                                               \
+  if (0 != (raw = toml_raw_in(tab, #m))) {                                                                             \
+    if (0 != method(raw, &c->m)) {                                                                                     \
+      syslog(LOG_ERR, "%s[L%d] cannot parse toml file:%s key:%s", __func__, __LINE__, filename, #m);                   \
+    }                                                                                                                  \
+  } else {                                                                                                             \
+    c->m = empty;                                                                                                      \
+  }
+
+#define ID_QUERY_AVAILABLE(user_or_group, high_or_low, inequality)                                                     \
+  int stns_##user_or_group##_##high_or_low##est_query_available(int id)                                                \
+  {                                                                                                                    \
+    int r = get_##user_or_group##_##high_or_low##est_id();                                                             \
+    if (r != 0 && r inequality id)                                                                                     \
+      return 0;                                                                                                        \
+    return 1;                                                                                                          \
+  }
+
+#define USER_ID_QUERY_AVAILABLE                                                                                        \
+  if (!stns_user_highest_query_available(uid) || !stns_user_lowest_query_available(uid))                               \
+    return NSS_STATUS_NOTFOUND;
+
+#define GROUP_ID_QUERY_AVAILABLE                                                                                       \
+  if (!stns_group_highest_query_available(gid) || !stns_group_lowest_query_available(gid))                             \
+    return NSS_STATUS_NOTFOUND;
 
 #endif /* STNS_H */
