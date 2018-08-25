@@ -61,10 +61,10 @@ extern int stns_user_lowest_query_available(int);
 extern int stns_group_highest_query_available(int);
 extern int stns_group_lowest_query_available(int);
 
-extern void set_highest_user_id(int);
-extern void set_lowest_user_id(int);
-extern void set_highest_group_id(int);
-extern void set_lowest_group_id(int);
+extern void set_user_highest_id(int);
+extern void set_user_lowest_id(int);
+extern void set_group_highest_id(int);
+extern void set_group_lowest_id(int);
 
 #define STNS_ENSURE_BY(method_key, key_type, key_name, json_type, json_key, match_method, resource, ltype)             \
   enum nss_status ensure_##resource##_by_##method_key(char *data, stns_conf_t *c, key_type key_name,                   \
@@ -227,13 +227,13 @@ extern void set_lowest_group_id(int);
   }
 
 #define SET_GET_HIGH_LOW_ID(highest_or_lowest, user_or_group)                                                          \
-  void set_##highest_or_lowest##_##user_or_group##_id(int id)                                                          \
+  void set_##user_or_group##_##highest_or_lowest##_id(int id)                                                          \
   {                                                                                                                    \
     pthread_mutex_lock(&user_or_group##_mutex);                                                                        \
     highest_or_lowest##_##user_or_group##_id = id;                                                                     \
     pthread_mutex_unlock(&user_or_group##_mutex);                                                                      \
   }                                                                                                                    \
-  int get_##highest_or_lowest##_##user_or_group##_id()                                                                 \
+  int get_##user_or_group##_##highest_or_lowest##_id()                                                                 \
   {                                                                                                                    \
     int r;                                                                                                             \
     pthread_mutex_lock(&user_or_group##_mutex);                                                                        \
@@ -254,7 +254,7 @@ extern void set_lowest_group_id(int);
 #define ID_QUERY_AVAILABLE(user_or_group, high_or_low, inequality)                                                     \
   int stns_##user_or_group##_##high_or_low##est_query_available(int id)                                                \
   {                                                                                                                    \
-    int r = get_##high_or_low##est_##user_or_group##_id();                                                             \
+    int r = get_##user_or_group##_##high_or_low##est_id();                                                             \
     if (r != 0 && r inequality id)                                                                                     \
       return 0;                                                                                                        \
     return 1;                                                                                                          \

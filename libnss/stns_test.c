@@ -126,15 +126,16 @@ Test(stns_exec_cmd, ok)
 
 Test(query_available, ok)
 {
-  set_highest_user_id(10);
-  set_lowest_user_id(3);
-  set_highest_group_id(10);
-  set_lowest_group_id(3);
+  set_user_highest_id(10);
+  set_user_lowest_id(3);
+  set_group_highest_id(10);
+  set_group_lowest_id(3);
 
   cr_assert_eq(stns_user_highest_query_available(1), 1);
   cr_assert_eq(stns_user_highest_query_available(11), 0);
   cr_assert_eq(stns_user_lowest_query_available(4), 1);
   cr_assert_eq(stns_user_lowest_query_available(2), 0);
+
   cr_assert_eq(stns_group_highest_query_available(1), 1);
   cr_assert_eq(stns_group_highest_query_available(11), 0);
   cr_assert_eq(stns_group_lowest_query_available(4), 1);

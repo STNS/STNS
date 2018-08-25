@@ -90,7 +90,7 @@ static void trim(char *s)
 #define SET_TRIM_ID(high_or_low, user_or_group)                                                                        \
   tp = strtok(NULL, ".");                                                                                              \
   trim(tp);                                                                                                            \
-  set_##high_or_low##est_##user_or_group##_id(atoi(tp));
+  set_##user_or_group##_##high_or_low##est_id(atoi(tp));
 
 static size_t header_callback(char *buffer, size_t size, size_t nitems, void *userdata)
 {
