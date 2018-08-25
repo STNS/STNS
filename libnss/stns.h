@@ -61,6 +61,11 @@ extern int stns_user_lowest_query_available(int);
 extern int stns_group_highest_query_available(int);
 extern int stns_group_lowest_query_available(int);
 
+extern void set_highest_user_id(int);
+extern void set_lowest_user_id(int);
+extern void set_highest_group_id(int);
+extern void set_lowest_group_id(int);
+
 #define STNS_ENSURE_BY(method_key, key_type, key_name, json_type, json_key, match_method, resource, ltype)             \
   enum nss_status ensure_##resource##_by_##method_key(char *data, stns_conf_t *c, key_type key_name,                   \
                                                       struct resource *rbuf, char *buf, size_t buflen, int *errnop)    \
@@ -221,14 +226,6 @@ extern int stns_group_lowest_query_available(int);
     return inner_nss_stns_get##type##ent_r(&c, rbuf, buf, buflen, errnop);                                             \
   }
 
-#define USER_ID_QUERY_AVAILABLE                                                                                        \
-  if (!stns_user_highest_query_available(uid) || !stns_user_lowest_query_available(uid))                               \
-    return NSS_STATUS_NOTFOUND;
-
-#define GROUP_ID_QUERY_AVAILABLE                                                                                       \
-  if (!stns_group_highest_query_available(gid) || !stns_group_lowest_query_available(gid))                             \
-    return NSS_STATUS_NOTFOUND;
-
 #define SET_GET_HIGH_LOW_ID(highest_or_lowest, user_or_group)                                                          \
   void set_##highest_or_lowest##_##user_or_group##_id(int id)                                                          \
   {                                                                                                                    \
@@ -262,4 +259,13 @@ extern int stns_group_lowest_query_available(int);
       return 0;                                                                                                        \
     return 1;                                                                                                          \
   }
+
+#define USER_ID_QUERY_AVAILABLE                                                                                        \
+  if (!stns_user_highest_query_available(uid) || !stns_user_lowest_query_available(uid))                               \
+    return NSS_STATUS_NOTFOUND;
+
+#define GROUP_ID_QUERY_AVAILABLE                                                                                       \
+  if (!stns_group_highest_query_available(gid) || !stns_group_lowest_query_available(gid))                             \
+    return NSS_STATUS_NOTFOUND;
+
 #endif /* STNS_H */
