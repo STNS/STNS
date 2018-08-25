@@ -44,6 +44,7 @@ void stns_load_config(char *filename, stns_conf_t *c)
   }
 
   GET_TOML_BYKEY(api_endpoint, toml_rtos, "http://localhost:1104/v1");
+  GET_TOML_BYKEY(cache_dir, toml_rtos, "/var/cache/stns/");
   GET_TOML_BYKEY(auth_token, toml_rtos, NULL);
   GET_TOML_BYKEY(user, toml_rtos, NULL);
   GET_TOML_BYKEY(password, toml_rtos, NULL);
@@ -53,7 +54,9 @@ void stns_load_config(char *filename, stns_conf_t *c)
 
   GET_TOML_BYKEY(uid_shift, toml_rtoi, 0);
   GET_TOML_BYKEY(gid_shift, toml_rtoi, 0);
+  GET_TOML_BYKEY(cache_ttl, toml_rtoi, 600);
   GET_TOML_BYKEY(ssl_verify, toml_rtob, 1);
+  GET_TOML_BYKEY(cache, toml_rtob, 1);
   GET_TOML_BYKEY(request_timeout, toml_rtoi, 10);
   GET_TOML_BYKEY(request_retry, toml_rtoi, 3);
   GET_TOML_BYKEY(request_locktime, toml_rtoi, 60);
@@ -180,9 +183,8 @@ static CURLcode _stns_http_request(stns_conf_t *c, char *path, stns_http_respons
   url = (char *)malloc(strlen(c->api_endpoint) + strlen(path) + 2);
   sprintf(url, "%s/%s", c->api_endpoint, path);
 
-  res->data        = NULL;
-  res->size        = 0;
-  res->status_code = (long *)0;
+  res->data = NULL;
+  res->size = 0;
 
   if (auth != NULL) {
     headers = curl_slist_append(headers, auth);
@@ -220,7 +222,6 @@ static CURLcode _stns_http_request(stns_conf_t *c, char *path, stns_http_respons
   } else {
     long *code;
     curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &code);
-    res->status_code = code;
   }
 
   free(auth);
@@ -255,10 +256,81 @@ void stns_make_lockfile(char *path)
   }
 }
 
+// base: https://github.com/linyows/octopass/blob/master/octopass.c
+void stns_export_file(char *file, char *data)
+{
+  FILE *fp = fopen(file, "w");
+  if (!fp) {
+    fprintf(stderr, "File open failure: %s\n", file);
+    exit(1);
+    return;
+  }
+  fprintf(fp, "%s", data);
+  fclose(fp);
+
+  if (getuid() == 0) {
+    chmod(file, S_IRUSR | S_IWUSR | S_IXUSR | S_IRGRP | S_IWGRP | S_IXGRP | S_IROTH | S_IWOTH | S_IXOTH);
+  }
+}
+
+// base: https://github.com/linyows/octopass/blob/master/octopass.c
+const char *stns_import_file(char *file)
+{
+  FILE *fp = fopen(file, "r");
+  if (!fp) {
+    fprintf(stderr, "File open failure: %s\n", file);
+    exit(1);
+  }
+  char line[MAXBUF];
+  char *data;
+
+  if ((data = malloc(STNS_MAX_BUFFER_SIZE)) != NULL) {
+    data[0] = '\0';
+  } else {
+    fprintf(stderr, "Malloc failed\n");
+    fclose(fp);
+    return NULL;
+  }
+
+  while (fgets(line, sizeof(line), fp) != NULL) {
+    strcat(data, strdup(line));
+  }
+  fclose(fp);
+  const char *res = strdup(data);
+  free(data);
+
+  return res;
+}
+
 int stns_request(stns_conf_t *c, char *path, stns_http_response_t *res)
 {
   CURLcode result;
   int retry_count = c->request_retry;
+
+  if (path == NULL) {
+    return CURLE_HTTP_RETURNED_ERROR;
+  }
+
+  char *base = curl_escape(path, strlen(path));
+  char fpath[strlen(c->cache_dir) + strlen(base) + 1];
+  sprintf(fpath, "%s/%s", c->cache_dir, base);
+
+  if (c->cache) {
+    FILE *fp = fopen(fpath, "r");
+    if (fp != NULL) {
+      fclose(fp);
+      struct stat statbuf;
+      if (stat(fpath, &statbuf) != -1) {
+        unsigned long now  = time(NULL);
+        unsigned long diff = now - statbuf.st_mtime;
+        if (diff < c->cache_ttl) {
+          res->data = (char *)stns_import_file(fpath);
+          res->size = strlen(res->data);
+          return CURLE_OK;
+        }
+      }
+    }
+  }
 
   if (!stns_request_available(STNS_LOCK_FILE, c))
     return CURLE_COULDNT_CONNECT;
@@ -285,6 +357,9 @@ int stns_request(stns_conf_t *c, char *path, stns_http_response_t *res)
     stns_make_lockfile(STNS_LOCK_FILE);
   }
 
+  if (result == CURLE_OK && c->cache) {
+    stns_export_file(fpath, res->data);
+  }
   return result;
 }
 

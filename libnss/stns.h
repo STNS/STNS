@@ -31,7 +31,6 @@ typedef struct stns_http_response_t stns_http_response_t;
 struct stns_http_response_t {
   char *data;
   size_t size;
-  long *status_code;
 };
 
 typedef struct stns_conf_t stns_conf_t;
@@ -49,6 +48,9 @@ struct stns_conf_t {
   int request_timeout;
   int request_retry;
   int request_locktime;
+  int cache;
+  int cache_ttl;
+  char *cache_dir;
 };
 
 extern void stns_load_config(char *, stns_conf_t *);

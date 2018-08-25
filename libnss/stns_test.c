@@ -62,6 +62,7 @@ Test(stns_request, http_request)
   stns_http_response_t r;
 
   c.api_endpoint    = "https://httpbin.org";
+  c.cache_dir       = "/tmp";
   c.user            = NULL;
   c.password        = NULL;
   c.query_wrapper   = NULL;
@@ -70,7 +71,6 @@ Test(stns_request, http_request)
   c.auth_token      = NULL;
   stns_request(&c, "user-agent", &r);
 
-  cr_assert_eq(r.status_code, (long *)200);
   sprintf(expect_body, "{\n  \"user-agent\": \"%s\"\n}\n", STNS_VERSION_WITH_NAME);
   cr_assert_str_eq(r.data, expect_body);
 }
@@ -82,6 +82,7 @@ Test(stns_request, wrapper_request_ok)
   int res;
 
   c.query_wrapper = "test/dummy_arg.sh";
+  c.cache_dir     = "/tmp";
 
   res = stns_request(&c, "test", &r);
   cr_assert_str_eq(r.data, "ok\n");
@@ -94,10 +95,11 @@ Test(stns_request, wrapper_request_ng)
   stns_http_response_t r;
   int res;
 
+  c.cache         = 0;
   c.query_wrapper = "test/dummy_arg.sh";
 
   res = stns_request(&c, NULL, &r);
-  cr_assert_eq(res, 0);
+  cr_assert_eq(res, 22);
 }
 
 Test(stns_request_available, ok)

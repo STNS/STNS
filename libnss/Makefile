@@ -14,6 +14,7 @@ endif
 BINDIR=$(PREFIX)/bin
 
 BUILD=tmp/libs
+CACHE=/var/cache/stns
 CRITERION_VERSION=2.3.2
 SHUNIT_VERSION=2.1.6
 
@@ -23,7 +24,10 @@ test: testdev ## Test with dependencies installation
 build_dir: ## Create directory for build
 	test -d $(BUILD) || mkdir -p $(BUILD)
 
-depsdev: build_dir ## Installing dependencies for development
+cache_dir: ## Create directory for cache
+	test -d $(CACHE) || mkdir -p $(CACHE)
+
+depsdev: build_dir cache_dir ## Installing dependencies for development
 	test -f $(BUILD)/criterion.tar.bz2 || curl -sL https://github.com/Snaipe/Criterion/releases/download/v$(CRITERION_VERSION)/criterion-v$(CRITERION_VERSION)-linux-x86_64.tar.bz2 -o $(BUILD)/criterion.tar.bz2
 	cd $(BUILD); tar xf criterion.tar.bz2; cd ../
 	test -d /usr/include/criterion || mv $(BUILD)/criterion-v$(CRITERION_VERSION)/include/criterion /usr/include/criterion && mv $(BUILD)/criterion-v$(CRITERION_VERSION)/lib/libcriterion.* $(LIBDIR)/
