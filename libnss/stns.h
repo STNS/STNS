@@ -233,7 +233,7 @@ extern void set_group_lowest_id(int);
     highest_or_lowest##_##user_or_group##_id = id;                                                                     \
     pthread_mutex_unlock(&user_or_group##_mutex);                                                                      \
   }                                                                                                                    \
-  int get_##user_or_group##_##highest_or_lowest##_id()                                                                 \
+  int get_##user_or_group##_##highest_or_lowest##_id(void)                                                             \
   {                                                                                                                    \
     int r;                                                                                                             \
     pthread_mutex_lock(&user_or_group##_mutex);                                                                        \
