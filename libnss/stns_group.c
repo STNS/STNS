@@ -16,18 +16,30 @@ static int entry_idx   = 0;
                                                                                                                        \
   json_t *members = json_object_get(group, "users");                                                                   \
   int i;                                                                                                               \
+  int ptr_area_size = (json_array_size(members) + 1) * sizeof(char *);                                                 \
+  char *next_member;                                                                                                   \
+                                                                                                                       \
+  if (buflen < ptr_area_size) {                                                                                        \
+    (*errnop) = ERANGE;                                                                                                \
+    return NSS_STATUS_TRYAGAIN;                                                                                        \
+  }                                                                                                                    \
+                                                                                                                       \
+  next_member = buf + ptr_area_size;                                                                                   \
   for (i = 0; i < json_array_size(members); i++) {                                                                     \
     json_t *member = json_array_get(members, i);                                                                       \
     if (!json_is_string(member)) {                                                                                     \
       return NSS_STATUS_UNAVAIL;                                                                                       \
     }                                                                                                                  \
     const char *user = json_string_value(member);                                                                      \
-    if (buflen <= strlen(user)) {                                                                                      \
+    int user_length  = strlen(user) + 1;                                                                               \
+    if (buflen < user_length) {                                                                                        \
+      *errnop = ERANGE;                                                                                                \
       return NSS_STATUS_TRYAGAIN;                                                                                      \
     }                                                                                                                  \
-    rbuf->gr_mem[i] = strdup(user);                                                                                    \
-    buf += strlen(rbuf->gr_mem[i]) + 1;                                                                                \
-    buflen -= strlen(rbuf->gr_mem[i]) + 1;                                                                             \
+    strcpy(next_member, user);                                                                                         \
+    rbuf->gr_mem[i] = next_member;                                                                                     \
+    next_member += user_length + 1;                                                                                    \
+    buflen -= user_length + 1;                                                                                         \
   }                                                                                                                    \
   rbuf->gr_mem[json_array_size(members)] = NULL;
 

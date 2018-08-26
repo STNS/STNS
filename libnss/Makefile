@@ -14,6 +14,7 @@ endif
 BINDIR=$(PREFIX)/bin
 
 BUILD=tmp/libs
+CACHE=/var/cache/stns
 CRITERION_VERSION=2.3.2
 SHUNIT_VERSION=2.1.6
 
@@ -23,7 +24,10 @@ test: testdev ## Test with dependencies installation
 build_dir: ## Create directory for build
 	test -d $(BUILD) || mkdir -p $(BUILD)
 
-depsdev: build_dir ## Installing dependencies for development
+cache_dir: ## Create directory for cache
+	test -d $(CACHE) || mkdir -p $(CACHE)
+
+depsdev: build_dir cache_dir ## Installing dependencies for development
 	test -f $(BUILD)/criterion.tar.bz2 || curl -sL https://github.com/Snaipe/Criterion/releases/download/v$(CRITERION_VERSION)/criterion-v$(CRITERION_VERSION)-linux-x86_64.tar.bz2 -o $(BUILD)/criterion.tar.bz2
 	cd $(BUILD); tar xf criterion.tar.bz2; cd ../
 	test -d /usr/include/criterion || mv $(BUILD)/criterion-v$(CRITERION_VERSION)/include/criterion /usr/include/criterion && mv $(BUILD)/criterion-v$(CRITERION_VERSION)/lib/libcriterion.* $(LIBDIR)/
@@ -34,7 +38,7 @@ depsdev: build_dir ## Installing dependencies for development
 testdev: ## Test without dependencies installation
 	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Testing$(RESET)"
 	$(CC) -g3 -O0 stns.c stns_group.c toml.c stns_shadow.c stns_passwd.c stns_test.c stns_group_test.c stns_shadow_test.c stns_passwd_test.c \
-		-lcurl -ljansson -lcriterion -o $(BUILD)/test && \
+		-lcurl -ljansson -lcriterion -lpthread -o $(BUILD)/test && \
 		$(BUILD)/test --verbose
 build: nss_build key_wrapper_build
 nss_build: build_dir ## Build nss_stns
@@ -50,7 +54,7 @@ nss_build: build_dir ## Build nss_stns
 		$(BUILD)/toml.o \
 		$(BUILD)/stns_group.o \
 		$(BUILD)/stns_shadow.o \
-		-lcurl -ljansson
+		-lcurl -ljansson -lpthread
 key_wrapper_build: build_dir ## Build nss_stns
 	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Building nss_stns$(RESET)"
 	$(CC) $(CFLAGS) -c toml.c -o $(BUILD)/toml.o
@@ -60,7 +64,7 @@ key_wrapper_build: build_dir ## Build nss_stns
 		$(BUILD)/stns.o \
 		$(BUILD)/stns_key_wrapper.o \
 		$(BUILD)/toml.o \
-		-lcurl -ljansson
+		-lcurl -ljansson -lpthread
 
 integration_test: build install depsdev ## Run integration test
 	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Integration Testing$(RESET)"

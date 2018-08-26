@@ -27,11 +27,10 @@
 #define MAXBUF 1024
 #define STNS_LOCK_FILE "/var/tmp/.stns.lock"
 
-typedef struct stns_http_response_t stns_http_response_t;
-struct stns_http_response_t {
+typedef struct stns_response_t stns_response_t;
+struct stns_response_t {
   char *data;
   size_t size;
-  long *status_code;
 };
 
 typedef struct stns_conf_t stns_conf_t;
@@ -43,19 +42,23 @@ struct stns_conf_t {
   char *query_wrapper;
   char *chain_ssh_wrapper;
   char *http_proxy;
+  char *cache_dir;
   int uid_shift;
   int gid_shift;
   int ssl_verify;
   int request_timeout;
   int request_retry;
   int request_locktime;
+  int cache;
+  int cache_ttl;
 };
 
 extern void stns_load_config(char *, stns_conf_t *);
-extern int stns_request(stns_conf_t *, char *, stns_http_response_t *);
+extern void stns_unload_config(stns_conf_t *);
+extern int stns_request(stns_conf_t *, char *, stns_response_t *);
 extern int stns_request_available(char *, stns_conf_t *);
 extern void stns_make_lockfile(char *);
-extern int stns_exec_cmd(char *, char *, char *);
+extern int stns_exec_cmd(char *, char *, stns_response_t *);
 extern int stns_user_highest_query_available(int);
 extern int stns_user_lowest_query_available(int);
 extern int stns_group_highest_query_available(int);
@@ -76,8 +79,8 @@ extern void set_group_lowest_id(int);
     json_t *root = json_loads(data, 0, &error);                                                                        \
                                                                                                                        \
     if (root == NULL) {                                                                                                \
-      syslog(LOG_ERR, "%s[L%d] json parse error: %s", __func__, __LINE__, error.text);                                 \
-      goto leave;                                                                                                      \
+      syslog(LOG_ERR, "%s(stns)[L%d] json parse error: %s", __func__, __LINE__, error.text);                           \
+      return NSS_STATUS_UNAVAIL;                                                                                       \
     }                                                                                                                  \
                                                                                                                        \
     json_array_foreach(root, i, leaf)                                                                                  \
@@ -89,18 +92,13 @@ extern void set_group_lowest_id(int);
                                                                                                                        \
       if (match_method) {                                                                                              \
         ltype##_ENSURE(leaf);                                                                                          \
-        free(data);                                                                                                    \
         json_decref(root);                                                                                             \
         return NSS_STATUS_SUCCESS;                                                                                     \
       }                                                                                                                \
     }                                                                                                                  \
                                                                                                                        \
-    free(data);                                                                                                        \
     json_decref(root);                                                                                                 \
     return NSS_STATUS_NOTFOUND;                                                                                        \
-  leave:                                                                                                               \
-    free(data);                                                                                                        \
-    return NSS_STATUS_UNAVAIL;                                                                                         \
   }
 
 #define STNS_SET_DEFAULT_VALUE(buf, name, def)                                                                         \
@@ -116,7 +114,7 @@ extern void set_group_lowest_id(int);
   enum nss_status _nss_stns_##method(first, struct resource *rbuf, char *buf, size_t buflen, int *errnop)              \
   {                                                                                                                    \
     int curl_result;                                                                                                   \
-    stns_http_response_t r;                                                                                            \
+    stns_response_t r;                                                                                                 \
     stns_conf_t c;                                                                                                     \
     char url[MAXBUF];                                                                                                  \
                                                                                                                        \
@@ -129,7 +127,10 @@ extern void set_group_lowest_id(int);
       return NSS_STATUS_UNAVAIL;                                                                                       \
     }                                                                                                                  \
                                                                                                                        \
-    return ensure_##resource##_by_##value(r.data, &c, value, rbuf, buf, buflen, errnop);                               \
+    int result = ensure_##resource##_by_##value(r.data, &c, value, rbuf, buf, buflen, errnop);                         \
+    free(r.data);                                                                                                      \
+    stns_unload_config(&c);                                                                                            \
+    return result;                                                                                                     \
   }
 
 #define SET_ATTRBUTE(type, name, attr)                                                                                 \
@@ -155,8 +156,7 @@ extern void set_group_lowest_id(int);
     entries = json_loads(data, 0, &error);                                                                             \
                                                                                                                        \
     if (entries == NULL) {                                                                                             \
-      syslog(LOG_ERR, "%s[L%d] json parse error: %s", __func__, __LINE__, error.text);                                 \
-      free(data);                                                                                                      \
+      syslog(LOG_ERR, "%s(stns)[L%d] json parse error: %s", __func__, __LINE__, error.text);                           \
       pthread_mutex_unlock(&type##ent_mutex);                                                                          \
       return NSS_STATUS_UNAVAIL;                                                                                       \
     }                                                                                                                  \
@@ -169,7 +169,7 @@ extern void set_group_lowest_id(int);
   enum nss_status _nss_stns_set##type##ent(void)                                                                       \
   {                                                                                                                    \
     int curl_result;                                                                                                   \
-    stns_http_response_t r;                                                                                            \
+    stns_response_t r;                                                                                                 \
     stns_conf_t c;                                                                                                     \
     stns_load_config(STNS_CONFIG_FILE, &c);                                                                            \
                                                                                                                        \
@@ -178,7 +178,10 @@ extern void set_group_lowest_id(int);
       return NSS_STATUS_UNAVAIL;                                                                                       \
     }                                                                                                                  \
                                                                                                                        \
-    return inner_nss_stns_set##type##ent(r.data, &c);                                                                  \
+    int result = inner_nss_stns_set##type##ent(r.data, &c);                                                            \
+    free(r.data);                                                                                                      \
+    stns_unload_config(&c);                                                                                            \
+    return result;                                                                                                     \
   }                                                                                                                    \
                                                                                                                        \
   enum nss_status _nss_stns_end##type##ent(void)                                                                       \
@@ -223,7 +226,9 @@ extern void set_group_lowest_id(int);
   {                                                                                                                    \
     stns_conf_t c;                                                                                                     \
     stns_load_config(STNS_CONFIG_FILE, &c);                                                                            \
-    return inner_nss_stns_get##type##ent_r(&c, rbuf, buf, buflen, errnop);                                             \
+    int result = inner_nss_stns_get##type##ent_r(&c, rbuf, buf, buflen, errnop);                                       \
+    stns_unload_config(&c);                                                                                            \
+    return result;                                                                                                     \
   }
 
 #define SET_GET_HIGH_LOW_ID(highest_or_lowest, user_or_group)                                                          \
@@ -242,13 +247,23 @@ extern void set_group_lowest_id(int);
     return r;                                                                                                          \
   }
 
-#define GET_TOML_BYKEY(m, method, empty)                                                                               \
+#define TOML_STR(m, empty)                                                                                             \
+  c->m = malloc(strlen(empty) + 1);                                                                                    \
+  strcpy(c->m, empty);
+#define TOML_NULL_OR_INT(m, empty) c->m = empty;
+
+#define GET_TOML_BYKEY(m, method, empty, str_or_int)                                                                   \
   if (0 != (raw = toml_raw_in(tab, #m))) {                                                                             \
     if (0 != method(raw, &c->m)) {                                                                                     \
-      syslog(LOG_ERR, "%s[L%d] cannot parse toml file:%s key:%s", __func__, __LINE__, filename, #m);                   \
+      syslog(LOG_ERR, "%s(stns)[L%d] cannot parse toml file:%s key:%s", __func__, __LINE__, filename, #m);             \
     }                                                                                                                  \
   } else {                                                                                                             \
-    c->m = empty;                                                                                                      \
+    str_or_int(m, empty)                                                                                               \
+  }
+
+#define UNLOAD_TOML_BYKEY(m)                                                                                           \
+  if (c->m != NULL) {                                                                                                  \
+    free(c->m);                                                                                                        \
   }
 
 #define ID_QUERY_AVAILABLE(user_or_group, high_or_low, inequality)                                                     \

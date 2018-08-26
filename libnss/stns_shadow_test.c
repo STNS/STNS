@@ -7,7 +7,7 @@ Test(ensure_spwd_by_name, ok)
   struct spwd spbuf;
   char buffer[MAXBUF];
   stns_conf_t c;
-  stns_http_response_t r;
+  stns_response_t r;
 
   readfile(f, &json);
   code = ensure_spwd_by_name(json, &c, "user1", &spbuf, buffer, MAXBUF, 0);
@@ -40,7 +40,7 @@ Test(ensure_spwd_by_uid, ok)
   struct spwd spbuf;
   char buffer[MAXBUF];
   stns_conf_t c;
-  stns_http_response_t r;
+  stns_response_t r;
 
   readfile(f, &json);
   code = ensure_spwd_by_uid(json, &c, 1, &spbuf, buffer, MAXBUF, 0);
@@ -73,7 +73,7 @@ Test(inner_nss_stns_setspent, ok)
   struct spwd spbuf;
   char buffer[MAXBUF];
   stns_conf_t c;
-  stns_http_response_t r;
+  stns_response_t r;
 
   c.uid_shift = 0;
   c.gid_shift = 0;
@@ -97,7 +97,7 @@ Test(inner_nss_stns_getspent_r, ok)
   struct spwd spbuf;
   char buffer[MAXBUF];
   stns_conf_t c;
-  stns_http_response_t r;
+  stns_response_t r;
 
   readfile(f, &json);
   code = inner_nss_stns_setspent(json, &c);
