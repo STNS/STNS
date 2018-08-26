@@ -26,6 +26,7 @@ func NewConfig(confPath string) (Config, error) {
 }
 
 type Config struct {
+	Port             int `toml:"port"`
 	UseServerStarter bool
 	Users            *model.Users
 	Groups           *model.Groups
@@ -33,6 +34,7 @@ type Config struct {
 }
 
 func defaultConfig(c *Config) {
+	c.Port = 1104
 }
 
 func includeConfigFile(config *Config, include string) error {

@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"strconv"
 	"time"
 
 	emiddleware "github.com/labstack/echo/middleware"
@@ -69,7 +70,8 @@ func (s *server) Run() error {
 		}
 		e.Listener = listeners[0]
 	} else {
-		l, err := net.Listen("tcp", ":8050")
+		p := strconv.Itoa(s.config.Port)
+		l, err := net.Listen("tcp", ":"+p)
 		if err != nil {
 			return err
 		}
