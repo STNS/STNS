@@ -62,7 +62,8 @@ Test(stns_request, http_request)
   stns_http_response_t r;
 
   c.api_endpoint    = "https://httpbin.org";
-  c.cache_dir       = "/tmp";
+  c.cache_dir       = "/var/cache/stns";
+  c.cache           = 0;
   c.user            = NULL;
   c.password        = NULL;
   c.query_wrapper   = NULL;
@@ -75,6 +76,32 @@ Test(stns_request, http_request)
   cr_assert_str_eq(r.data, expect_body);
 }
 
+Test(stns_request, http_cache)
+{
+  struct stat st;
+  stns_conf_t c;
+  stns_http_response_t r;
+  char *path = "/var/cache/stns/get%3Fexample";
+
+  c.api_endpoint    = "https://httpbin.org";
+  c.cache_dir       = "/var/cache/stns";
+  c.cache           = 1;
+  c.cache_ttl       = 2;
+  c.user            = NULL;
+  c.password        = NULL;
+  c.query_wrapper   = NULL;
+  c.request_timeout = 3;
+  c.request_retry   = 3;
+  c.auth_token      = NULL;
+
+  stns_request(&c, "get?example", &r);
+  cr_assert_eq(stat(path, &st), 0);
+  sleep(3);
+  // deleted by thread
+  stns_request(&c, "get?notfound", &r);
+  cr_assert_eq(stat(path, &st), -1);
+}
+
 Test(stns_request, wrapper_request_ok)
 {
   stns_conf_t c;
@@ -82,7 +109,8 @@ Test(stns_request, wrapper_request_ok)
   int res;
 
   c.query_wrapper = "test/dummy_arg.sh";
-  c.cache_dir     = "/tmp";
+  c.cache_dir     = "/var/cache/stns";
+  c.cache         = 0;
 
   res = stns_request(&c, "test", &r);
   cr_assert_str_eq(r.data, "ok\n");

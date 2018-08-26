@@ -6,13 +6,15 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <dirent.h>
 
-pthread_mutex_t user_mutex  = PTHREAD_MUTEX_INITIALIZER;
-pthread_mutex_t group_mutex = PTHREAD_MUTEX_INITIALIZER;
-int highest_user_id         = 0;
-int lowest_user_id          = 0;
-int highest_group_id        = 0;
-int lowest_group_id         = 0;
+pthread_mutex_t user_mutex   = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t group_mutex  = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t delete_mutex = PTHREAD_MUTEX_INITIALIZER;
+int highest_user_id          = 0;
+int lowest_user_id           = 0;
+int highest_group_id         = 0;
+int lowest_group_id          = 0;
 
 SET_GET_HIGH_LOW_ID(highest, user);
 SET_GET_HIGH_LOW_ID(lowest, user);
@@ -259,18 +261,20 @@ void stns_make_lockfile(char *path)
 // base: https://github.com/linyows/octopass/blob/master/octopass.c
 void stns_export_file(char *file, char *data)
 {
+  struct stat statbuf;
+  if (stat(file, &statbuf) != -1 && statbuf.st_uid != getuid()) {
+    return;
+  }
+
   FILE *fp = fopen(file, "w");
   if (!fp) {
     fprintf(stderr, "File open failure: %s\n", file);
-    exit(1);
     return;
   }
   fprintf(fp, "%s", data);
   fclose(fp);
 
-  if (getuid() == 0) {
-    chmod(file, S_IRUSR | S_IWUSR | S_IXUSR | S_IRGRP | S_IWGRP | S_IXGRP | S_IROTH | S_IWOTH | S_IXOTH);
-  }
+  chmod(file, S_IRUSR | S_IWUSR | S_IXUSR | S_IRGRP | S_IWGRP | S_IXGRP | S_IROTH | S_IWOTH | S_IXOTH);
 }
 
 // base: https://github.com/linyows/octopass/blob/master/octopass.c
@@ -279,7 +283,7 @@ const char *stns_import_file(char *file)
   FILE *fp = fopen(file, "r");
   if (!fp) {
     fprintf(stderr, "File open failure: %s\n", file);
-    exit(1);
+    return NULL;
   }
   char line[MAXBUF];
   char *data;
@@ -302,9 +306,47 @@ const char *stns_import_file(char *file)
   return res;
 }
 
+static void *delete_cache_files(void *data)
+{
+  stns_conf_t *c = (stns_conf_t *)data;
+  DIR *dp;
+  char *buf = malloc(1);
+  struct dirent *ent;
+  struct stat statbuf;
+  unsigned long now = time(NULL);
+
+  if (getuid() != 0)
+    return NULL;
+
+  pthread_mutex_lock(&delete_mutex);
+  if ((dp = opendir(c->cache_dir)) == NULL) {
+    syslog(LOG_ERR, "%s[L%d] cannot open %s: %s", __func__, __LINE__, c->cache_dir, strerror(errno));
+    pthread_mutex_unlock(&delete_mutex);
+    return NULL;
+  }
+
+  while ((ent = readdir(dp)) != NULL) {
+    buf = (char *)realloc(buf, strlen(c->cache_dir) + strlen(ent->d_name) + 2);
+    sprintf(buf, "%s/%s", c->cache_dir, ent->d_name);
+
+    if (stat(buf, &statbuf) == 0) {
+      unsigned long diff = now - statbuf.st_mtime;
+      if (!S_ISDIR(statbuf.st_mode) && diff > c->cache_ttl) {
+        if (unlink(buf) == -1) {
+          syslog(LOG_ERR, "%s[L%d] cannot delete %s: %s", __func__, __LINE__, buf, strerror(errno));
+        }
+      }
+    }
+  }
+  closedir(dp);
+  pthread_mutex_unlock(&delete_mutex);
+  return NULL;
+}
+
 int stns_request(stns_conf_t *c, char *path, stns_http_response_t *res)
 {
   CURLcode result;
+  pthread_t pthread;
   int retry_count = c->request_retry;
 
   if (path == NULL) {
@@ -324,7 +366,9 @@ int stns_request(stns_conf_t *c, char *path, stns_http_response_t *res)
         unsigned long now  = time(NULL);
         unsigned long diff = now - statbuf.st_mtime;
         if (diff < c->cache_ttl) {
+          pthread_mutex_lock(&delete_mutex);
           res->data = (char *)stns_import_file(fpath);
+          pthread_mutex_unlock(&delete_mutex);
           res->size = strlen(res->data);
           return CURLE_OK;
         }
@@ -334,6 +378,10 @@ int stns_request(stns_conf_t *c, char *path, stns_http_response_t *res)
 
   if (!stns_request_available(STNS_LOCK_FILE, c))
     return CURLE_COULDNT_CONNECT;
+
+  if (c->cache) {
+    pthread_create(&pthread, NULL, &delete_cache_files, (void *)c);
+  }
 
   if (c->query_wrapper == NULL) {
     result = _stns_http_request(c, path, res);
@@ -357,8 +405,14 @@ int stns_request(stns_conf_t *c, char *path, stns_http_response_t *res)
     stns_make_lockfile(STNS_LOCK_FILE);
   }
 
+  if (c->cache) {
+    pthread_join(pthread, NULL);
+  }
+
   if (result == CURLE_OK && c->cache) {
+    pthread_mutex_lock(&delete_mutex);
     stns_export_file(fpath, res->data);
+    pthread_mutex_unlock(&delete_mutex);
   }
   return result;
 }

@@ -38,7 +38,7 @@ depsdev: build_dir cache_dir ## Installing dependencies for development
 testdev: ## Test without dependencies installation
 	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Testing$(RESET)"
 	$(CC) -g3 -O0 stns.c stns_group.c toml.c stns_shadow.c stns_passwd.c stns_test.c stns_group_test.c stns_shadow_test.c stns_passwd_test.c \
-		-lcurl -ljansson -lcriterion -o $(BUILD)/test && \
+		-lcurl -ljansson -lcriterion -lpthread -o $(BUILD)/test && \
 		$(BUILD)/test --verbose
 build: nss_build key_wrapper_build
 nss_build: build_dir ## Build nss_stns
@@ -54,7 +54,7 @@ nss_build: build_dir ## Build nss_stns
 		$(BUILD)/toml.o \
 		$(BUILD)/stns_group.o \
 		$(BUILD)/stns_shadow.o \
-		-lcurl -ljansson
+		-lcurl -ljansson -lpthread
 key_wrapper_build: build_dir ## Build nss_stns
 	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Building nss_stns$(RESET)"
 	$(CC) $(CFLAGS) -c toml.c -o $(BUILD)/toml.o
