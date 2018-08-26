@@ -63,6 +63,24 @@ func (s *server) Run() error {
 			`"method":"${method}","uri":"${uri}","status":${status}` + "\n",
 	}))
 
+	if s.config.BasicAuth != nil {
+		e.Use(emiddleware.BasicAuthWithConfig(
+			emiddleware.BasicAuthConfig{
+				Validator: func(username, password string, c echo.Context) (bool, error) {
+					if username == s.config.BasicAuth.User && password == s.config.BasicAuth.Password {
+						return true, nil
+					}
+					return false, nil
+				},
+				Skipper: func(c echo.Context) bool {
+					if c.Path() == "/" || len(os.Getenv("CI")) > 0 {
+						return true
+					}
+					return false
+				},
+			}))
+	}
+
 	if s.config.UseServerStarter {
 		listeners, err := listener.ListenAll()
 		if listeners == nil || err != nil {

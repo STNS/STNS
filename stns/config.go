@@ -26,11 +26,18 @@ func NewConfig(confPath string) (Config, error) {
 }
 
 type Config struct {
-	Port             int `toml:"port"`
+	Port      int        `toml:"port"`
+	BasicAuth *BasicAuth `toml:"basic_auth"`
+
 	UseServerStarter bool
 	Users            *model.Users
 	Groups           *model.Groups
 	Include          string `toml:"include"`
+}
+
+type BasicAuth struct {
+	User     string
+	Password string
 }
 
 func defaultConfig(c *Config) {

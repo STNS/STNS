@@ -1,5 +1,9 @@
 include = "include.toml"
 
+[basic_auth]
+user = "foo"
+password = "bar"
+
 [users.test]
 id = 10001
 password = "test"
