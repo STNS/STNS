@@ -78,7 +78,7 @@ extern void set_group_lowest_id(int);
     json_t *root = json_loads(data, 0, &error);                                                                        \
                                                                                                                        \
     if (root == NULL) {                                                                                                \
-      syslog(LOG_ERR, "%s[L%d] json parse error: %s", __func__, __LINE__, error.text);                                 \
+      syslog(LOG_ERR, "%s(stns)[L%d] json parse error: %s", __func__, __LINE__, error.text);                           \
       goto leave;                                                                                                      \
     }                                                                                                                  \
                                                                                                                        \
@@ -157,7 +157,7 @@ extern void set_group_lowest_id(int);
     entries = json_loads(data, 0, &error);                                                                             \
                                                                                                                        \
     if (entries == NULL) {                                                                                             \
-      syslog(LOG_ERR, "%s[L%d] json parse error: %s", __func__, __LINE__, error.text);                                 \
+      syslog(LOG_ERR, "%s(stns)[L%d] json parse error: %s", __func__, __LINE__, error.text);                           \
       free(data);                                                                                                      \
       pthread_mutex_unlock(&type##ent_mutex);                                                                          \
       return NSS_STATUS_UNAVAIL;                                                                                       \
@@ -247,7 +247,7 @@ extern void set_group_lowest_id(int);
 #define GET_TOML_BYKEY(m, method, empty)                                                                               \
   if (0 != (raw = toml_raw_in(tab, #m))) {                                                                             \
     if (0 != method(raw, &c->m)) {                                                                                     \
-      syslog(LOG_ERR, "%s[L%d] cannot parse toml file:%s key:%s", __func__, __LINE__, filename, #m);                   \
+      syslog(LOG_ERR, "%s(stns)[L%d] cannot parse toml file:%s key:%s", __func__, __LINE__, filename, #m);             \
     }                                                                                                                  \
   } else {                                                                                                             \
     c->m = empty;                                                                                                      \

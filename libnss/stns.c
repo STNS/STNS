@@ -33,7 +33,7 @@ void stns_load_config(char *filename, stns_conf_t *c)
 
   FILE *fp = fopen(filename, "r");
   if (!fp) {
-    syslog(LOG_ERR, "%s[L%d] cannot open %s: %s", __func__, __LINE__, filename, strerror(errno));
+    syslog(LOG_ERR, "%s(stns)[L%d] cannot open %s: %s", __func__, __LINE__, filename, strerror(errno));
 
     exit(1);
   }
@@ -41,7 +41,7 @@ void stns_load_config(char *filename, stns_conf_t *c)
   toml_table_t *tab = toml_parse_file(fp, errbuf, sizeof(errbuf));
 
   if (!tab) {
-    syslog(LOG_ERR, "%s[L%d] %s", __func__, __LINE__, errbuf);
+    syslog(LOG_ERR, "%s(stns)[L%d] %s", __func__, __LINE__, errbuf);
     exit(1);
   }
 
@@ -122,7 +122,7 @@ static size_t response_callback(void *buffer, size_t size, size_t nmemb, void *u
   stns_http_response_t *res = (stns_http_response_t *)userp;
 
   if (segsize > STNS_MAX_BUFFER_SIZE) {
-    syslog(LOG_ERR, "%s[L%d] Response is too large", __func__, __LINE__);
+    syslog(LOG_ERR, "%s(stns)[L%d] Response is too large", __func__, __LINE__);
     return 0;
   }
 
@@ -139,7 +139,7 @@ static size_t response_callback(void *buffer, size_t size, size_t nmemb, void *u
   return segsize;
 }
 
-static int _stns_wrapper_request(stns_conf_t *c, char *path, stns_http_response_t *res)
+static int inner_wrapper_request(stns_conf_t *c, char *path, stns_http_response_t *res)
 {
   int rsize    = 0;
   char *result = malloc(1);
@@ -167,7 +167,7 @@ static int _stns_wrapper_request(stns_conf_t *c, char *path, stns_http_response_
 }
 
 // base https://github.com/linyows/octopass/blob/master/octopass.c
-static CURLcode _stns_http_request(stns_conf_t *c, char *path, stns_http_response_t *res)
+static CURLcode inner_http_request(stns_conf_t *c, char *path, stns_http_response_t *res)
 {
   char *auth;
   char *url;
@@ -193,7 +193,7 @@ static CURLcode _stns_http_request(stns_conf_t *c, char *path, stns_http_respons
   }
 
 #ifdef DEBUG
-  syslog(LOG_DEBUG, "%s[L%d] send http request: %s", __func__, __LINE__, url);
+  syslog(LOG_DEBUG, "%s(stns)[L%d] send http request: %s", __func__, __LINE__, url);
 #endif
 
   curl = curl_easy_init();
@@ -220,7 +220,7 @@ static CURLcode _stns_http_request(stns_conf_t *c, char *path, stns_http_respons
   result = curl_easy_perform(curl);
 
   if (result != CURLE_OK) {
-    syslog(LOG_ERR, "%s[L%d] http request failed: %s", __func__, __LINE__, curl_easy_strerror(result));
+    syslog(LOG_ERR, "%s(stns)[L%d] http request failed: %s", __func__, __LINE__, curl_easy_strerror(result));
   } else {
     long *code;
     curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &code);
@@ -320,7 +320,7 @@ static void *delete_cache_files(void *data)
 
   pthread_mutex_lock(&delete_mutex);
   if ((dp = opendir(c->cache_dir)) == NULL) {
-    syslog(LOG_ERR, "%s[L%d] cannot open %s: %s", __func__, __LINE__, c->cache_dir, strerror(errno));
+    syslog(LOG_ERR, "%s(stns)[L%d] cannot open %s: %s", __func__, __LINE__, c->cache_dir, strerror(errno));
     pthread_mutex_unlock(&delete_mutex);
     return NULL;
   }
@@ -333,7 +333,7 @@ static void *delete_cache_files(void *data)
       unsigned long diff = now - statbuf.st_mtime;
       if (!S_ISDIR(statbuf.st_mode) && diff > c->cache_ttl) {
         if (unlink(buf) == -1) {
-          syslog(LOG_ERR, "%s[L%d] cannot delete %s: %s", __func__, __LINE__, buf, strerror(errno));
+          syslog(LOG_ERR, "%s(stns)[L%d] cannot delete %s: %s", __func__, __LINE__, buf, strerror(errno));
         }
       }
     }
@@ -384,21 +384,21 @@ int stns_request(stns_conf_t *c, char *path, stns_http_response_t *res)
   }
 
   if (c->query_wrapper == NULL) {
-    result = _stns_http_request(c, path, res);
+    result = inner_http_request(c, path, res);
     while (1) {
       if (result != CURLE_OK && retry_count > 0) {
         if (result == CURLE_HTTP_RETURNED_ERROR) {
           break;
         }
         sleep(1);
-        result = _stns_http_request(c, path, res);
+        result = inner_http_request(c, path, res);
         retry_count--;
       } else {
         break;
       }
     }
   } else {
-    result = _stns_wrapper_request(c, path, res);
+    result = inner_wrapper_request(c, path, res);
   }
 
   if (result == CURLE_COULDNT_CONNECT) {

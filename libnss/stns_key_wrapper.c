@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
 
   if (root == NULL) {
     free(r.data);
-    syslog(LOG_ERR, "%s[L%d] json parse error: %s", __func__, __LINE__, error.text);
+    syslog(LOG_ERR, "%s(stns)[L%d] json parse error: %s", __func__, __LINE__, error.text);
     return -1;
   }
 
