@@ -96,7 +96,7 @@ Test(stns_request, http_cache)
 
   stns_request(&c, "get?example", &r);
   cr_assert_eq(stat(path, &st), 0);
-  sleep(3);
+  sleep(5);
   // deleted by thread
   stns_request(&c, "get?notfound", &r);
   cr_assert_eq(stat(path, &st), -1);

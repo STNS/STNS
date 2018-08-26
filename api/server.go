@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"strconv"
 	"time"
 
 	emiddleware "github.com/labstack/echo/middleware"
@@ -30,7 +31,6 @@ type server struct {
 }
 
 func newServer(confPath string) (*server, error) {
-	logrus.Warn(confPath)
 	conf, err := stns.NewConfig(confPath)
 	if err != nil {
 		return nil, err
@@ -62,6 +62,43 @@ func (s *server) Run() error {
 			`"method":"${method}","uri":"${uri}","status":${status}` + "\n",
 	}))
 
+	if s.config.BasicAuth != nil {
+		e.Use(emiddleware.BasicAuthWithConfig(
+			emiddleware.BasicAuthConfig{
+				Validator: func(username, password string, c echo.Context) (bool, error) {
+					if username == s.config.BasicAuth.User && password == s.config.BasicAuth.Password {
+						return true, nil
+					}
+					return false, nil
+				},
+				Skipper: func(c echo.Context) bool {
+					if c.Path() == "/" || c.Path() == "/status" || len(os.Getenv("CI")) > 0 {
+						return true
+					}
+					return false
+				},
+			}))
+	}
+
+	e.Use(middleware.TokenAuthWithConfig(middleware.TokenAuthConfig{
+		Skipper: func(c echo.Context) bool {
+
+			if c.Path() == "/" || c.Path() == "/status" || len(os.Getenv("CI")) > 0 {
+				return true
+			}
+
+			return false
+		},
+		Validator: func(token string) bool {
+			for _, a := range s.config.TokenAuth.Tokens {
+				if a == token {
+					return true
+				}
+			}
+			return false
+		},
+	}))
+
 	if s.config.UseServerStarter {
 		listeners, err := listener.ListenAll()
 		if listeners == nil || err != nil {
@@ -69,7 +106,8 @@ func (s *server) Run() error {
 		}
 		e.Listener = listeners[0]
 	} else {
-		l, err := net.Listen("tcp", ":8050")
+		p := strconv.Itoa(s.config.Port)
+		l, err := net.Listen("tcp", ":"+p)
 		if err != nil {
 			return err
 		}

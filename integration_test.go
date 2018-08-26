@@ -16,7 +16,7 @@ var (
 )
 
 // testHost is host url for test
-const testHost = "http://localhost:8050"
+const testHost = "http://localhost:1104"
 
 // testEndpoint is endpoint for API
 const testEndpoint = testHost + "/v1"

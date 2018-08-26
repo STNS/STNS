@@ -1,6 +1,7 @@
 #!/bin/bash
 
 start_server() {
+  export CI=1
   make server &
   sleep 3
 }

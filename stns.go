@@ -26,7 +26,7 @@ func init() {
 var flags = []cli.Flag{
 	cli.StringFlag{
 		Name:   "logfile",
-		Value:  "/var/log/stns.log",
+		Value:  "",
 		Usage:  "Log file path",
 		EnvVar: "STNS_LOG",
 	},
