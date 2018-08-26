@@ -7,6 +7,7 @@ RUN apt-get install -qqy build-essential \
     libjansson-dev \
     gdb \
     sudo \
+    rsyslog \
     clang
 RUN go get -u golang.org/x/vgo/...
 ADD . /go/src/github.com/STNS/STNS
