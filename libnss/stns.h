@@ -42,6 +42,7 @@ struct stns_conf_t {
   char *query_wrapper;
   char *chain_ssh_wrapper;
   char *http_proxy;
+  char *cache_dir;
   int uid_shift;
   int gid_shift;
   int ssl_verify;
@@ -50,7 +51,6 @@ struct stns_conf_t {
   int request_locktime;
   int cache;
   int cache_ttl;
-  char *cache_dir;
 };
 
 extern void stns_load_config(char *, stns_conf_t *);

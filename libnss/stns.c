@@ -326,9 +326,6 @@ static void *delete_cache_files(void *data)
   struct stat statbuf;
   unsigned long now = time(NULL);
 
-  if (getuid() != 0)
-    return NULL;
-
   pthread_mutex_lock(&delete_mutex);
   if ((dp = opendir(c->cache_dir)) == NULL) {
     syslog(LOG_ERR, "%s(stns)[L%d] cannot open %s: %s", __func__, __LINE__, c->cache_dir, strerror(errno));
@@ -341,7 +338,7 @@ static void *delete_cache_files(void *data)
     buf = (char *)realloc(buf, strlen(c->cache_dir) + strlen(ent->d_name) + 2);
     sprintf(buf, "%s/%s", c->cache_dir, ent->d_name);
 
-    if (stat(buf, &statbuf) == 0) {
+    if (stat(buf, &statbuf) == 0 && (statbuf.st_uid == getuid() || getuid() == 0)) {
       unsigned long diff = now - statbuf.st_mtime;
       if (!S_ISDIR(statbuf.st_mode) && diff > c->cache_ttl) {
         if (unlink(buf) == -1) {
