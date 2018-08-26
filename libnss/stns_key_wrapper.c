@@ -4,7 +4,7 @@ int main(int argc, char *argv[])
 {
 
   int curl_result;
-  stns_http_response_t r;
+  stns_response_t r;
   stns_conf_t c;
   char url[MAXBUF];
   const char *tmpkey;
@@ -38,6 +38,7 @@ int main(int argc, char *argv[])
   curl_result = stns_request(&c, url, &r);
   if (curl_result != CURLE_OK) {
     fprintf(stderr, "http request failed user: %s\n", argv[optind]);
+    stns_unload_config(&c);
     return -1;
   }
 
@@ -52,6 +53,7 @@ int main(int argc, char *argv[])
   if (root == NULL) {
     free(r.data);
     syslog(LOG_ERR, "%s(stns)[L%d] json parse error: %s", __func__, __LINE__, error.text);
+    stns_unload_config(&c);
     return -1;
   }
 
@@ -88,19 +90,20 @@ int main(int argc, char *argv[])
   }
 
   if (c.chain_ssh_wrapper != NULL) {
-    char *result = malloc(1);
-    if (stns_exec_cmd(c.chain_ssh_wrapper, argv[optind], result)) {
-      key_size = strlen(result);
+    stns_response_t cr;
+    if (stns_exec_cmd(c.chain_ssh_wrapper, argv[optind], &cr)) {
+      key_size = cr.size;
       keys     = (char *)realloc(keys, key_size + strlen(keys) + 1);
-      memcpy(&(keys[size]), result, (size_t)key_size);
+      strcpy(&(keys[size]), cr.data);
       size += key_size;
-      keys[size] = '\0';
     }
+    free(cr.data);
   }
 
   fprintf(stdout, "%s\n", keys);
   free(keys);
   free(r.data);
   json_decref(root);
+  stns_unload_config(&c);
   return 0;
 }

@@ -54,29 +54,41 @@ void stns_load_config(char *filename, stns_conf_t *c)
     exit(1);
   }
 
-  GET_TOML_BYKEY(api_endpoint, toml_rtos, "http://localhost:1104/v1");
-  GET_TOML_BYKEY(cache_dir, toml_rtos, "/var/cache/stns/");
-  GET_TOML_BYKEY(auth_token, toml_rtos, NULL);
-  GET_TOML_BYKEY(user, toml_rtos, NULL);
-  GET_TOML_BYKEY(password, toml_rtos, NULL);
-  GET_TOML_BYKEY(query_wrapper, toml_rtos, NULL);
-  GET_TOML_BYKEY(chain_ssh_wrapper, toml_rtos, NULL);
-  GET_TOML_BYKEY(http_proxy, toml_rtos, NULL);
+  GET_TOML_BYKEY(api_endpoint, toml_rtos, "http://localhost:1104/v1", TOML_STR);
+  GET_TOML_BYKEY(cache_dir, toml_rtos, "/var/cache/stns", TOML_STR);
+  GET_TOML_BYKEY(auth_token, toml_rtos, NULL, TOML_NULL_OR_INT);
+  GET_TOML_BYKEY(user, toml_rtos, NULL, TOML_NULL_OR_INT);
+  GET_TOML_BYKEY(password, toml_rtos, NULL, TOML_NULL_OR_INT);
+  GET_TOML_BYKEY(query_wrapper, toml_rtos, NULL, TOML_NULL_OR_INT);
+  GET_TOML_BYKEY(chain_ssh_wrapper, toml_rtos, NULL, TOML_NULL_OR_INT);
+  GET_TOML_BYKEY(http_proxy, toml_rtos, NULL, TOML_NULL_OR_INT);
 
-  GET_TOML_BYKEY(uid_shift, toml_rtoi, 0);
-  GET_TOML_BYKEY(gid_shift, toml_rtoi, 0);
-  GET_TOML_BYKEY(cache_ttl, toml_rtoi, 600);
-  GET_TOML_BYKEY(ssl_verify, toml_rtob, 1);
-  GET_TOML_BYKEY(cache, toml_rtob, 1);
-  GET_TOML_BYKEY(request_timeout, toml_rtoi, 10);
-  GET_TOML_BYKEY(request_retry, toml_rtoi, 3);
-  GET_TOML_BYKEY(request_locktime, toml_rtoi, 60);
+  GET_TOML_BYKEY(uid_shift, toml_rtoi, 0, TOML_NULL_OR_INT);
+  GET_TOML_BYKEY(gid_shift, toml_rtoi, 0, TOML_NULL_OR_INT);
+  GET_TOML_BYKEY(cache_ttl, toml_rtoi, 600, TOML_NULL_OR_INT);
+  GET_TOML_BYKEY(ssl_verify, toml_rtob, 1, TOML_NULL_OR_INT);
+  GET_TOML_BYKEY(cache, toml_rtob, 1, TOML_NULL_OR_INT);
+  GET_TOML_BYKEY(request_timeout, toml_rtoi, 10, TOML_NULL_OR_INT);
+  GET_TOML_BYKEY(request_retry, toml_rtoi, 3, TOML_NULL_OR_INT);
+  GET_TOML_BYKEY(request_locktime, toml_rtoi, 60, TOML_NULL_OR_INT);
 
   TRIM_SLASH(api_endpoint)
   TRIM_SLASH(cache_dir)
 
   fclose(fp);
   toml_free(tab);
+}
+
+void stns_unload_config(stns_conf_t *c)
+{
+  UNLOAD_TOML_BYKEY(api_endpoint);
+  UNLOAD_TOML_BYKEY(cache_dir);
+  UNLOAD_TOML_BYKEY(auth_token);
+  UNLOAD_TOML_BYKEY(user);
+  UNLOAD_TOML_BYKEY(password);
+  UNLOAD_TOML_BYKEY(query_wrapper);
+  UNLOAD_TOML_BYKEY(chain_ssh_wrapper);
+  UNLOAD_TOML_BYKEY(http_proxy);
 }
 
 static void trim(char *s)
@@ -122,8 +134,8 @@ static size_t header_callback(char *buffer, size_t size, size_t nitems, void *us
 // size is always 1
 static size_t response_callback(void *buffer, size_t size, size_t nmemb, void *userp)
 {
-  size_t segsize            = size * nmemb;
-  stns_http_response_t *res = (stns_http_response_t *)userp;
+  size_t segsize       = size * nmemb;
+  stns_response_t *res = (stns_response_t *)userp;
 
   if (segsize > STNS_MAX_BUFFER_SIZE) {
     syslog(LOG_ERR, "%s(stns)[L%d] Response is too large", __func__, __LINE__);
@@ -131,47 +143,44 @@ static size_t response_callback(void *buffer, size_t size, size_t nmemb, void *u
   }
 
   if (!res->data) {
-    res->data = (char *)malloc(segsize);
+    res->data = (char *)malloc(segsize + 1);
   } else {
-    res->data = (char *)realloc(res->data, res->size + segsize);
+    res->data = (char *)realloc(res->data, res->size + segsize + 1);
   }
 
-  memcpy(&(res->data[res->size]), buffer, (size_t)segsize);
+  strcpy(&(res->data[res->size]), buffer);
   res->size += segsize;
-  res->data[res->size] = '\0';
 
   return segsize;
 }
 
-static int inner_wrapper_request(stns_conf_t *c, char *path, stns_http_response_t *res)
+static int inner_wrapper_request(stns_conf_t *c, char *path, stns_response_t *res)
 {
-  int rsize    = 0;
-  char *result = malloc(1);
-  res->data    = NULL;
-  res->size    = 0;
+  int rsize = 0;
+  stns_response_t exe_r;
+  res->data = NULL;
+  res->size = 0;
 
-  if (stns_exec_cmd(c->query_wrapper, path, result)) {
-    rsize = strlen(result);
-
+  if (stns_exec_cmd(c->query_wrapper, path, &exe_r)) {
+    rsize = exe_r.size;
     if (res->data) {
       res->data = (char *)realloc(res->data, rsize + 1);
     } else {
       res->data = (char *)malloc(rsize + 1);
     }
 
-    memcpy(&(res->data[0]), result, (size_t)rsize);
-    res->data[rsize] = '\0';
+    strcpy(&(res->data[0]), exe_r.data);
   } else {
-    free(result);
+    free(exe_r.data);
     return 0;
   }
 
-  free(result);
+  free(exe_r.data);
   return 1;
 }
 
 // base https://github.com/linyows/octopass/blob/master/octopass.c
-static CURLcode inner_http_request(stns_conf_t *c, char *path, stns_http_response_t *res)
+static CURLcode inner_http_request(stns_conf_t *c, char *path, stns_response_t *res)
 {
   char *auth;
   char *url;
@@ -282,36 +291,37 @@ void stns_export_file(char *file, char *data)
 }
 
 // base: https://github.com/linyows/octopass/blob/master/octopass.c
-const char *stns_import_file(char *file)
+int stns_import_file(char *file, stns_response_t *res)
 {
   FILE *fp = fopen(file, "r");
   if (!fp) {
     syslog(LOG_ERR, "%s(stns)[L%d] cannot open %s", __func__, __LINE__, file);
-    return NULL;
+    return 0;
   }
 
-  char *data = malloc(1);
   char buf[MAXBUF];
   int total_len = 0;
   int len       = 0;
 
   while (fgets(buf, sizeof(buf), fp) != NULL) {
-    len  = strlen(buf);
-    data = (char *)realloc(data, total_len + len + 1);
-    strcpy(data + total_len, buf);
+    len = strlen(buf);
+    if (!res->data) {
+      res->data = (char *)malloc(len + 1);
+    } else {
+      res->data = (char *)realloc(res->data, total_len + len + 1);
+    }
+    strcpy(res->data + total_len, buf);
     total_len += len;
   }
-  data[total_len] = '\0';
   fclose(fp);
 
-  return data;
+  return 1;
 }
 
 static void *delete_cache_files(void *data)
 {
   stns_conf_t *c = (stns_conf_t *)data;
   DIR *dp;
-  char *buf = malloc(1);
   struct dirent *ent;
   struct stat statbuf;
   unsigned long now = time(NULL);
@@ -326,6 +336,7 @@ static void *delete_cache_files(void *data)
     return NULL;
   }
 
+  char *buf = malloc(1);
   while ((ent = readdir(dp)) != NULL) {
     buf = (char *)realloc(buf, strlen(c->cache_dir) + strlen(ent->d_name) + 2);
     sprintf(buf, "%s/%s", c->cache_dir, ent->d_name);
@@ -339,16 +350,19 @@ static void *delete_cache_files(void *data)
       }
     }
   }
+  free(buf);
   closedir(dp);
   pthread_mutex_unlock(&delete_mutex);
   return NULL;
 }
 
-int stns_request(stns_conf_t *c, char *path, stns_http_response_t *res)
+int stns_request(stns_conf_t *c, char *path, stns_response_t *res)
 {
   CURLcode result;
   pthread_t pthread;
   int retry_count = c->request_retry;
+  res->data       = NULL;
+  res->size       = 0;
 
   if (path == NULL) {
     return CURLE_HTTP_RETURNED_ERROR;
@@ -357,6 +371,7 @@ int stns_request(stns_conf_t *c, char *path, stns_http_response_t *res)
   char *base = curl_escape(path, strlen(path));
   char fpath[strlen(c->cache_dir) + strlen(base) + 1];
   sprintf(fpath, "%s/%s", c->cache_dir, base);
+  free(base);
 
   if (c->cache) {
     FILE *fp = fopen(fpath, "r");
@@ -368,7 +383,10 @@ int stns_request(stns_conf_t *c, char *path, stns_http_response_t *res)
         unsigned long diff = now - statbuf.st_mtime;
         if (diff < c->cache_ttl) {
           pthread_mutex_lock(&delete_mutex);
-          res->data = (char *)stns_import_file(fpath);
+          if (!stns_import_file(fpath, res)) {
+            pthread_mutex_unlock(&delete_mutex);
+            goto request;
+          }
           pthread_mutex_unlock(&delete_mutex);
           res->size = strlen(res->data);
           return CURLE_OK;
@@ -376,7 +394,7 @@ int stns_request(stns_conf_t *c, char *path, stns_http_response_t *res)
       }
     }
   }
-
+request:
   if (!stns_request_available(STNS_LOCK_FILE, c))
     return CURLE_COULDNT_CONNECT;
 
@@ -418,10 +436,13 @@ int stns_request(stns_conf_t *c, char *path, stns_http_response_t *res)
   return result;
 }
 
-int stns_exec_cmd(char *cmd, char *arg, char *result)
+int stns_exec_cmd(char *cmd, char *arg, stns_response_t *r)
 {
   FILE *fp;
   char *c;
+
+  r->data = NULL;
+  r->size = 0;
 
   if (arg != NULL) {
     c = malloc(strlen(cmd) + strlen(arg) + 2);
@@ -431,7 +452,7 @@ int stns_exec_cmd(char *cmd, char *arg, char *result)
   }
 
   if ((fp = popen(c, "r")) == NULL) {
-    return 0;
+    goto err;
   }
 
   char buf[MAXBUF];
@@ -440,19 +461,26 @@ int stns_exec_cmd(char *cmd, char *arg, char *result)
 
   while (fgets(buf, sizeof(buf), fp) != NULL) {
     len = strlen(buf);
-    if (result) {
-      result = (char *)realloc(result, total_len + len + 1);
+    if (r->data) {
+      r->data = (char *)realloc(r->data, total_len + len + 1);
     } else {
-      return 0;
+      r->data = (char *)malloc(total_len + len + 1);
     }
-    strcpy(result + total_len, buf);
+    strcpy(r->data + total_len, buf);
     total_len += len;
   }
-  result[total_len] = '\0';
   pclose(fp);
 
   if (total_len == 0) {
-    return 0;
+    goto err;
   }
+  if (arg != NULL)
+    free(c);
+
+  r->size = total_len;
   return 1;
+err:
+  if (arg != NULL)
+    free(c);
+  return 0;
 }
