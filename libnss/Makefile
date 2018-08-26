@@ -64,7 +64,7 @@ key_wrapper_build: build_dir ## Build nss_stns
 		$(BUILD)/stns.o \
 		$(BUILD)/stns_key_wrapper.o \
 		$(BUILD)/toml.o \
-		-lcurl -ljansson
+		-lcurl -ljansson -lpthread
 
 integration_test: build install depsdev ## Run integration test
 	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Integration Testing$(RESET)"
