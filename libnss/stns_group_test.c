@@ -8,7 +8,7 @@ Test(ensure_group_by_name, ok)
   struct group grd;
   char buffer[MAXBUF];
   stns_conf_t c;
-  stns_http_response_t r;
+  stns_response_t r;
   c.gid_shift = 0;
 
   readfile(f, &json);
@@ -54,7 +54,7 @@ Test(ensure_group_by_gid, ok)
   struct group grd;
   char buffer[MAXBUF];
   stns_conf_t c;
-  stns_http_response_t r;
+  stns_response_t r;
   c.gid_shift = 0;
 
   readfile(f, &json);
@@ -100,7 +100,7 @@ Test(inner_nss_stns_setgrent, ok)
   struct group grd;
   char buffer[MAXBUF];
   stns_conf_t c;
-  stns_http_response_t r;
+  stns_response_t r;
 
   c.gid_shift = 0;
   readfile(f, &json);
@@ -123,7 +123,7 @@ Test(inner_nss_stns_getgrent_r, ok)
   struct group grd;
   char buffer[MAXBUF];
   stns_conf_t c;
-  stns_http_response_t r;
+  stns_response_t r;
 
   c.gid_shift = 0;
   readfile(f, &json);

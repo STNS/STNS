@@ -8,7 +8,7 @@ Test(ensure_passwd_by_name, ok)
   struct passwd pwd;
   char buffer[MAXBUF];
   stns_conf_t c;
-  stns_http_response_t r;
+  stns_response_t r;
   readfile(f, &json);
   c.uid_shift = 0;
   c.gid_shift = 0;
@@ -66,7 +66,7 @@ Test(ensure_passwd_by_uid, ok)
   struct passwd pwd;
   char buffer[MAXBUF];
   stns_conf_t c;
-  stns_http_response_t r;
+  stns_response_t r;
   readfile(f, &json);
   c.uid_shift = 0;
   c.gid_shift = 0;
@@ -124,7 +124,7 @@ Test(inner_nss_stns_setpwent, ok)
   struct passwd pwd;
   char buffer[MAXBUF];
   stns_conf_t c;
-  stns_http_response_t r;
+  stns_response_t r;
 
   c.uid_shift = 0;
   c.gid_shift = 0;
@@ -148,7 +148,7 @@ Test(inner_nss_stns_getpwent_r, ok)
   struct passwd pwd;
   char buffer[MAXBUF];
   stns_conf_t c;
-  stns_http_response_t r;
+  stns_response_t r;
 
   c.uid_shift = 0;
   c.gid_shift = 0;

@@ -263,7 +263,6 @@ extern void set_group_lowest_id(int);
 
 #define UNLOAD_TOML_BYKEY(m)                                                                                           \
   if (c->m != NULL) {                                                                                                  \
-    printf("%s\n", c->m);                                                                                              \
     free(c->m);                                                                                                        \
   }
 

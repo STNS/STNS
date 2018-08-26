@@ -59,7 +59,7 @@ Test(stns_request, http_request)
 {
   char expect_body[1024];
   stns_conf_t c;
-  stns_http_response_t r;
+  stns_response_t r;
 
   c.api_endpoint    = "https://httpbin.org";
   c.cache_dir       = "/var/cache/stns";
@@ -80,7 +80,7 @@ Test(stns_request, http_cache)
 {
   struct stat st;
   stns_conf_t c;
-  stns_http_response_t r;
+  stns_response_t r;
   char *path = "/var/cache/stns/get%3Fexample";
 
   c.api_endpoint    = "https://httpbin.org";
@@ -105,7 +105,7 @@ Test(stns_request, http_cache)
 Test(stns_request, wrapper_request_ok)
 {
   stns_conf_t c;
-  stns_http_response_t r;
+  stns_response_t r;
   int res;
 
   c.query_wrapper = "test/dummy_arg.sh";
@@ -120,7 +120,7 @@ Test(stns_request, wrapper_request_ok)
 Test(stns_request, wrapper_request_ng)
 {
   stns_conf_t c;
-  stns_http_response_t r;
+  stns_response_t r;
   int res;
 
   c.cache         = 0;
@@ -134,7 +134,7 @@ Test(stns_request_available, ok)
 {
   char expect_body[1024];
   stns_conf_t c;
-  stns_http_response_t r;
+  stns_response_t r;
 
   c.request_locktime = 1;
   stns_make_lockfile(STNS_LOCK_FILE);
@@ -146,12 +146,12 @@ Test(stns_request_available, ok)
 Test(stns_exec_cmd, ok)
 {
   char expect_body[1024];
-  char *result = malloc(1);
-  int r        = stns_exec_cmd("test/dummy.sh", NULL, result);
+  stns_response_t result;
+  int r = stns_exec_cmd("test/dummy.sh", NULL, &result);
 
   cr_assert_eq(r, 1);
-  cr_expect_str_eq(result, "aaabbbccc\nddd\n");
-  free(result);
+  cr_expect_str_eq(result.data, "aaabbbccc\nddd\n");
+  free(result.data);
 }
 
 Test(query_available, ok)
