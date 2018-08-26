@@ -28,6 +28,7 @@ func NewConfig(confPath string) (Config, error) {
 type Config struct {
 	Port      int        `toml:"port"`
 	BasicAuth *BasicAuth `toml:"basic_auth"`
+	TokenAuth *TokenAuth `toml:"token_auth"`
 
 	UseServerStarter bool
 	Users            *model.Users
@@ -38,6 +39,9 @@ type Config struct {
 type BasicAuth struct {
 	User     string
 	Password string
+}
+type TokenAuth struct {
+	Tokens []string
 }
 
 func defaultConfig(c *Config) {

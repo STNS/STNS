@@ -31,7 +31,6 @@ type server struct {
 }
 
 func newServer(confPath string) (*server, error) {
-	logrus.Warn(confPath)
 	conf, err := stns.NewConfig(confPath)
 	if err != nil {
 		return nil, err
@@ -73,13 +72,32 @@ func (s *server) Run() error {
 					return false, nil
 				},
 				Skipper: func(c echo.Context) bool {
-					if c.Path() == "/" || len(os.Getenv("CI")) > 0 {
+					if c.Path() == "/" || c.Path() == "/status" || len(os.Getenv("CI")) > 0 {
 						return true
 					}
 					return false
 				},
 			}))
 	}
+
+	e.Use(middleware.TokenAuthWithConfig(middleware.TokenAuthConfig{
+		Skipper: func(c echo.Context) bool {
+
+			if c.Path() == "/" || c.Path() == "/status" || len(os.Getenv("CI")) > 0 {
+				return true
+			}
+
+			return false
+		},
+		Validator: func(token string) bool {
+			for _, a := range s.config.TokenAuth.Tokens {
+				if a == token {
+					return true
+				}
+			}
+			return false
+		},
+	}))
 
 	if s.config.UseServerStarter {
 		listeners, err := listener.ListenAll()

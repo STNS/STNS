@@ -27,6 +27,10 @@ func TestNewConfig(t *testing.T) {
 	if c.BasicAuth.User != "foo" && c.BasicAuth.Password != "bar" {
 		t.Errorf("config cannot parse basic auth")
 	}
+
+	if c.TokenAuth.Tokens[0] != "a" && c.TokenAuth.Tokens[1] != "b" {
+		t.Errorf("config cannot parse token auth")
+	}
 }
 
 func TestNewConfigError(t *testing.T) {
