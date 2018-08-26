@@ -1,0 +1,14 @@
+[Unit]
+Description=stns server
+After=syslog.target network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/sbin/stns --logfile /var/log/stns.log server
+KillMode=process
+Restart=always
+User=root
+Group=root
+
+[Install]
+WantedBy=multi-user.target

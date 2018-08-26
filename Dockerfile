@@ -1,4 +1,4 @@
-FROM golang:1.10.3
+FROM golang:1.11
 RUN apt-get update -qqy --fix-missing
 RUN apt-get install -qqy build-essential \
     git \

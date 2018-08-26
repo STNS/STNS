@@ -9,3 +9,5 @@ keys/
 Godeps/
 libnss/tmp/*
 stns.log
+stns.pid
+builds/*

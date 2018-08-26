@@ -6,7 +6,14 @@ INFO_COLOR=\033[1;34m
 RESET=\033[0m
 BOLD=\033[1m
 
+DIST ?= unknown
+PREFIX=/usr
+BINDIR=$(PREFIX)/sbin
+SOURCES=Makefile go.mod go.sum version model api middleware stns stns.go stns.conf.sample rpm/stns_v2.initd rpm/stns_v2.logrotate rpm/stns_v2.systemd
+BUILD=tmp/bin
+
 default: build
+
 ci: depsdev test lint integration ## Run test and more...
 
 deps: ## Install dependencies
@@ -46,10 +53,33 @@ integration: ## Run integration test after Server wakeup
 	./misc/server stop
 
 build: ## Build server
-	GOOS=linux GOARCH=amd64 vgo build -o misc/stns
+	vgo build -o $(BUILD)/stns
+
+install: build ## Install
+	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Installing as Server$(RESET)"
+	cp $(BUILD)/stns $(BINDIR)/stns
 
 docker:
 	docker build -t nss_develop .
 	docker run --cap-add=SYS_PTRACE --security-opt="seccomp=unconfined" -v `pwd`:/go/src/github.com/STNS/STNS -w /go/src/github.com/STNS/STNS -it nss_develop /bin/bash
 
-.PHONY: default dist test deps docker
+source_for_rpm: ## Create source for RPM
+	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Distributing$(RESET)"
+	rm -rf tmp.$(DIST) stns_v2-$(VERSION).tar.gz
+	mkdir -p tmp.$(DIST)/stns_v2-$(VERSION)
+	cp -r $(SOURCES) tmp.$(DIST)/stns_v2-$(VERSION)
+	cd tmp.$(DIST) && \
+		tar cf stns_v2-$(VERSION).tar stns_v2-$(VERSION) && \
+		gzip -9 stns_v2-$(VERSION).tar
+	cp tmp.$(DIST)/stns_v2-$(VERSION).tar.gz ./builds
+	rm -rf tmp.$(DIST)
+
+rpm: source_for_rpm ## Packaging for RPM
+	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Packaging for RPM$(RESET)"
+	cp builds/stns_v2-$(VERSION).tar.gz /root/rpmbuild/SOURCES
+	spectool -g -R rpm/stns.spec
+	rpmbuild -ba rpm/stns.spec
+	cp /root/rpmbuild/RPMS/*/*.rpm /go/src/github.com/STNS/STNS/builds
+
+
+.PHONY: default dist test deps docker rpm source_for_rpm

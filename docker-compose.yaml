@@ -1,0 +1,24 @@
+version: '3'
+services:
+  centos7:
+    build:
+      context: .
+      dockerfile: dockerfiles/Dockerfile.centos-7
+      args:
+        GO_VERSION: 1.11
+    volumes:
+      - .:/go/src/github.com/STNS/STNS
+    environment:
+      DIST: el7
+    command: make rpm
+  centos6:
+    build:
+      context: .
+      dockerfile: dockerfiles/Dockerfile.centos-6
+      args:
+        GO_VERSION: 1.11
+    volumes:
+      - .:/go/src/github.com/STNS/STNS
+    environment:
+      DIST: el6
+    command: make rpm

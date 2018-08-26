@@ -1,4 +1,4 @@
-# The base of this code is https://github.com/linyows/stns/blob/master/Makefile
+# The base of this code is https://github.com/pyama86/stns/blob/master/Makefile
 CC=gcc
 CFLAGS=-Wall -Wstrict-prototypes -Werror -fPIC -std=c99 -D_GNU_SOURCE
 LIBRARY=libnss_stns.so.2.0
