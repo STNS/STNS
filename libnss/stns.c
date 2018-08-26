@@ -26,6 +26,15 @@ ID_QUERY_AVAILABLE(user, low, >)
 ID_QUERY_AVAILABLE(group, high, <)
 ID_QUERY_AVAILABLE(group, low, >)
 
+#define TRIM_SLASH(key)                                                                                                \
+  if (c->key != NULL) {                                                                                                \
+    const int key##_len = strlen(c->key);                                                                              \
+    if (key##_len > 0) {                                                                                               \
+      if (c->key[key##_len - 1] == '/') {                                                                              \
+        c->key = strndup(c->key, key##_len - 1);                                                                       \
+      }                                                                                                                \
+    }                                                                                                                  \
+  }
 void stns_load_config(char *filename, stns_conf_t *c)
 {
   char errbuf[200];
@@ -63,13 +72,8 @@ void stns_load_config(char *filename, stns_conf_t *c)
   GET_TOML_BYKEY(request_retry, toml_rtoi, 3);
   GET_TOML_BYKEY(request_locktime, toml_rtoi, 60);
 
-  // 末尾の/を取り除く
-  const int len = strlen(c->api_endpoint);
-  if (len > 0) {
-    if (c->api_endpoint[len - 1] == '/') {
-      c->api_endpoint[len - 1] = '\0';
-    }
-  }
+  TRIM_SLASH(api_endpoint)
+  TRIM_SLASH(cache_dir)
 
   fclose(fp);
   toml_free(tab);
@@ -268,7 +272,7 @@ void stns_export_file(char *file, char *data)
 
   FILE *fp = fopen(file, "w");
   if (!fp) {
-    fprintf(stderr, "File open failure: %s\n", file);
+    syslog(LOG_ERR, "%s(stns)[L%d] cannot open %s", __func__, __LINE__, file);
     return;
   }
   fprintf(fp, "%s", data);
@@ -282,28 +286,25 @@ const char *stns_import_file(char *file)
 {
   FILE *fp = fopen(file, "r");
   if (!fp) {
-    fprintf(stderr, "File open failure: %s\n", file);
-    return NULL;
-  }
-  char line[MAXBUF];
-  char *data;
-
-  if ((data = malloc(STNS_MAX_BUFFER_SIZE)) != NULL) {
-    data[0] = '\0';
-  } else {
-    fprintf(stderr, "Malloc failed\n");
-    fclose(fp);
+    syslog(LOG_ERR, "%s(stns)[L%d] cannot open %s", __func__, __LINE__, file);
     return NULL;
   }
 
-  while (fgets(line, sizeof(line), fp) != NULL) {
-    strcat(data, strdup(line));
+  char *data = malloc(1);
+  char buf[MAXBUF];
+  int total_len = 0;
+  int len       = 0;
+
+  while (fgets(buf, sizeof(buf), fp) != NULL) {
+    len  = strlen(buf);
+    data = (char *)realloc(data, total_len + len + 1);
+    strcpy(data + total_len, buf);
+    total_len += len;
   }
+  data[total_len] = '\0';
   fclose(fp);
-  const char *res = strdup(data);
-  free(data);
 
-  return res;
+  return data;
 }
 
 static void *delete_cache_files(void *data)

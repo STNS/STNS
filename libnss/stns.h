@@ -79,7 +79,7 @@ extern void set_group_lowest_id(int);
                                                                                                                        \
     if (root == NULL) {                                                                                                \
       syslog(LOG_ERR, "%s(stns)[L%d] json parse error: %s", __func__, __LINE__, error.text);                           \
-      goto leave;                                                                                                      \
+      return NSS_STATUS_UNAVAIL;                                                                                       \
     }                                                                                                                  \
                                                                                                                        \
     json_array_foreach(root, i, leaf)                                                                                  \
@@ -91,18 +91,13 @@ extern void set_group_lowest_id(int);
                                                                                                                        \
       if (match_method) {                                                                                              \
         ltype##_ENSURE(leaf);                                                                                          \
-        free(data);                                                                                                    \
         json_decref(root);                                                                                             \
         return NSS_STATUS_SUCCESS;                                                                                     \
       }                                                                                                                \
     }                                                                                                                  \
                                                                                                                        \
-    free(data);                                                                                                        \
     json_decref(root);                                                                                                 \
     return NSS_STATUS_NOTFOUND;                                                                                        \
-  leave:                                                                                                               \
-    free(data);                                                                                                        \
-    return NSS_STATUS_UNAVAIL;                                                                                         \
   }
 
 #define STNS_SET_DEFAULT_VALUE(buf, name, def)                                                                         \
