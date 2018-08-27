@@ -105,4 +105,19 @@ deb_systemd: source_for_deb ## Packaging for DEB
 		cp *.deb $(GOPATH)/src/github.com/STNS/STNS/builds
 	rm -rf tmp.$(DIST)
 
+deb_sysv: source_for_deb ## Packaging for DEB
+	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Packaging for DEB$(RESET)"
+	cd tmp.$(DIST) && \
+		tar xf stns-v2-$(VERSION).orig.tar.gz && \
+		cd stns-v2-$(VERSION) && \
+		dh_make --single --createorig -y && \
+		rm -rf debian/*.ex debian/*.EX debian/README.Debian && \
+		cp -r $(GOPATH)/src/github.com/STNS/STNS/debian-sysv/* debian/ && \
+		sed -i -e 's/xenial/$(DIST)/g' debian/changelog && \
+		debuild -uc -us
+	cd tmp.$(DIST) && \
+		find . -name "*.deb" | sed -e 's/\(\(.*stns-v2_.*\).deb\)/mv \1 \2.$(DIST).deb/g' | sh && \
+		cp *.deb $(GOPATH)/src/github.com/STNS/STNS/builds
+	rm -rf tmp.$(DIST)
+
 .PHONY: default test docker rpm source_for_rpm pkg source_for_deb deb

@@ -33,3 +33,47 @@ services:
     environment:
       DIST: jessie
     command: make deb_systemd
+  debian9:
+    build:
+      context: .
+      dockerfile: dockerfiles/Dockerfile.debian-9
+      args:
+        GO_VERSION: 1.11
+    volumes:
+      - $GOPATH:/go
+    environment:
+      DIST: stretch
+    command: make deb_systemd
+  ubuntu14:
+    build:
+      context: .
+      dockerfile: dockerfiles/Dockerfile.ubuntu-14
+      args:
+        GO_VERSION: 1.11
+    volumes:
+      - $GOPATH:/go
+    environment:
+      DIST: trusty
+    command: make deb_sysv
+  ubuntu16:
+    build:
+      context: .
+      dockerfile: dockerfiles/Dockerfile.ubuntu-16
+      args:
+        GO_VERSION: 1.11
+    volumes:
+      - $GOPATH:/go
+    environment:
+      DIST: xenial
+    command: make deb_systemd
+  ubuntu18:
+    build:
+      context: .
+      dockerfile: dockerfiles/Dockerfile.ubuntu-18
+      args:
+        GO_VERSION: 1.11
+    volumes:
+      - $GOPATH:/go
+    environment:
+      DIST: bionic
+    command: make deb_systemd
