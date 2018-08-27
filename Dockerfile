@@ -9,7 +9,6 @@ RUN apt-get install -qqy build-essential \
     sudo \
     rsyslog \
     clang
-RUN go get -u golang.org/x/vgo/...
 ADD . /go/src/github.com/STNS/STNS
 WORKDIR /go/src/github.com/STNS/STNS
 RUN make depsdev

@@ -2,6 +2,7 @@ TEST ?= $(shell go list ./... | grep -v vendor)
 VERSION = $(shell cat version)
 REVISION = $(shell git describe --always)
 
+GO=GO111MODULE=on go
 INFO_COLOR=\033[1;34m
 RESET=\033[0m
 BOLD=\033[1m
@@ -16,28 +17,23 @@ default: build
 
 ci: depsdev test lint integration ## Run test and more...
 
-deps: ## Install dependencies
-	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Installing Dependencies$(RESET)"
-	go get -u golang.org/x/vgo/...
-	vgo install
-
-depsdev: deps ## Installing dependencies for development
-	go get github.com/golang/lint/golint
-	go get github.com/pierrre/gotestcover
-	go get -u github.com/tcnksm/ghr
-	go get github.com/mitchellh/gox
+depsdev: ## Installing dependencies for development
+	$(GO) get github.com/golang/lint/golint
+	$(GO) get github.com/pierrre/gotestcover
+	$(GO) get -u github.com/tcnksm/ghr
+	$(GO) get github.com/mitchellh/gox
 
 test: ## Run test
 	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Testing$(RESET)"
-	vgo test -v $(TEST) -timeout=30s -parallel=4
-	vgo test -race $(TEST)
+	$(GO) test -v $(TEST) -timeout=30s -parallel=4
+	$(GO) test -race $(TEST)
 
 lint: ## Exec golint
 	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Linting$(RESET)"
 	golint -min_confidence 1.1 -set_exit_status $(TEST)
 
 server: ## Run server
-	vgo run github.com/STNS/STNS --logfile ./stns.log --pidfile ./stns.pid --config ./stns/test.toml server
+	$(GO) run github.com/STNS/STNS --logfile ./stns.log --pidfile ./stns.pid --config ./stns/test.toml server
 
 ghr: ## Upload to Github releases without token check
 	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Releasing for Github$(RESET)"
@@ -49,11 +45,11 @@ dist: build ## Upload to Github releases
 integration: ## Run integration test after Server wakeup
 	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Integration Testing$(RESET)"
 	./misc/server start
-	vgo test $(VERBOSE) -integration $(TEST) $(TEST_OPTIONS)
+	$(GO) test $(VERBOSE) -integration $(TEST) $(TEST_OPTIONS)
 	./misc/server stop
 
 build: ## Build server
-	vgo build -o $(BUILD)/stns
+	$(GO) build -o $(BUILD)/stns
 
 install: build ## Install
 	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Installing as Server$(RESET)"
@@ -82,4 +78,4 @@ rpm: source_for_rpm ## Packaging for RPM
 	cp /root/rpmbuild/RPMS/*/*.rpm /go/src/github.com/STNS/STNS/builds
 
 
-.PHONY: default dist test deps docker rpm source_for_rpm
+.PHONY: default dist test docker rpm source_for_rpm

@@ -8,6 +8,6 @@ script:
 - cd libnss
 - sudo PATH=$PATH GOPATH=$GOPATH make ci
 go:
-  - 1.10.2
+  - 1.11
 notifications:
   slack: pepabo:urThJPQ6Vh8m3cI7riDpYAbn
