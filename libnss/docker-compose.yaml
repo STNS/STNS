@@ -1,0 +1,65 @@
+version: '3'
+services:
+  nss_centos7:
+    build:
+      context: .
+      dockerfile: dockerfiles/Dockerfile.centos-7
+    volumes:
+      - .:/stns
+    environment:
+      DIST: el7
+    command: make rpm
+  nss_centos6:
+    build:
+      context: .
+      dockerfile: dockerfiles/Dockerfile.centos-6
+    volumes:
+      - .:/stns
+    environment:
+      DIST: el6
+    command: make rpm
+  nss_debian8:
+    build:
+      context: .
+      dockerfile: dockerfiles/Dockerfile.debian-8
+    volumes:
+      - .:/stns
+    environment:
+      DIST: jessie
+    command: make deb
+  nss_debian9:
+    build:
+      context: .
+      dockerfile: dockerfiles/Dockerfile.debian-9
+    volumes:
+      - .:/stns
+    environment:
+      DIST: stretch
+    command: make deb
+  nss_ubuntu14:
+    build:
+      context: .
+      dockerfile: dockerfiles/Dockerfile.ubuntu-14
+    volumes:
+      - .:/stns
+    environment:
+      DIST: trusty
+    command: make deb
+  nss_ubuntu16:
+    build:
+      context: .
+      dockerfile: dockerfiles/Dockerfile.ubuntu-16
+    volumes:
+      - .:/stns
+    environment:
+      DIST: xenial
+    command: make deb
+  nss_ubuntu18:
+    build:
+      context: .
+      dockerfile: dockerfiles/Dockerfile.ubuntu-18
+    volumes:
+      - .:/stns
+    environment:
+      DIST: bionic
+    command: make deb
