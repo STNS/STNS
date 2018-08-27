@@ -14,5 +14,4 @@ notifications:
 
 cache:
   directories:
-    - /go/pkg
-    - /go/src
+    - /go/pkg/mod/cache/download
