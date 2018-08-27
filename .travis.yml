@@ -11,3 +11,7 @@ go:
   - 1.11
 notifications:
   slack: pepabo:urThJPQ6Vh8m3cI7riDpYAbn
+
+cache:
+  directories:
+    - /go/pkg/mod/cache/download
