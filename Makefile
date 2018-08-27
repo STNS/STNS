@@ -19,9 +19,7 @@ ci: depsdev test lint integration ## Run test and more...
 
 depsdev: ## Installing dependencies for development
 	$(GO) get github.com/golang/lint/golint
-	$(GO) get github.com/pierrre/gotestcover
 	$(GO) get -u github.com/tcnksm/ghr
-	$(GO) get github.com/mitchellh/gox
 
 test: ## Run test
 	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Testing$(RESET)"
@@ -34,13 +32,6 @@ lint: ## Exec golint
 
 server: ## Run server
 	$(GO) run github.com/STNS/STNS --logfile ./stns.log --pidfile ./stns.pid --config ./stns/test.toml server
-
-ghr: ## Upload to Github releases without token check
-	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Releasing for Github$(RESET)"
-	ghr -u stns v$(VERSION)-$(REVISION) pkg
-
-dist: build ## Upload to Github releases
-	@test -z $(GITHUB_TOKEN) || test -z $(GITHUB_API) || $(MAKE) ghr
 
 integration: ## Run integration test after Server wakeup
 	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Integration Testing$(RESET)"
@@ -77,5 +68,12 @@ rpm: source_for_rpm ## Packaging for RPM
 	rpmbuild -ba rpm/stns.spec
 	cp /root/rpmbuild/RPMS/*/*.rpm /go/src/github.com/STNS/STNS/builds
 
+pkg: ## Create some distribution packages
+	rm -rf builds && mkdir builds
+	docker-compose up
 
-.PHONY: default dist test docker rpm source_for_rpm
+github_release: pkg ## Upload archives to Github Release on Mac
+	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Releasing for Github$(RESET)"
+	rm -rf builds/.keep && ghr v$(VERSION) builds && git checkout builds/.keep
+
+.PHONY: default test docker rpm source_for_rpm pkg
