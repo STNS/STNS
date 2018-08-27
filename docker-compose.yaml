@@ -22,3 +22,14 @@ services:
     environment:
       DIST: el6
     command: make rpm
+  debian8:
+    build:
+      context: .
+      dockerfile: dockerfiles/Dockerfile.debian-8
+      args:
+        GO_VERSION: 1.11
+    volumes:
+      - $GOPATH:/go
+    environment:
+      DIST: jessie
+    command: make deb_systemd

@@ -11,3 +11,4 @@ libnss/tmp/*
 stns.log
 stns.pid
 builds/*
+tmp*

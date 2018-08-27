@@ -1,5 +1,5 @@
 Summary: SimpleTomlNameService is Linux User,Group Name Service
-Name:             stns_v2
+Name:             stns-v2
 Version:          0.0.1
 Release:          1
 License:          GPLv3
@@ -41,18 +41,18 @@ make
 mkdir -p %{buildroot}/usr/sbin
 mkdir -p %{buildroot}%{_sysconfdir}/stns/server
 make PREFIX=%{buildroot}/usr/ install
-install -m 644 stns.conf.sample %{buildroot}%{_sysconfdir}/stns/server/stns.conf
+install -m 644 package/stns-v2.conf %{buildroot}%{_sysconfdir}/stns/server/stns.conf
 
 %if 0%{?rhel} < 7
 mkdir -p %{buildroot}%{_sysconfdir}/init.d
-install -m 644 stns_v2.initd  %{buildroot}%{_sysconfdir}/init.d/stns
+install -m 644 package/stns-v2.initd  %{buildroot}%{_sysconfdir}/init.d/stns
 %else
 mkdir -p %{buildroot}%{_sysconfdir}/systemd/system/
-install -m 644 stns_v2.systemd %{buildroot}%{_sysconfdir}/systemd/system/stns.service
+install -m 644 package/stns-v2.systemd %{buildroot}%{_sysconfdir}/systemd/system/stns.service
 %endif
 
 mkdir -p %{buildroot}%{_sysconfdir}/logrotate.d
-install -m 644 stns_v2.logrotate %{buildroot}%{_sysconfdir}/logrotate.d/stns
+install -m 644 package/stns-v2.logrotate %{buildroot}%{_sysconfdir}/logrotate.d/stns
 
 %clean
 %{__rm} -rf %{buildroot}
