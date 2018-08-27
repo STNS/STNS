@@ -7,7 +7,7 @@ services:
       args:
         GO_VERSION: 1.11
     volumes:
-      - .:/go/src/github.com/STNS/STNS
+      - $GOPATH:/go
     environment:
       DIST: el7
     command: make rpm
@@ -18,7 +18,7 @@ services:
       args:
         GO_VERSION: 1.11
     volumes:
-      - .:/go/src/github.com/STNS/STNS
+      - $GOPATH:/go
     environment:
       DIST: el6
     command: make rpm

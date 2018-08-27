@@ -1,4 +1,4 @@
-FROM golang:1.11
+FROM golang:1.11rc2
 RUN apt-get update -qqy --fix-missing
 RUN apt-get install -qqy build-essential \
     git \
@@ -11,4 +11,3 @@ RUN apt-get install -qqy build-essential \
     clang
 ADD . /go/src/github.com/STNS/STNS
 WORKDIR /go/src/github.com/STNS/STNS
-RUN make depsdev
