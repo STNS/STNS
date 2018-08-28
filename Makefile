@@ -15,7 +15,7 @@ DIST ?= unknown
 PREFIX=/usr
 BINDIR=$(PREFIX)/sbin
 SOURCES=Makefile go.mod go.sum version model api middleware stns stns.go package/
-DISTS= centos7 centos6 debian8 debian9 ubuntu14 ubuntu16 ubuntu18
+DISTS=centos7 centos6 ubuntu16
 
 
 BUILD=tmp/bin
@@ -92,42 +92,33 @@ source_for_deb: ## Create source for DEB
 	tar zcf stns-v2-$(VERSION).tar.gz stns-v2-$(VERSION)
 	mv tmp.$(DIST)/stns-v2-$(VERSION).tar.gz tmp.$(DIST)/stns-v2-$(VERSION).orig.tar.gz
 
-deb_systemd: source_for_deb ## Packaging for DEB
+deb: source_for_deb ## Packaging for DEB
 	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Packaging for DEB$(RESET)"
 	cd tmp.$(DIST) && \
 		tar xf stns-v2-$(VERSION).orig.tar.gz && \
 		cd stns-v2-$(VERSION) && \
 		dh_make --single --createorig -y && \
 		rm -rf debian/*.ex debian/*.EX debian/README.Debian && \
-		cp -r $(GOPATH)/src/github.com/STNS/STNS/debian-systemd/* debian/ && \
+		cp -r $(GOPATH)/src/github.com/STNS/STNS/debian/* debian/ && \
 		sed -i -e 's/xenial/$(DIST)/g' debian/changelog && \
 		debuild -uc -us
 	cd tmp.$(DIST) && \
-		find . -name "*.deb" | sed -e 's/\(\(.*stns-v2_.*\).deb\)/mv \1 \2.$(DIST).deb/g' | sh && \
 		cp *.deb $(GOPATH)/src/github.com/STNS/STNS/builds
 	rm -rf tmp.$(DIST)
 
-deb_sysv: source_for_deb ## Packaging for DEB
-	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Packaging for DEB$(RESET)"
-	cd tmp.$(DIST) && \
-		tar xf stns-v2-$(VERSION).orig.tar.gz && \
-		cd stns-v2-$(VERSION) && \
-		dh_make --single --createorig -y && \
-		rm -rf debian/*.ex debian/*.EX debian/README.Debian && \
-		cp -r $(GOPATH)/src/github.com/STNS/STNS/debian-sysv/* debian/ && \
-		sed -i -e 's/xenial/$(DIST)/g' debian/changelog && \
-		debuild -uc -us
-	cd tmp.$(DIST) && \
-		find . -name "*.deb" | sed -e 's/\(\(.*stns-v2_.*\).deb\)/mv \1 \2.$(DIST).deb/g' | sh && \
-		cp *.deb $(GOPATH)/src/github.com/STNS/STNS/builds
-	rm -rf tmp.$(DIST)
-
-release: pkg ## Create some distribution packages
-	cd libnss && make pkg
-	mv libnss/builds/* builds
+release: server_client_pkg ## Create some distribution packages
 	ghr -u STNS --prerelease --replace v$(VERSION) builds/
 
+server_client_pkg: pkg ## Create some distribution packages
+	cd libnss && make pkg
+	mv libnss/builds/* builds
+
 yumrepo: ## Create some distribution packages
-	docker-compose up yumrepo
+	docker-compose build yumrepo
+	docker-compose run yumrepo
+
+debrepo: ## Create some distribution packages
+	docker-compose build debrepo
+	docker-compose run debrepo
 
 .PHONY: default test docker rpm source_for_rpm pkg source_for_deb deb

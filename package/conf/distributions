@@ -1,0 +1,7 @@
+Origin: stns
+Label: stns
+Codename: stns
+Architectures: amd64 i386
+Components: main
+Description: Apt repository for project stns
+SignWith: B2EC51BA

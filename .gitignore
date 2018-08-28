@@ -13,3 +13,4 @@ stns.pid
 builds/*
 tmp*
 keys/*
+repo/*

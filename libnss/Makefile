@@ -134,7 +134,6 @@ deb: source_for_deb ## Packaging for DEB
 		sed -i -e 's/xenial/$(DIST)/g' debian/changelog && \
 		debuild -uc -us
 	cd tmp.$(DIST) && \
-		find . -name "*.deb" |grep -v dbgsym | sed -e 's/\(\(.*libnss-stns-v2_.*\).deb\)/mv \1 \2.$(DIST).deb/g' | sh && \
 		cp *.deb /stns/builds
 	rm -rf tmp.$(DIST)
 pkg: ## Create some distribution packages
