@@ -103,7 +103,7 @@ deb: source_for_deb ## Packaging for DEB
 	rm -rf tmp.$(DIST)
 
 github_release: server_client_pkg ## Create some distribution packages
-	ghr -u STNS --prerelease --replace v$(VERSION) builds/
+	ghr -u STNS --replace v$(VERSION) builds/
 
 server_client_pkg: pkg ## Create some distribution packages
 	cd libnss && make pkg
