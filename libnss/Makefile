@@ -139,5 +139,6 @@ deb: source_for_deb ## Packaging for DEB
 	rm -rf tmp.$(DIST)
 pkg: ## Create some distribution packages
 	rm -rf builds && mkdir builds
-	docker-compose up
+	docker-compose up $(DISTS)
+
 .PHONY: depsdev test testdev build

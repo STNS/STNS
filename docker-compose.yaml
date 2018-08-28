@@ -77,3 +77,10 @@ services:
     environment:
       DIST: bionic
     command: make deb_systemd
+  yumrepo:
+    build:
+      context: .
+      dockerfile: dockerfiles/Dockerfile.yumrepo
+    volumes:
+      - ./repo:/go/src/github.com/STNS/STNS/releases
+

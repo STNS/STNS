@@ -1,0 +1,36 @@
+FROM centos:6
+RUN yum -y install epel-release
+RUN yum install -y --enablerepo=epel createrepo rpm-sign gitsudo
+FROM pyama/stns:centos-x86
+
+ADD . /go/src/github.com/STNS/STNS
+WORKDIR /go/src/github.com/STNS/STNS
+RUN gpg --import keys/pub.key;gpg --import --allow-secret-key-import keys/secret.key && \
+echo '%_signature gpg' >> ~/.rpmmacros && \
+echo '%_gpg_name stns-server' >> ~/.rpmmacros
+
+RUN install -d -m 755 releases/centos/x86_64
+RUN install -d -m 755 releases/centos/i386
+
+# old version
+RUN curl https://github.com/STNS/STNS/releases/download/v0.4/stns-0.4-0.x86_64.rpm -o releases/centos/x86_64/stns-0.4-0.x86_64.rpm
+RUN curl https://github.com/STNS/STNS/releases/download/v0.4/stns-0.4-0.amd64.deb -o releases/centos/x86_64/stns-0.4-0.amd64.deb
+RUN curl https://github.com/STNS/STNS/releases/download/v0.4/stns-0.4-0.i386.rpm -o releases/centos/i386/stns-0.4-0.i386.rpm
+RUN curl https://github.com/STNS/STNS/releases/download/v0.4/stns-0.4-0.i386.deb -o releases/centos/i386/stns-0.4-0.i386.deb
+
+RUN curl https://github.com/STNS/libnss_stns/releases/download/v0.4.5/libpam-stns_0.4.5_i386.deb -o releases/centos/i386/libpam-stns_0.4.5_i386.deb
+RUN curl https://github.com/STNS/libnss_stns/releases/download/v0.4.5/libnss-stns-0.4.5-1.i386.rpm -o releases/centos/i386/libnss-stns-0.4.5-1.i386.rpm
+RUN curl https://github.com/STNS/libnss_stns/releases/download/v0.4.5/libpam-pam.4.5_i386.deb -o releases/centos/i386/libpam-pam.4.5_i386.deb
+RUN curl https://github.com/STNS/libnss_stns/releases/download/v0.4.5/libnss-pam-0.4.5-1.i386.rpm -o releases/centos/i386/libnss-pam-0.4.5-1.i386.rpm
+RUN curl https://github.com/STNS/libnss_stns/releases/download/v0.4.5/libnss-stns_0.4.5_amd64.deb -o releases/centos/x86_64/libnss-stns_0.4.5_amd64.deb
+RUN curl https://github.com/STNS/libnss_stns/releases/download/v0.4.5/libnss-stns-0.4.5-1.x86_64.rpm -o releases/centos/x86_64/libnss-stns-0.4.5-1.x86_64.rpm
+RUN curl https://github.com/STNS/libnss_stns/releases/download/v0.4.5/libnss-pam.4.5_amd64.deb -o releases/centos/x86_64/libnss-pam.4.5_amd64.deb
+RUN curl https://github.com/STNS/libnss_stns/releases/download/v0.4.5/libnss-pam-0.4.5-1.x86_64.rpm -o releases/centos/x86_64/libnss-pam-0.4.5-1.x86_64.rpm
+
+RUN cp -pr builds/*64*.rpm releases/centos/x86_64/
+
+CMD rpm --addsign releases/centos/x86_64/*.rpm && \
+rpm --addsign releases/centos/i386/*.rpm && \
+createrepo --checksum sha releases/centos/x86_64/ && \
+createrepo --checksum sha releases/centos/i386/ && \
+cp -p releases/* repo/

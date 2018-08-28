@@ -12,3 +12,4 @@ stns.log
 stns.pid
 builds/*
 tmp*
+keys/*

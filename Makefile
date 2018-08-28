@@ -15,6 +15,8 @@ DIST ?= unknown
 PREFIX=/usr
 BINDIR=$(PREFIX)/sbin
 SOURCES=Makefile go.mod go.sum version model api middleware stns stns.go package/
+DISTS= centos7 centos6 debian8 debian9 ubuntu14 ubuntu16 ubuntu18
+
 
 BUILD=tmp/bin
 
@@ -75,7 +77,7 @@ rpm: source_for_rpm ## Packaging for RPM
 
 pkg: ## Create some distribution packages
 	rm -rf builds && mkdir builds
-	docker-compose up
+	docker-compose up $(DISTS)
 
 github_release: pkg ## Upload archives to Github Release on Mac
 	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Releasing for Github$(RESET)"
@@ -119,5 +121,13 @@ deb_sysv: source_for_deb ## Packaging for DEB
 		find . -name "*.deb" | sed -e 's/\(\(.*stns-v2_.*\).deb\)/mv \1 \2.$(DIST).deb/g' | sh && \
 		cp *.deb $(GOPATH)/src/github.com/STNS/STNS/builds
 	rm -rf tmp.$(DIST)
+
+release: pkg ## Create some distribution packages
+	cd libnss && make pkg
+	mv libnss/builds/* builds
+	ghr -u STNS --prerelease --replace v$(VERSION) builds/
+
+yumrepo: ## Create some distribution packages
+	docker-compose up yumrepo
 
 .PHONY: default test docker rpm source_for_rpm pkg source_for_deb deb
