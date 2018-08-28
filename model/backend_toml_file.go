@@ -1,25 +1,39 @@
 package model
 
-import "sort"
+import (
+	"fmt"
+	"sort"
+)
 
 type BackendTomlFile struct {
 	users  *Users
 	groups *Groups
 }
 
-func NewBackendTomlFile(u *Users, g *Groups) *BackendTomlFile {
+func NewBackendTomlFile(u *Users, g *Groups) (*BackendTomlFile, error) {
 	if u != nil {
-		ensureName(u.ToUserGroup())
+		ug := u.ToUserGroup()
+		ensureName(ug)
+		mergeLinkAttribute(ug, nil, nil, nil)
+
+		if err := checkDuplicateID(ug); err != nil {
+			return nil, err
+		}
 	}
 
 	if g != nil {
-		ensureName(g.ToUserGroup())
+		gg := g.ToUserGroup()
+		ensureName(gg)
+		mergeLinkAttribute(gg, nil, nil, nil)
+		if err := checkDuplicateID(gg); err != nil {
+			return nil, err
+		}
 	}
 
 	return &BackendTomlFile{
 		users:  u,
 		groups: g,
-	}
+	}, nil
 }
 
 func (t BackendTomlFile) FindUserByID(id int) map[string]UserGroup {
@@ -94,15 +108,7 @@ func ensureName(list map[string]UserGroup) {
 	}
 }
 
-// user or group
-type linkAttributer interface {
-	linkValues() []string
-	setLinkValues([]string)
-	value() []string
-	name() string
-}
-
-type linkAttributers map[string]linkAttributer
+type linkAttributers map[string]UserGroup
 
 func (las linkAttributers) find(keys []string) linkAttributers {
 	result := linkAttributers{}
@@ -138,7 +144,6 @@ func mergeLinkAttribute(master, current linkAttributers, result map[string][]str
 		links := v.linkValues()
 		if len(links) > 0 {
 			ls := master.find(links)
-			// user3をrangeする
 			for _, iv := range ls {
 				if len(result[iv.name()]) == 0 {
 					result[iv.name()] = append(result[iv.name()], iv.value()...)
@@ -197,4 +202,16 @@ func tomlHighLowID(highorlow int, list map[string]UserGroup) int {
 		}
 	}
 	return current
+}
+
+func checkDuplicateID(attr map[string]UserGroup) error {
+	b := map[int]bool{}
+
+	for _, a := range attr {
+		if a.id() != 0 && b[a.id()] {
+			return fmt.Errorf("Duplicate id is not allowed: %d", a.id())
+		}
+		b[a.id()] = true
+	}
+	return nil
 }

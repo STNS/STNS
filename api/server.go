@@ -53,7 +53,11 @@ func (s *server) Run() error {
 	}
 	defer removePidFile()
 
-	b := model.NewBackendTomlFile(s.config.Users, s.config.Groups)
+	b, err := model.NewBackendTomlFile(s.config.Users, s.config.Groups)
+	if err != nil {
+		return err
+	}
+
 	e.Use(middleware.Backend(b))
 	e.Use(middleware.AddHeader(b))
 	e.Use(emiddleware.Recover())
