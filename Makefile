@@ -79,10 +79,6 @@ pkg: ## Create some distribution packages
 	rm -rf builds && mkdir builds
 	docker-compose up $(DISTS)
 
-github_release: pkg ## Upload archives to Github Release on Mac
-	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Releasing for Github$(RESET)"
-	rm -rf builds/.keep && ghr v$(VERSION) builds && git checkout builds/.keep
-
 source_for_deb: ## Create source for DEB
 	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Distributing$(RESET)"
 	rm -rf tmp.$(DIST) stns-v2-$(VERSION).orig.tar.gz
@@ -106,7 +102,7 @@ deb: source_for_deb ## Packaging for DEB
 		cp *.deb $(GOPATH)/src/github.com/STNS/STNS/builds
 	rm -rf tmp.$(DIST)
 
-release: server_client_pkg ## Create some distribution packages
+github_release: server_client_pkg ## Create some distribution packages
 	ghr -u STNS --prerelease --replace v$(VERSION) builds/
 
 server_client_pkg: pkg ## Create some distribution packages
@@ -121,4 +117,9 @@ debrepo: ## Create some distribution packages
 	docker-compose build debrepo
 	docker-compose run debrepo
 
+repo_release: server_client_pkg yumrepo debrepo
+	ssh pyama@stns.jp rm -rf /var/www/releases/centos
+	ssh pyama@stns.jp rm -rf /var/www/releases/debian
+	scp -r repo/centos pyama@stns.jp:/var/www/releases
+	scp -r repo/debian pyama@stns.jp:/var/www/releases
 .PHONY: default test docker rpm source_for_rpm pkg source_for_deb deb
