@@ -8,6 +8,7 @@ RUN apt-get install -qqy build-essential \
     gdb \
     sudo \
     rsyslog \
-    clang
+    clang \
+    lsof
 ADD . /go/src/github.com/STNS/STNS
 WORKDIR /go/src/github.com/STNS/STNS

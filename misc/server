@@ -7,7 +7,7 @@ start_server() {
 }
 
 stop_server() {
-  PID=$(cat stns.pid)
+  PID=$(lsof -i:1104 | tail -1 | awk '{print $2}')
 
   kill -SIGINT $PID
   if [ $? -ne 0 ]; then
