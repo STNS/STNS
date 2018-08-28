@@ -33,8 +33,8 @@ override_dh_auto_install:
 	dh_auto_install -- PREFIX=$(PREFIX) BINDIR=$(BINDIR)
 	install -pm 644 package/stns-v2.conf $(CONFDIR)/stns/server/stns.conf
 	install -pm 644 package/stns-v2.logrotate $(CONFDIR)/logrotate.d/stns
-	install -pm 644 package/stns-v2.systemd $(CONFDIR)/systemd/system/stns.service
-	install -pm 644 package/stns-v2.sysv $(CONFDIR)/init.d/stns
+	install -pm 755 package/stns-v2.systemd $(CONFDIR)/systemd/system/stns.service
+	install -pm 755 package/stns-v2.sysv $(CONFDIR)/init.d/stns
 	find $(DESTDIR)
 
 override_dh_auto_test:
