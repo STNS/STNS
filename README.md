@@ -27,5 +27,22 @@ However, sometimes it becomes complicated and versatile too.
 STNS function is small compared with the LDAP, but it is management that much simple.
 And, In many cases, meet the required functionality.
 
+## How to Contribute
+Please give me a pull request anything!
+
+### Test
+#### Server
+```
+$ make depsdev
+$ make test
+```
+#### Client
+```
+$ make docker
+# cd libnss
+# make depsdev
+# make test
+```
+
 ## author
 * pyama86
