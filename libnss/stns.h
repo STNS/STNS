@@ -1,6 +1,5 @@
 #ifndef STNS_H
 #define STNS_H
-#define DEBUG 1
 
 #include <curl/curl.h>
 #include <errno.h>
