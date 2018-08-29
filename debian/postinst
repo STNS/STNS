@@ -20,6 +20,8 @@ set -e
 
 case "$1" in
     configure)
+      update-rc.d stns defaults
+      update-rc.d stns enable >/dev/null 2>&1
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)
