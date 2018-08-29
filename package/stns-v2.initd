@@ -33,12 +33,16 @@ prefix_match() {
 }
 
 start() {
+    if [ -e $PIDFILE ];then
+      return 0
+    fi
+
     [ -x $exec ] || exit 5
 
     echo -n $"Starting $prog:"
 
-    $BIN --pidfile=$PIDFILE $OTHER_OPTS server >>$LOGFILE 2>&1 &
-    sleep 3
+    $BIN --pidfile=$PIDFILE --logfile=$LOGFILE $OTHER_OPTS server 2>&1 &
+    sleep 1
     if ! kill -0 $(cat $PIDFILE 2>/dev/null) >/dev/null 2>&1; then
         failure
         echo
