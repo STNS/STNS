@@ -148,8 +148,9 @@ static size_t response_callback(void *buffer, size_t size, size_t nmemb, void *u
     res->data = (char *)realloc(res->data, res->size + segsize + 1);
   }
 
-  strcpy(&(res->data[res->size]), buffer);
+  memcpy(&(res->data[res->size]), buffer, segsize);
   res->size += segsize;
+  res->data[res->size] = 0;
 
   return segsize;
 }
