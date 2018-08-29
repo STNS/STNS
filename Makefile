@@ -16,7 +16,7 @@ PREFIX=/usr
 BINDIR=$(PREFIX)/sbin
 SOURCES=Makefile go.mod go.sum version model api middleware stns stns.go package/
 DISTS=centos7 centos6 ubuntu16
-
+RELEASE_DIR=/var/www/releases
 
 BUILD=tmp/bin
 
@@ -118,8 +118,11 @@ debrepo: ## Create some distribution packages
 	docker-compose run debrepo
 
 repo_release: server_client_pkg yumrepo debrepo
-	ssh pyama@stns.jp rm -rf /var/www/releases/centos
-	ssh pyama@stns.jp rm -rf /var/www/releases/debian
-	scp -r repo/centos pyama@stns.jp:/var/www/releases
-	scp -r repo/debian pyama@stns.jp:/var/www/releases
+	ssh pyama@stns.jp rm -rf $(RELEASE_DIR)/centos
+	ssh pyama@stns.jp rm -rf $(RELEASE_DIR)/debian
+	scp -r repo/centos pyama@stns.jp:$(RELEASE_DIR)
+	scp -r repo/debian pyama@stns.jp:$(RELEASE_DIR)
+	scp -r package/scripts/yum-repo.sh  pyama@stns.jp:$(RELEASE_DIR)/scripts
+	scp -r package/scripts/apt-repo.sh  pyama@stns.jp:$(RELEASE_DIR)/scripts
+
 .PHONY: default test docker rpm source_for_rpm pkg source_for_deb deb
