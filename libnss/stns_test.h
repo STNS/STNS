@@ -1,5 +1,6 @@
 #ifndef STNS_TEST_H
 #define STNS_TEST_H
+#define DEBUG 1
 
 #include <criterion/criterion.h>
 #include "stns.h"
