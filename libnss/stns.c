@@ -66,6 +66,7 @@ void stns_load_config(char *filename, stns_conf_t *c)
   GET_TOML_BYKEY(uid_shift, toml_rtoi, 0, TOML_NULL_OR_INT);
   GET_TOML_BYKEY(gid_shift, toml_rtoi, 0, TOML_NULL_OR_INT);
   GET_TOML_BYKEY(cache_ttl, toml_rtoi, 600, TOML_NULL_OR_INT);
+  GET_TOML_BYKEY(negative_cache_ttl, toml_rtoi, 60, TOML_NULL_OR_INT);
   GET_TOML_BYKEY(ssl_verify, toml_rtob, 1, TOML_NULL_OR_INT);
   GET_TOML_BYKEY(cache, toml_rtob, 1, TOML_NULL_OR_INT);
   GET_TOML_BYKEY(request_timeout, toml_rtoi, 10, TOML_NULL_OR_INT);
@@ -155,31 +156,6 @@ static size_t response_callback(void *buffer, size_t size, size_t nmemb, void *u
   return segsize;
 }
 
-static int inner_wrapper_request(stns_conf_t *c, char *path, stns_response_t *res)
-{
-  int rsize = 0;
-  stns_response_t exe_r;
-  res->data = NULL;
-  res->size = 0;
-
-  if (stns_exec_cmd(c->query_wrapper, path, &exe_r)) {
-    rsize = exe_r.size;
-    if (res->data) {
-      res->data = (char *)realloc(res->data, rsize + 1);
-    } else {
-      res->data = (char *)malloc(rsize + 1);
-    }
-
-    strcpy(&(res->data[0]), exe_r.data);
-  } else {
-    free(exe_r.data);
-    return 0;
-  }
-
-  free(exe_r.data);
-  return 1;
-}
-
 // base https://github.com/linyows/octopass/blob/master/octopass.c
 static CURLcode inner_http_request(stns_conf_t *c, char *path, stns_response_t *res)
 {
@@ -199,8 +175,9 @@ static CURLcode inner_http_request(stns_conf_t *c, char *path, stns_response_t *
   url = (char *)malloc(strlen(c->api_endpoint) + strlen(path) + 2);
   sprintf(url, "%s/%s", c->api_endpoint, path);
 
-  res->data = NULL;
-  res->size = 0;
+  res->data        = NULL;
+  res->size        = 0;
+  res->status_code = (long)200;
 
   if (auth != NULL) {
     headers = curl_slist_append(headers, auth);
@@ -236,9 +213,11 @@ static CURLcode inner_http_request(stns_conf_t *c, char *path, stns_response_t *
 
   if (result != CURLE_OK) {
     syslog(LOG_ERR, "%s(stns)[L%d] http request failed: %s", __func__, __LINE__, curl_easy_strerror(result));
-  } else {
-    long *code;
-    curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &code);
+    if (result == CURLE_HTTP_RETURNED_ERROR) {
+      long code;
+      curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &code);
+      res->status_code = code;
+    }
   }
 
   free(auth);
@@ -286,7 +265,9 @@ void stns_export_file(char *file, char *data)
     syslog(LOG_ERR, "%s(stns)[L%d] cannot open %s", __func__, __LINE__, file);
     return;
   }
-  fprintf(fp, "%s", data);
+  if (data != NULL) {
+    fprintf(fp, "%s", data);
+  }
   fclose(fp);
 
   chmod(file, S_IRUSR | S_IWUSR | S_IXUSR | S_IRGRP | S_IWGRP | S_IXGRP | S_IROTH | S_IWOTH | S_IXOTH);
@@ -342,7 +323,10 @@ static void *delete_cache_files(void *data)
 
     if (stat(buf, &statbuf) == 0 && (statbuf.st_uid == getuid() || getuid() == 0)) {
       unsigned long diff = now - statbuf.st_mtime;
-      if (!S_ISDIR(statbuf.st_mode) && diff > c->cache_ttl) {
+
+      if (!S_ISDIR(statbuf.st_mode) &&
+          ((diff > c->cache_ttl && statbuf.st_size > 0) || (diff > c->negative_cache_ttl && statbuf.st_size == 0))) {
+
         if (unlink(buf) == -1) {
           syslog(LOG_ERR, "%s(stns)[L%d] cannot delete %s: %s", __func__, __LINE__, buf, strerror(errno));
         }
@@ -359,9 +343,10 @@ int stns_request(stns_conf_t *c, char *path, stns_response_t *res)
 {
   CURLcode result;
   pthread_t pthread;
-  int retry_count = c->request_retry;
-  res->data       = NULL;
-  res->size       = 0;
+  int retry_count  = c->request_retry;
+  res->data        = NULL;
+  res->size        = 0;
+  res->status_code = (long)200;
 
   if (path == NULL) {
     return CURLE_HTTP_RETURNED_ERROR;
@@ -380,7 +365,14 @@ int stns_request(stns_conf_t *c, char *path, stns_response_t *res)
       if (stat(fpath, &statbuf) != -1) {
         unsigned long now  = time(NULL);
         unsigned long diff = now - statbuf.st_mtime;
-        if (diff < c->cache_ttl) {
+
+        // resource notfound
+        if ((diff < c->cache_ttl && statbuf.st_size > 0) || (diff < c->negative_cache_ttl && statbuf.st_size == 0)) {
+          if (statbuf.st_size == 0) {
+            res->status_code = STNS_HTTP_NOTFOUND;
+            return CURLE_HTTP_RETURNED_ERROR;
+          }
+
           pthread_mutex_lock(&delete_mutex);
           if (!stns_import_file(fpath, res)) {
             pthread_mutex_unlock(&delete_mutex);
@@ -416,7 +408,7 @@ request:
       }
     }
   } else {
-    result = inner_wrapper_request(c, path, res);
+    result = stns_exec_cmd(c->query_wrapper, path, res);
   }
 
   if (result == CURLE_COULDNT_CONNECT) {
@@ -427,7 +419,7 @@ request:
     pthread_join(pthread, NULL);
   }
 
-  if (result == CURLE_OK && c->cache) {
+  if (c->cache) {
     pthread_mutex_lock(&delete_mutex);
     stns_export_file(fpath, res->data);
     pthread_mutex_unlock(&delete_mutex);
@@ -435,13 +427,34 @@ request:
   return result;
 }
 
+unsigned int match(char *pattern, char *text)
+{
+  regex_t regex;
+  int rc;
+
+  if (text == NULL) {
+    return 0;
+  }
+
+  rc = regcomp(&regex, pattern, REG_EXTENDED | REG_NOSUB);
+  if (rc == 0)
+    rc = regexec(&regex, text, 0, 0, 0);
+  regfree(&regex);
+  return rc == 0;
+}
+
 int stns_exec_cmd(char *cmd, char *arg, stns_response_t *r)
 {
   FILE *fp;
   char *c;
 
-  r->data = NULL;
-  r->size = 0;
+  r->data        = NULL;
+  r->size        = 0;
+  r->status_code = (long)200;
+
+  if (!match("^[a-z0-9_.]+$", arg)) {
+    return 0;
+  }
 
   if (arg != NULL) {
     c = malloc(strlen(cmd) + strlen(arg) + 2);

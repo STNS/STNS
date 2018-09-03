@@ -18,6 +18,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <ctype.h>
+#include <regex.h>
 #define STNS_VERSION "2.0.0"
 #define STNS_VERSION_WITH_NAME "stns/" STNS_VERSION
 // 10MB
@@ -25,11 +26,13 @@
 #define STNS_CONFIG_FILE "/etc/stns/client/stns.conf"
 #define MAXBUF 1024
 #define STNS_LOCK_FILE "/var/tmp/.stns.lock"
+#define STNS_HTTP_NOTFOUND 404L
 
 typedef struct stns_response_t stns_response_t;
 struct stns_response_t {
   char *data;
   size_t size;
+  long status_code;
 };
 
 typedef struct stns_conf_t stns_conf_t;
@@ -50,6 +53,7 @@ struct stns_conf_t {
   int request_locktime;
   int cache;
   int cache_ttl;
+  int negative_cache_ttl;
 };
 
 extern void stns_load_config(char *, stns_conf_t *);
@@ -123,6 +127,9 @@ extern void set_group_lowest_id(int);
     curl_result = stns_request(&c, url, &r);                                                                           \
                                                                                                                        \
     if (curl_result != CURLE_OK) {                                                                                     \
+      if (r.status_code == STNS_HTTP_NOTFOUND) {                                                                       \
+        return NSS_STATUS_NOTFOUND;                                                                                    \
+      }                                                                                                                \
       return NSS_STATUS_UNAVAIL;                                                                                       \
     }                                                                                                                  \
                                                                                                                        \
@@ -174,6 +181,9 @@ extern void set_group_lowest_id(int);
                                                                                                                        \
     curl_result = stns_request(&c, #query, &r);                                                                        \
     if (curl_result != CURLE_OK) {                                                                                     \
+      if (r.status_code == STNS_HTTP_NOTFOUND) {                                                                       \
+        return NSS_STATUS_NOTFOUND;                                                                                    \
+      }                                                                                                                \
       return NSS_STATUS_UNAVAIL;                                                                                       \
     }                                                                                                                  \
                                                                                                                        \
