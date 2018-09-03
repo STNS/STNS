@@ -102,7 +102,7 @@ deb: source_for_deb ## Packaging for DEB
 		cp *.deb $(GOPATH)/src/github.com/STNS/STNS/builds
 	rm -rf tmp.$(DIST)
 
-github_release: server_client_pkg ## Create some distribution packages
+github_release: ## Create some distribution packages
 	ghr -u STNS --replace v$(VERSION) builds/
 
 server_client_pkg: pkg ## Create some distribution packages
@@ -117,7 +117,7 @@ debrepo: ## Create some distribution packages
 	docker-compose build debrepo
 	docker-compose run debrepo
 
-repo_release: server_client_pkg yumrepo debrepo
+repo_release: yumrepo debrepo
 	ssh pyama@stns.jp rm -rf $(RELEASE_DIR)/centos
 	ssh pyama@stns.jp rm -rf $(RELEASE_DIR)/debian
 	scp -r repo/centos pyama@stns.jp:$(RELEASE_DIR)
