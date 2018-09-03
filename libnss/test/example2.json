@@ -1,0 +1,17 @@
+[
+  {
+    "id": 1,
+    "name": "group1",
+    "users": [
+      "test"
+    ]
+  },
+  {
+    "id": 2,
+    "name": "group2",
+    "users": [
+      "foo",
+      "bar"
+    ]
+  }
+]

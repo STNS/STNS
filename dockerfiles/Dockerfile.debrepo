@@ -1,0 +1,29 @@
+FROM ubuntu:xenial
+RUN apt-get -qqy update && \
+    apt-get install -yq reprepro curl
+
+WORKDIR /tmp
+RUN mkdir -p releases/debian
+
+# old version
+RUN curl https://github.com/STNS/STNS/releases/download/v0.4/stns_0.4.0_amd64.deb -s -L -o releases/debian/stns-0.4.0.amd64.deb
+RUN curl https://github.com/STNS/STNS/releases/download/v0.4/stns_0.4.0_i386.deb -s -L -o releases/debian/stns-0.4.0.i386.deb
+RUN curl https://github.com/STNS/libnss_stns/releases/download/v0.4.5/libnss-stns_0.4.5_amd64.deb -s -L -o releases/debian/libnss-stns_0.4.5_amd64.deb
+RUN curl https://github.com/STNS/libnss_stns/releases/download/v0.4.5/libpam-stns_0.4.5_amd64.deb -s -L -o releases/debian/libpam-stns_0.4.5_amd64.deb
+
+RUN curl https://github.com/STNS/libnss_stns/releases/download/v0.4.5/libnss-stns_0.4.5_i386.deb -s -L -o releases/debian/libnss-stns_0.4.5_i386.deb
+RUN curl https://github.com/STNS/libnss_stns/releases/download/v0.4.5/libpam-stns_0.4.5_i386.deb -s -L -o releases/debian/libpam-stns_0.4.5_i386.deb
+
+ADD . /go/src/github.com/STNS/STNS
+WORKDIR /go/src/github.com/STNS/STNS
+RUN rm -rf releases && mkdir releases
+RUN mv /tmp/releases/* releases
+
+RUN gpg --import keys/pub.key;gpg --import --allow-secret-key-import keys/secret.key
+RUN mkdir -p releases/debian && cp -pr builds/*64*.deb releases/debian
+
+CMD cp -pr package/conf releases/debian && \
+cd releases/debian && \
+reprepro includedeb stns *.deb && \
+cd ../.. && \
+cp -r releases/* repo/

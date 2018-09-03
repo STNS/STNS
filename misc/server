@@ -1,0 +1,35 @@
+#!/bin/bash
+
+start_server() {
+  export CI=1
+  make server &
+  sleep 5
+}
+
+stop_server() {
+  PID=$(lsof -i:1104 | tail -1 | awk '{print $2}')
+
+  kill -SIGINT $PID
+  if [ $? -ne 0 ]; then
+    echo "process not found"
+    exit 1
+  fi
+  sleep 1
+  kill -0 $PID 2>/dev/null
+  if [ $? -ne 1 ]; then
+    echo "sent signal as SIGKILL"
+    kill -SIGKILL $PID
+  fi
+}
+
+case "$1" in
+  start)
+    start_server
+    ;;
+  stop*)
+    stop_server
+    ;;
+  *)
+    echo $"Usage: $0 {start|stop}"
+    exit 2
+esac
