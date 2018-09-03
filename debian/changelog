@@ -1,4 +1,4 @@
-libnss-stns-v2 (1.0.0-1) xenial; urgency=medium
+stns-v2 (1.0.0-1) xenial; urgency=medium
 
   * Release.
 
