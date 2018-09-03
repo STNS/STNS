@@ -8,7 +8,7 @@ type User struct {
 	Shell         string   `toml:"shell" json:"shell"`
 	Gecos         string   `toml:"gecos" json:"gecos"`
 	Keys          []string `toml:"keys" json:"keys"`
-	LinkUsers     []string `toml:"link_users" json:"link_users"`
+	LinkUsers     []string `toml:"link_users" json:"-"`
 	SetupCommands []string `toml:"setup_commands" json:"setup_commands"`
 }
 

@@ -1,0 +1,169 @@
+#!/bin/sh
+#
+#       /etc/rc.d/init.d/stns
+#
+#       Daemon for SimpleTomlNameService
+#
+# chkconfig:   2345 95 5
+# description: Daemon for SimpleTomlNameService
+
+### BEGIN INIT INFO
+# Provides:       stns
+# Short-Description: start and stop stns
+# Description: Daemon for stns
+### END INIT INFO
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+prog="stns"
+
+[ -e /etc/sysconfig/$prog ] && . /etc/sysconfig/$prog
+
+BIN=${BIN:="/usr/sbin/$prog"}
+LOGFILE=${LOGILE:="/var/log/$prog.log"}
+PIDFILE=${PIDFILE:="/var/run/$prog.pid"}
+
+lockfile=/var/lock/subsys/$prog
+
+# if matched return 0, else return 1
+prefix_match() {
+    [ "${1#$2*}" = "$1" ] && return 1
+    return 0
+}
+
+start() {
+    if [ -e $PIDFILE ];then
+      return 0
+    fi
+
+    [ -x $exec ] || exit 5
+
+    echo -n $"Starting $prog:"
+
+    $BIN --pidfile=$PIDFILE --logfile=$LOGFILE $OTHER_OPTS server 2>&1 &
+    sleep 1
+    if ! kill -0 $(cat $PIDFILE 2>/dev/null) >/dev/null 2>&1; then
+        failure
+        echo
+
+        return 1
+    fi
+
+    touch $lockfile
+    success
+    echo
+
+    return 0
+}
+
+stop() {
+    echo -n $"Stopping $prog: "
+
+    if [ ! -f $PIDFILE ]; then
+        echo
+        echo "pid file ($PIDFILE) not found" >&2
+
+        return 0
+    fi
+
+    pid=$(cat $PIDFILE)
+    process_name=$(ps -p $pid -o comm= )
+    if [ -z $process_name ]; then
+        failure
+        echo
+        echo "No such process (pid: $pid)" >&2
+
+        return 1
+    fi
+
+    prefix_match $prog $process_name
+    retval=$?
+    if [ $retval -eq 1 ]; then
+        failure
+        echo
+        echo "pid file ($PIDFILE) is invalid" >&2
+
+        return 1
+    fi
+
+    killproc -p $PIDFILE -QUIT
+    retval=$?
+    echo
+    [ $retval -eq 0 ] && rm -f $lockfile
+    return $retval
+}
+
+restart() {
+    stop
+    start
+}
+
+reload() {
+  echo -n $"Reload Config $prog: "
+
+    if [ ! -f $PIDFILE ]; then
+        echo
+        echo "pid file ($PIDFILE) not found" >&2
+
+        return 0
+    fi
+
+    pid=$(cat $PIDFILE)
+    process_name=$(ps -p $pid -o comm= )
+    if [ -z $process_name ]; then
+        failure
+        echo
+        echo "No such process (pid: $pid)" >&2
+
+        return 1
+    fi
+
+    prefix_match $prog $process_name
+    retval=$?
+    if [ $retval -eq 1 ]; then
+        failure
+        echo
+        echo "pid file ($PIDFILE) is invalid" >&2
+
+        return 1
+    fi
+
+    kill -USR1 $pid
+    retval=$?
+    echo
+    return $retval
+}
+
+rh_status() {
+    status -p $PIDFILE $prog
+}
+
+rh_status_q() {
+    rh_status >/dev/null 2>&1
+}
+
+case "$1" in
+    start)
+        rh_status_q && exit 0
+        $1
+        ;;
+    stop)
+        rh_status_q || exit 0
+        $1
+        ;;
+    reload)
+        $1
+        ;;
+    restart)
+        $1
+        ;;
+    status)
+        rh_status
+        ;;
+    *)
+        echo $"Usage: $0 {start|stop|restart|reload|status}"
+        exit 2
+esac
+
+exit $?

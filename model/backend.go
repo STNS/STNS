@@ -4,6 +4,9 @@ type UserGroup interface {
 	id() int
 	name() string
 	setName(string)
+	linkValues() []string
+	setLinkValues([]string)
+	value() []string
 }
 
 type Backend interface {

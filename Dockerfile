@@ -1,4 +1,4 @@
-FROM golang:1.10.3
+FROM golang:1.11rc2
 RUN apt-get update -qqy --fix-missing
 RUN apt-get install -qqy build-essential \
     git \
@@ -8,8 +8,7 @@ RUN apt-get install -qqy build-essential \
     gdb \
     sudo \
     rsyslog \
-    clang
-RUN go get -u golang.org/x/vgo/...
+    clang \
+    lsof
 ADD . /go/src/github.com/STNS/STNS
 WORKDIR /go/src/github.com/STNS/STNS
-RUN make depsdev

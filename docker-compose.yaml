@@ -1,0 +1,47 @@
+version: '3'
+services:
+  centos7:
+    build:
+      context: .
+      dockerfile: dockerfiles/Dockerfile.centos-7
+      args:
+        GO_VERSION: 1.11
+    volumes:
+      - $GOPATH:/go
+    environment:
+      DIST: el7
+    command: make rpm
+  centos6:
+    build:
+      context: .
+      dockerfile: dockerfiles/Dockerfile.centos-6
+      args:
+        GO_VERSION: 1.11
+    volumes:
+      - $GOPATH:/go
+    environment:
+      DIST: el6
+    command: make rpm
+  ubuntu16:
+    build:
+      context: .
+      dockerfile: dockerfiles/Dockerfile.ubuntu-16
+      args:
+        GO_VERSION: 1.11
+    volumes:
+      - $GOPATH:/go
+    environment:
+      DIST: xenial
+    command: make deb
+  yumrepo:
+    build:
+      context: .
+      dockerfile: dockerfiles/Dockerfile.yumrepo
+    volumes:
+      - ./repo:/go/src/github.com/STNS/STNS/repo
+  debrepo:
+    build:
+      context: .
+      dockerfile: dockerfiles/Dockerfile.debrepo
+    volumes:
+      - ./repo:/go/src/github.com/STNS/STNS/repo

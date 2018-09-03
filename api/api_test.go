@@ -26,7 +26,7 @@ func newContext(path string, queryParams map[string]string, config *stns.Config)
 	e := echo.New()
 	ctx := e.NewContext(req, rec)
 
-	b := model.NewBackendTomlFile(config.Users, config.Groups)
+	b, _ := model.NewBackendTomlFile(config.Users, config.Groups)
 	ctx.Set(middleware.BackendKey, b)
 
 	ctx.SetPath(path)

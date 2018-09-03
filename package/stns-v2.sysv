@@ -1,0 +1,128 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:          stns
+# Short-Description: 'Simple Toml Name Service'
+# Description:       'Simple Toml Name Service'
+# Author:            pyama86
+# Required-Start:    $syslog $network $remote_fs
+# Required-Stop:     $syslog $network $remote_fs
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+### END INIT INFO
+
+NAME=stns
+
+[ -r /etc/default/$NAME ] && . /etc/default/$NAME
+
+PATH=/sbin:/usr/sbin:/bin:/usr/bin
+DAEMON=${DAEMON:="/usr/sbin/$NAME"}
+SCRIPTNAME=/etc/init.d/$NAME
+LOGFILE=${LOGILE:="/var/log/$NAME.log"}
+PIDFILE=${PIDFILE:="/var/run/$NAME.pid"}
+
+# Exit if the package is not installed
+[ -x $DAEMON ] || exit 0
+
+# Define LSB log_* functions.
+# Depend on lsb-base (>= 3.0-6) to ensure that this file is present.
+. /lib/lsb/init-functions
+
+#
+# Function that starts the daemon/service
+#
+do_start()
+{
+    if [ -e $PIDFILE ];then
+      return 0
+    fi
+    $DAEMON --pidfile=$PIDFILE --logfile=$LOGFILE $OTHER_OPTS >>$LOGFILE server 2>&1 &
+    sleep 1
+    kill -0 $(cat $PIDFILE 2>/dev/null) >/dev/null 2>&1
+    return $?
+}
+
+#
+# Function that stops the daemon/service
+#
+do_stop()
+{
+    start-stop-daemon --stop --quiet --retry=TERM/30/KILL/5 --pidfile $PIDFILE --exec $DAEMON
+    RETVAL="$?"
+    [ "$RETVAL" = 2 ] && return 2
+    start-stop-daemon --stop --quiet --oknodo --retry=0/30/KILL/5 --exec $DAEMON
+    [ "$?" = 2 ] && return 2
+    # Many daemons don't delete their pidfiles when they exit.
+    rm -f $PIDFILE
+    return "$RETVAL"
+}
+
+#
+# Function that reload config the daemon/service
+#
+do_reload()
+{
+    start-stop-daemon --stop --quiet --signal=USR1 --pidfile $PIDFILE --exec $DAEMON
+    RETVAL="$?"
+    sleep 3
+    kill -0 $(cat $PIDFILE 2>/dev/null) >/dev/null 2>&1
+    return $?
+}
+
+case "$1" in
+    start)
+        log_daemon_msg "Starting $NAME"
+        do_start
+        retval=$?
+        case "$retval" in
+            0) log_end_msg 0 ;;
+            *) log_end_msg 1; exit $retval ;;
+        esac
+        ;;
+    stop)
+        log_daemon_msg "Stopping $DESC" "$NAME"
+        do_stop
+        retval=$?
+        case "$retval" in
+            0|1) log_end_msg 0 ;;
+            *)   log_end_msg 1; exit $retval ;;
+        esac
+        ;;
+    status)
+        status_of_proc "$DAEMON" "$NAME" && exit 0 || exit $?
+        ;;
+    restart)
+        log_daemon_msg "Restarting $DESC" "$NAME"
+        do_stop
+        retval=$?
+        case "$retval" in
+            0|1)
+                do_start
+                retval=$?
+                case "$retval" in
+                    0) log_end_msg 0 ;;
+                    *) log_end_msg 1; exit $retval ;; # Failed to start
+                esac
+                ;;
+            *)
+                # Failed to stop
+                log_end_msg 1; exit $retval
+            ;;
+        esac
+        ;;
+     reload)
+        log_daemon_msg "Reload Config $NAME"
+          do_reload
+          retval=$?
+          case "$retval" in
+              0) log_end_msg 0 ;;
+              *) log_end_msg 1; exit $retval ;;
+          esac
+          ;;
+
+    *)
+        echo "Usage: $SCRIPTNAME {start|stop|restart|reload|status}" >&2
+        exit 3
+    ;;
+esac
+
+:

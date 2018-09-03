@@ -3,7 +3,7 @@ package model
 type Group struct {
 	Base
 	Users      []string `toml:"users" json:"users"`
-	LinkGroups []string `toml:"link_groups" json:"link_groups"`
+	LinkGroups []string `toml:"link_groups" json:"-"`
 }
 
 type Groups map[string]*Group

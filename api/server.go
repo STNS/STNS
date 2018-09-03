@@ -53,7 +53,11 @@ func (s *server) Run() error {
 	}
 	defer removePidFile()
 
-	b := model.NewBackendTomlFile(s.config.Users, s.config.Groups)
+	b, err := model.NewBackendTomlFile(s.config.Users, s.config.Groups)
+	if err != nil {
+		return err
+	}
+
 	e.Use(middleware.Backend(b))
 	e.Use(middleware.AddHeader(b))
 	e.Use(emiddleware.Recover())
@@ -80,24 +84,26 @@ func (s *server) Run() error {
 			}))
 	}
 
-	e.Use(middleware.TokenAuthWithConfig(middleware.TokenAuthConfig{
-		Skipper: func(c echo.Context) bool {
+	if s.config.TokenAuth != nil {
+		e.Use(middleware.TokenAuthWithConfig(middleware.TokenAuthConfig{
+			Skipper: func(c echo.Context) bool {
 
-			if c.Path() == "/" || c.Path() == "/status" || len(os.Getenv("CI")) > 0 {
-				return true
-			}
-
-			return false
-		},
-		Validator: func(token string) bool {
-			for _, a := range s.config.TokenAuth.Tokens {
-				if a == token {
+				if c.Path() == "/" || c.Path() == "/status" || len(os.Getenv("CI")) > 0 {
 					return true
 				}
-			}
-			return false
-		},
-	}))
+
+				return false
+			},
+			Validator: func(token string) bool {
+				for _, a := range s.config.TokenAuth.Tokens {
+					if a == token {
+						return true
+					}
+				}
+				return false
+			},
+		}))
+	}
 
 	if s.config.UseServerStarter {
 		listeners, err := listener.ListenAll()

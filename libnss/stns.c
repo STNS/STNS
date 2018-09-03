@@ -148,8 +148,9 @@ static size_t response_callback(void *buffer, size_t size, size_t nmemb, void *u
     res->data = (char *)realloc(res->data, res->size + segsize + 1);
   }
 
-  strcpy(&(res->data[res->size]), buffer);
+  memcpy(&(res->data[res->size]), buffer, segsize);
   res->size += segsize;
+  res->data[res->size] = 0;
 
   return segsize;
 }
@@ -215,6 +216,7 @@ static CURLcode inner_http_request(stns_conf_t *c, char *path, stns_response_t *
   curl_easy_setopt(curl, CURLOPT_USERAGENT, STNS_VERSION_WITH_NAME);
   curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
   curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, c->ssl_verify);
+  curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, c->ssl_verify);
   curl_easy_setopt(curl, CURLOPT_TIMEOUT, c->request_timeout);
   curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, response_callback);
   curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, header_callback);

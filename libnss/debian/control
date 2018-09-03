@@ -1,0 +1,14 @@
+Source: libnss-stns-v2
+Section: admin
+Priority: optional
+Maintainer: pyama86 <www.kazu.com@gmail.com>
+Build-Depends: debhelper (>= 9), libcurl4-gnutls-dev, libjansson-dev
+Standards-Version: 3.9.7
+Homepage: https://github.com/STNS/STNS
+Vcs-Browser: https://github.com/STNS/STNS/tree/debian
+Vcs-Git: https://github.com/STNS/STNS -b debian
+
+Package: libnss-stns-v2
+Architecture: amd64
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: We provide name resolution of Linux user group using STNS.
