@@ -111,7 +111,7 @@ rpm: source_for_rpm ## Packaging for RPM
 	cp builds/libnss-stns-v2-$(VERSION).tar.gz /root/rpmbuild/SOURCES
 	spectool -g -R rpm/stns.spec
 	rpmbuild -ba rpm/stns.spec
-	cp /root/rpmbuild/RPMS/*/*.rpm /stns/builds
+	cp /root/rpmbuild/RPMS/*/*$(VERSION)*.rpm /stns/builds
 
 source_for_deb: ## Create source for DEB
 	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Distributing$(RESET)"
