@@ -53,6 +53,7 @@ Test(stns_load_config, load_ok)
   cr_assert_eq(c.gid_shift, 2000);
   cr_assert_eq(c.request_timeout, 3);
   cr_assert_eq(c.request_retry, 3);
+  cr_assert_eq(c.negative_cache_ttl, 10);
 }
 
 Test(stns_request, http_request)
@@ -147,7 +148,7 @@ Test(stns_exec_cmd, ok)
 {
   char expect_body[1024];
   stns_response_t result;
-  int r = stns_exec_cmd("test/dummy.sh", NULL, &result);
+  int r = stns_exec_cmd("test/dummy.sh", "test", &result);
 
   cr_assert_eq(r, 1);
   cr_expect_str_eq(result.data, "aaabbbccc\nddd\n");
