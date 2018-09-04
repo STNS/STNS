@@ -1,7 +1,7 @@
 Summary:          SimpleTomlNameService Nss Module
-Name:             libnss-stns-v2 
+Name:             libnss-stns-v2
 Version:          1.0.0
-Release:          1
+Release:          2
 License:          GPLv3
 URL:              https://github.com/STNS/STNS
 Source:           %{name}-%{version}.tar.gz
@@ -51,10 +51,13 @@ install -m 644 stns.conf.example %{buildroot}%{_sysconfdir}/stns/client/stns.con
 /usr/lib64/libnss_stns.so.2
 /usr/lib64/libnss_stns.so.2.0
 /usr/lib/stns/stns-key-wrapper
+/usr/local/bin/stns-key-wrapper
 /var/cache/stns
 /etc/stns/client/stns.conf
 
 %changelog
+* Mon Sep 4 2018 pyama86 <www.kazu.com@gmail.com> - 1.0.0-2
+- Add symbolic link to key-wrapper
 * Mon Sep 3 2018 pyama86 <www.kazu.com@gmail.com> - 1.0.0-1
 - Release
 * Mon Aug 27 2018 pyama86 <www.kazu.com@gmail.com> - 0.0.1-1

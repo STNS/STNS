@@ -13,6 +13,7 @@ ifeq ($(wildcard $(LIBDIR)/.*),)
 LIBDIR=$(PREFIX)/lib
 endif
 BINDIR=$(PREFIX)/lib/stns
+BINSYMDIR=$(PREFIX)/local/bin/
 
 BUILD=tmp/libs
 CACHE=/var/cache/stns
@@ -93,7 +94,9 @@ install_lib: ## Install only shared objects
 install_key_wrapper: ## Install only key wrapper
 	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Installing as Key Wrapper$(RESET)"
 	[ -d $(BINDIR) ] || install -d $(BINDIR)
+	[ -d $(BINSYMDIR) ] || install -d $(BINSYMDIR)
 	install $(BUILD)/$(KEY_WRAPPER) $(BINDIR)
+	cd $(BINDIR);ln -sf $(KEY_WRAPPER) $(BINSYMDIR)/$(KEY_WRAPPER)
 
 source_for_rpm: ## Create source for RPM
 	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Distributing$(RESET)"
@@ -111,7 +114,7 @@ rpm: source_for_rpm ## Packaging for RPM
 	cp builds/libnss-stns-v2-$(VERSION).tar.gz /root/rpmbuild/SOURCES
 	spectool -g -R rpm/stns.spec
 	rpmbuild -ba rpm/stns.spec
-	cp /root/rpmbuild/RPMS/*/*$(VERSION)*.rpm /stns/builds
+	mv /root/rpmbuild/RPMS/*/*.rpm /stns/builds
 
 source_for_deb: ## Create source for DEB
 	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Distributing$(RESET)"

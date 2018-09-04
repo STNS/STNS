@@ -32,5 +32,7 @@ rpm --addsign releases/centos/x86_64/6/*.rpm && \
 rpm --addsign releases/centos/x86_64/7/*.rpm && \
 rpm --addsign releases/centos/i386/*.rpm && \
 createrepo --checksum sha releases/centos/x86_64/ && \
+createrepo --checksum sha releases/centos/x86_64/6 && \
+createrepo --checksum sha releases/centos/x86_64/7 && \
 createrepo --checksum sha releases/centos/i386/ && \
 cp -r releases/* repo/

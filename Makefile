@@ -110,10 +110,12 @@ server_client_pkg: pkg ## Create some distribution packages
 	mv libnss/builds/* builds
 
 yumrepo: ## Create some distribution packages
+	rm -rf repo/centos
 	docker-compose build yumrepo
 	docker-compose run yumrepo
 
 debrepo: ## Create some distribution packages
+	rm -rf repo/debian
 	docker-compose build debrepo
 	docker-compose run debrepo
 
