@@ -20,6 +20,7 @@ CONFDIR=$(DESTDIR)/etc
 PREFIX=$(DESTDIR)/usr
 LIBDIR=$(PREFIX)/lib/$(DEB_HOST_MULTIARCH)
 BINDIR=$(PREFIX)/lib/stns
+BINSYMDIR=$(PREFIX)/local/bin/
 
 %:
 	dh $@
@@ -31,8 +32,9 @@ BINDIR=$(PREFIX)/lib/stns
 
 override_dh_auto_install:
 	mkdir -p $(LIBDIR) $(BINDIR) $(CONFDIR)/stns/client/
-	dh_auto_install -- LIBDIR=$(LIBDIR) PREFIX=$(PREFIX) BINDIR=$(BINDIR)
+	dh_auto_install -- LIBDIR=$(LIBDIR) PREFIX=$(PREFIX) BINDIR=$(BINDIR) BINSYMDIR=$(BINSYMDIR)
 	install -pm 644 stns.conf.example $(CONFDIR)/stns/client/stns.conf
 	find $(DESTDIR)
+override_dh_usrlocal:
 
 override_dh_auto_test:

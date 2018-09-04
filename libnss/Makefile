@@ -13,6 +13,7 @@ ifeq ($(wildcard $(LIBDIR)/.*),)
 LIBDIR=$(PREFIX)/lib
 endif
 BINDIR=$(PREFIX)/lib/stns
+BINSYMDIR=$(PREFIX)/local/bin/
 
 BUILD=tmp/libs
 CACHE=/var/cache/stns
@@ -93,7 +94,9 @@ install_lib: ## Install only shared objects
 install_key_wrapper: ## Install only key wrapper
 	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Installing as Key Wrapper$(RESET)"
 	[ -d $(BINDIR) ] || install -d $(BINDIR)
+	[ -d $(BINSYMDIR) ] || install -d $(BINSYMDIR)
 	install $(BUILD)/$(KEY_WRAPPER) $(BINDIR)
+	cd $(BINDIR);ln -sf $(KEY_WRAPPER) $(BINSYMDIR)/$(KEY_WRAPPER)
 
 source_for_rpm: ## Create source for RPM
 	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Distributing$(RESET)"
