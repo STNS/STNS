@@ -96,7 +96,7 @@ install_key_wrapper: ## Install only key wrapper
 	[ -d $(BINDIR) ] || install -d $(BINDIR)
 	[ -d $(BINSYMDIR) ] || install -d $(BINSYMDIR)
 	install $(BUILD)/$(KEY_WRAPPER) $(BINDIR)
-	cd $(BINDIR);ln -sf $(KEY_WRAPPER) $(BINSYMDIR)/$(KEY_WRAPPER)
+	ln -sf /usr/lib/stns/$(KEY_WRAPPER) $(BINSYMDIR)/
 
 source_for_rpm: ## Create source for RPM
 	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Distributing$(RESET)"
