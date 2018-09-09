@@ -11,7 +11,8 @@ $ id pyama
 uid=1001(pyama) gid=1001(pyama) groups=1001(pyama)
 ```
 
-![overview](https://raw.githubusercontent.com/STNS/STNS/master/docs/images/sns_diagram.png)
+# diagram
+![overview](https://raw.githubusercontent.com/STNS/STNS/master/docs/images/diagram.png)
 
 ## blog
 * [Linuxユーザーと公開鍵を統合管理するサーバ&クライアントを書いた](https://ten-snapon.com/archives/1228)
