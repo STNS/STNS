@@ -3,9 +3,9 @@
 static json_t *entries = NULL;
 static int entry_idx   = 0;
 
-#define SHADOW_ENSURE(user)                                                                                            \
-  const char *name     = json_string_value(json_object_get(user, "name"));                                             \
-  const char *password = json_string_value(json_object_get(user, "password"));                                         \
+#define SHADOW_ENSURE(entry)                                                                                           \
+  const char *name     = json_string_value(json_object_get(entry, "name"));                                            \
+  const char *password = json_string_value(json_object_get(entry, "password"));                                        \
   SET_ATTRBUTE(sp, name, namp);                                                                                        \
   STNS_SET_DEFAULT_VALUE(pw, password, "!!");                                                                          \
   SET_ATTRBUTE(sp, password, pwdp);                                                                                    \

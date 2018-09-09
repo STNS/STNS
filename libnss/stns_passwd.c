@@ -3,13 +3,13 @@
 static json_t *entries = NULL;
 static int entry_idx   = 0;
 
-#define PASSWD_ENSURE(user)                                                                                            \
-  const json_int_t id       = json_integer_value(json_object_get(user, "id"));                                         \
-  const json_int_t group_id = json_integer_value(json_object_get(user, "group_id"));                                   \
-  const char *name          = json_string_value(json_object_get(user, "name"));                                        \
-  const char *gecos         = json_string_value(json_object_get(user, "gecos"));                                       \
-  const char *dir           = json_string_value(json_object_get(user, "directory"));                                   \
-  const char *shell         = json_string_value(json_object_get(user, "shell"));                                       \
+#define PASSWD_ENSURE(entry)                                                                                           \
+  const json_int_t id       = json_integer_value(json_object_get(entry, "id"));                                        \
+  const json_int_t group_id = json_integer_value(json_object_get(entry, "group_id"));                                  \
+  const char *name          = json_string_value(json_object_get(entry, "name"));                                       \
+  const char *gecos         = json_string_value(json_object_get(entry, "gecos"));                                      \
+  const char *dir           = json_string_value(json_object_get(entry, "directory"));                                  \
+  const char *shell         = json_string_value(json_object_get(entry, "shell"));                                      \
   char passwd[]             = "x";                                                                                     \
   rbuf->pw_uid              = c->uid_shift + id;                                                                       \
   rbuf->pw_gid              = c->gid_shift + group_id;                                                                 \

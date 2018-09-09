@@ -3,9 +3,9 @@
 static json_t *entries = NULL;
 static int entry_idx   = 0;
 
-#define GROUP_ENSURE(group)                                                                                            \
-  const json_int_t id = json_integer_value(json_object_get(group, "id"));                                              \
-  const char *name    = json_string_value(json_object_get(group, "name"));                                             \
+#define GROUP_ENSURE(entry)                                                                                            \
+  const json_int_t id = json_integer_value(json_object_get(entry, "id"));                                              \
+  const char *name    = json_string_value(json_object_get(entry, "name"));                                             \
   char passwd[]       = "x";                                                                                           \
                                                                                                                        \
   if (name == NULL) {                                                                                                  \
@@ -17,7 +17,7 @@ static int entry_idx   = 0;
   SET_ATTRBUTE(gr, passwd, passwd)                                                                                     \
   rbuf->gr_mem = (char **)buf;                                                                                         \
                                                                                                                        \
-  json_t *members = json_object_get(group, "users");                                                                   \
+  json_t *members = json_object_get(entry, "users");                                                                   \
   int i;                                                                                                               \
   int ptr_area_size = (json_array_size(members) + 1) * sizeof(char *);                                                 \
   char *next_member;                                                                                                   \
