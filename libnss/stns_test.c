@@ -63,6 +63,7 @@ Test(stns_request, http_request)
   stns_response_t r;
 
   c.api_endpoint    = "https://httpbin.org";
+  c.http_proxy      = NULL;
   c.cache_dir       = "/var/cache/stns";
   c.cache           = 0;
   c.user            = NULL;
@@ -85,6 +86,7 @@ Test(stns_request, http_cache)
   char *path = "/var/cache/stns/get%3Fexample";
 
   c.api_endpoint    = "https://httpbin.org";
+  c.http_proxy      = NULL;
   c.cache_dir       = "/var/cache/stns";
   c.cache           = 1;
   c.cache_ttl       = 2;
