@@ -41,7 +41,7 @@ Test(stns_load_config, load_ok)
   stns_conf_t c;
   stns_load_config(f, &c);
 
-  cr_assert_str_eq(c.api_endpoint, "http://<server-ip>:1104/v2");
+  cr_assert_str_eq(c.api_endpoint, "http://<server-ip>:1104/v1");
   cr_assert_str_eq(c.auth_token, "xxxxxxxxxxxxxxx");
   cr_assert_str_eq(c.user, "test_user");
   cr_assert_str_eq(c.password, "test_password");
