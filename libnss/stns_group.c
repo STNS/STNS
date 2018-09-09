@@ -8,6 +8,9 @@ static int entry_idx   = 0;
   const char *name    = json_string_value(json_object_get(group, "name"));                                             \
   char passwd[]       = "x";                                                                                           \
                                                                                                                        \
+  if (name == NULL) {                                                                                                  \
+    return NSS_STATUS_NOTFOUND;                                                                                        \
+  }                                                                                                                    \
   rbuf->gr_gid = c->gid_shift + id;                                                                                    \
                                                                                                                        \
   SET_ATTRBUTE(gr, name, name)                                                                                         \

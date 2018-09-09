@@ -41,7 +41,7 @@ Test(stns_load_config, load_ok)
   stns_conf_t c;
   stns_load_config(f, &c);
 
-  cr_assert_str_eq(c.api_endpoint, "http://<server-ip>:1104/v2");
+  cr_assert_str_eq(c.api_endpoint, "http://<server-ip>:1104/v1");
   cr_assert_str_eq(c.auth_token, "xxxxxxxxxxxxxxx");
   cr_assert_str_eq(c.user, "test_user");
   cr_assert_str_eq(c.password, "test_password");
@@ -63,6 +63,7 @@ Test(stns_request, http_request)
   stns_response_t r;
 
   c.api_endpoint    = "https://httpbin.org";
+  c.http_proxy      = NULL;
   c.cache_dir       = "/var/cache/stns";
   c.cache           = 0;
   c.user            = NULL;
@@ -85,6 +86,7 @@ Test(stns_request, http_cache)
   char *path = "/var/cache/stns/get%3Fexample";
 
   c.api_endpoint    = "https://httpbin.org";
+  c.http_proxy      = NULL;
   c.cache_dir       = "/var/cache/stns";
   c.cache           = 1;
   c.cache_ttl       = 2;
