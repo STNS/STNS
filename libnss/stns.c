@@ -209,6 +209,10 @@ static CURLcode inner_http_request(stns_conf_t *c, char *path, stns_response_t *
     curl_easy_setopt(curl, CURLOPT_PASSWORD, c->password);
   }
 
+  if (c->http_proxy != NULL) {
+    curl_easy_setopt(curl, CURLOPT_PROXY, c->http_proxy);
+  }
+
   result = curl_easy_perform(curl);
 
   if (result != CURLE_OK) {
