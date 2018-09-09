@@ -1,14 +1,17 @@
 #include "stns.h"
 
-static json_t *entries = NULL;
-static int entry_idx   = 0;
+static json_t *entries      = NULL;
+static int entry_idx        = 0;
+pthread_mutex_t grent_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 #define GROUP_ENSURE(entry)                                                                                            \
   const json_int_t id = json_integer_value(json_object_get(entry, "id"));                                              \
   const char *name    = json_string_value(json_object_get(entry, "name"));                                             \
   char passwd[]       = "x";                                                                                           \
                                                                                                                        \
+  printf("name=%s id=%d\n", name, (int)id);                                                                            \
   if (name == NULL) {                                                                                                  \
+    pthread_mutex_unlock(&grent_mutex);                                                                                \
     return NSS_STATUS_NOTFOUND;                                                                                        \
   }                                                                                                                    \
   rbuf->gr_gid = c->gid_shift + id;                                                                                    \
@@ -24,6 +27,7 @@ static int entry_idx   = 0;
                                                                                                                        \
   if (buflen < ptr_area_size) {                                                                                        \
     (*errnop) = ERANGE;                                                                                                \
+    pthread_mutex_unlock(&grent_mutex);                                                                                \
     return NSS_STATUS_TRYAGAIN;                                                                                        \
   }                                                                                                                    \
                                                                                                                        \
@@ -31,12 +35,14 @@ static int entry_idx   = 0;
   for (i = 0; i < json_array_size(members); i++) {                                                                     \
     json_t *member = json_array_get(members, i);                                                                       \
     if (!json_is_string(member)) {                                                                                     \
+      pthread_mutex_unlock(&grent_mutex);                                                                              \
       return NSS_STATUS_UNAVAIL;                                                                                       \
     }                                                                                                                  \
     const char *user = json_string_value(member);                                                                      \
     int user_length  = strlen(user) + 1;                                                                               \
     if (buflen < user_length) {                                                                                        \
       *errnop = ERANGE;                                                                                                \
+      pthread_mutex_unlock(&grent_mutex);                                                                              \
       return NSS_STATUS_TRYAGAIN;                                                                                      \
     }                                                                                                                  \
     strcpy(next_member, user);                                                                                         \

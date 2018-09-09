@@ -1,7 +1,8 @@
 #include "stns.h"
 
-static json_t *entries = NULL;
-static int entry_idx   = 0;
+static json_t *entries      = NULL;
+static int entry_idx        = 0;
+pthread_mutex_t pwent_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 #define PASSWD_ENSURE(entry)                                                                                           \
   const json_int_t id       = json_integer_value(json_object_get(entry, "id"));                                        \

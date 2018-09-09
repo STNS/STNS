@@ -153,7 +153,6 @@ extern void set_group_lowest_id(int);
   buflen -= name##_length;
 
 #define STNS_SET_ENTRIES(type, ltype, resource, query)                                                                 \
-  pthread_mutex_t type##ent_mutex = PTHREAD_MUTEX_INITIALIZER;                                                         \
   enum nss_status inner_nss_stns_set##type##ent(char *data, stns_conf_t *c)                                            \
   {                                                                                                                    \
     pthread_mutex_lock(&type##ent_mutex);                                                                              \
