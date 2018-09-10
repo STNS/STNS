@@ -7,7 +7,6 @@ int main(int argc, char *argv[])
   stns_response_t r;
   stns_conf_t c;
   char url[MAXBUF];
-  const char *tmpkey;
   char *keys      = NULL;
   char *conf_path = NULL;
   int ret;
@@ -42,43 +41,44 @@ int main(int argc, char *argv[])
     return -1;
   }
 
-  int i, k;
+  int i;
   int size = 0;
-  json_error_t error;
-  json_t *leaf;
-  json_t *key;
   int key_size;
-  json_t *root = json_loads(r.data, 0, &error);
+  JSON_Object *leaf;
+  JSON_Value *root = json_parse_string(r.data);
 
   if (root == NULL) {
     free(r.data);
-    syslog(LOG_ERR, "%s(stns)[L%d] json parse error: %s", __func__, __LINE__, error.text);
+    syslog(LOG_ERR, "%s(stns)[L%d] json parse error", __func__, __LINE__);
     stns_unload_config(&c);
     return -1;
   }
 
-  json_array_foreach(root, i, leaf)
-  {
-    if (!json_is_object(leaf))
+  JSON_Array *root_array = json_value_get_array(root);
+  for (i = 0; i < json_array_get_count(root_array); i++) {
+    leaf = json_array_get_object(root_array, i);
+    if (leaf == NULL) {
       continue;
+    }
 
-    json_array_foreach(json_object_get(leaf, "keys"), k, key)
-    {
+    JSON_Array *json_keys = json_object_get_array(leaf, "keys");
+    for (i = 0; i < json_array_get_count(json_keys); i++) {
+      const char *key = json_array_get_string(json_keys, i);
+
       if (size != 0) {
         keys[size] = '\n';
         size++;
         keys[size] = '\0';
       }
-      tmpkey   = json_string_value(key);
-      key_size = strlen(tmpkey);
+      key_size = strlen(key);
 
       if (keys) {
         keys = (char *)realloc(keys, key_size + strlen(keys) + 2);
       } else {
-        keys = (char *)malloc(strlen(tmpkey) + 2);
+        keys = (char *)malloc(strlen(key) + 2);
       }
 
-      memcpy(&(keys[size]), tmpkey, (size_t)key_size);
+      memcpy(&(keys[size]), key, (size_t)key_size);
       size += key_size;
     }
   }
@@ -103,7 +103,7 @@ int main(int argc, char *argv[])
   fprintf(stdout, "%s\n", keys);
   free(keys);
   free(r.data);
-  json_decref(root);
+  json_value_free(root);
   stns_unload_config(&c);
   return 0;
 }

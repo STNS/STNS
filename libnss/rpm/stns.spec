@@ -8,9 +8,9 @@ Source:           %{name}-%{version}.tar.gz
 Group:            System Environment/Base
 Packager:         pyama86 <www.kazu.com@gmail.com>
 %if 0%{?rhel} < 6
-Requires:         glibc curl-devel jansson-devel
+Requires:         glibc curl-devel
 %else
-Requires:         glibc libcurl-devel jansson-devel
+Requires:         glibc libcurl-devel
 %endif
 BuildRequires:    gcc make
 BuildRoot:        %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)

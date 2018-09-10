@@ -8,12 +8,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include "toml.h"
+#include "parson.h"
 #include <syslog.h>
 #include <nss.h>
 #include <grp.h>
 #include <pwd.h>
 #include <shadow.h>
-#include <jansson.h>
 #include <pthread.h>
 #include <sys/stat.h>
 #include <unistd.h>
@@ -77,30 +77,30 @@ extern void set_group_lowest_id(int);
                                                       struct resource *rbuf, char *buf, size_t buflen, int *errnop)    \
   {                                                                                                                    \
     int i;                                                                                                             \
-    json_error_t error;                                                                                                \
-    json_t *leaf;                                                                                                      \
-    json_t *root = json_loads(data, 0, &error);                                                                        \
+    JSON_Object *leaf;                                                                                                 \
+    JSON_Value *root = json_parse_string(data);                                                                        \
                                                                                                                        \
     if (root == NULL) {                                                                                                \
-      syslog(LOG_ERR, "%s(stns)[L%d] json parse error: %s", __func__, __LINE__, error.text);                           \
+      syslog(LOG_ERR, "%s(stns)[L%d] json parse error", __func__, __LINE__);                                           \
+      free(data);                                                                                                      \
       return NSS_STATUS_UNAVAIL;                                                                                       \
     }                                                                                                                  \
-                                                                                                                       \
-    json_array_foreach(root, i, leaf)                                                                                  \
-    {                                                                                                                  \
-      if (!json_is_object(leaf)) {                                                                                     \
+    JSON_Array *root_array = json_value_get_array(root);                                                               \
+    for (i = 0; i < json_array_get_count(root_array); i++) {                                                           \
+      leaf = json_array_get_object(root_array, i);                                                                     \
+      if (leaf == NULL) {                                                                                              \
         continue;                                                                                                      \
       }                                                                                                                \
-      key_type current = json_##json_type##_value(json_object_get(leaf, #json_key));                                   \
+      key_type current = json_object_get_##json_type(leaf, #json_key);                                                 \
                                                                                                                        \
       if (match_method) {                                                                                              \
         ltype##_ENSURE(leaf);                                                                                          \
-        json_decref(root);                                                                                             \
+        json_value_free(root);                                                                                         \
         return NSS_STATUS_SUCCESS;                                                                                     \
       }                                                                                                                \
     }                                                                                                                  \
+    json_value_free(root);                                                                                             \
                                                                                                                        \
-    json_decref(root);                                                                                                 \
     return NSS_STATUS_NOTFOUND;                                                                                        \
   }
 
@@ -144,6 +144,7 @@ extern void set_group_lowest_id(int);
                                                                                                                        \
   if (buflen < name##_length) {                                                                                        \
     *errnop = ERANGE;                                                                                                  \
+    pthread_mutex_unlock(&type##ent_mutex);                                                                            \
     return NSS_STATUS_TRYAGAIN;                                                                                        \
   }                                                                                                                    \
                                                                                                                        \
@@ -156,15 +157,16 @@ extern void set_group_lowest_id(int);
   enum nss_status inner_nss_stns_set##type##ent(char *data, stns_conf_t *c)                                            \
   {                                                                                                                    \
     pthread_mutex_lock(&type##ent_mutex);                                                                              \
-    json_error_t error;                                                                                                \
                                                                                                                        \
-    entries = json_loads(data, 0, &error);                                                                             \
-                                                                                                                       \
-    if (entries == NULL) {                                                                                             \
-      syslog(LOG_ERR, "%s(stns)[L%d] json parse error: %s", __func__, __LINE__, error.text);                           \
+    JSON_Value *root = json_parse_string(data);                                                                        \
+    if (root == NULL) {                                                                                                \
+      free(data);                                                                                                      \
       pthread_mutex_unlock(&type##ent_mutex);                                                                          \
+      syslog(LOG_ERR, "%s(stns)[L%d] json parse error", __func__, __LINE__);                                           \
       return NSS_STATUS_UNAVAIL;                                                                                       \
     }                                                                                                                  \
+                                                                                                                       \
+    entries   = root;                                                                                                  \
     entry_idx = 0;                                                                                                     \
                                                                                                                        \
     pthread_mutex_unlock(&type##ent_mutex);                                                                            \
@@ -195,8 +197,8 @@ extern void set_group_lowest_id(int);
   enum nss_status _nss_stns_end##type##ent(void)                                                                       \
   {                                                                                                                    \
     pthread_mutex_lock(&type##ent_mutex);                                                                              \
-    json_decref(entries);                                                                                              \
     entry_idx = 0;                                                                                                     \
+    json_value_free(entries);                                                                                          \
     pthread_mutex_unlock(&type##ent_mutex);                                                                            \
     return NSS_STATUS_SUCCESS;                                                                                         \
   }                                                                                                                    \
@@ -206,8 +208,9 @@ extern void set_group_lowest_id(int);
   {                                                                                                                    \
     enum nss_status ret = NSS_STATUS_SUCCESS;                                                                          \
     pthread_mutex_lock(&type##ent_mutex);                                                                              \
+    JSON_Array *array_entries = json_value_get_array(entries);                                                         \
                                                                                                                        \
-    if (entries == NULL) {                                                                                             \
+    if (array_entries == NULL) {                                                                                       \
       ret = _nss_stns_set##type##ent();                                                                                \
     }                                                                                                                  \
                                                                                                                        \
@@ -216,13 +219,13 @@ extern void set_group_lowest_id(int);
       return ret;                                                                                                      \
     }                                                                                                                  \
                                                                                                                        \
-    if (entry_idx >= json_array_size(entries)) {                                                                       \
+    if (entry_idx >= json_array_get_count(array_entries)) {                                                            \
       *errnop = ENOENT;                                                                                                \
       pthread_mutex_unlock(&type##ent_mutex);                                                                          \
       return NSS_STATUS_NOTFOUND;                                                                                      \
     }                                                                                                                  \
                                                                                                                        \
-    json_t *user = json_array_get(entries, entry_idx);                                                                 \
+    JSON_Object *user = json_array_get_object(array_entries, entry_idx);                                               \
                                                                                                                        \
     ltype##_ENSURE(user);                                                                                              \
     entry_idx++;                                                                                                       \

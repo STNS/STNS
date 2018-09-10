@@ -19,7 +19,7 @@ BUILD=tmp/libs
 CACHE=/var/cache/stns
 CRITERION_VERSION=2.3.2
 SHUNIT_VERSION=2.1.6
-SOURCES=Makefile stns.h stns.c stns*.c stns*.h toml.h toml.c stns.conf.example test
+SOURCES=Makefile stns.h stns.c stns*.c stns*.h toml.h toml.c parson.h parson.c stns.conf.example test
 DIST ?= unknown
 
 default: build
@@ -42,12 +42,13 @@ depsdev: build_dir cache_dir ## Installing dependencies for development
 
 testdev: ## Test without dependencies installation
 	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Testing$(RESET)"
-	$(CC) -g3 -O0 stns.c stns_group.c toml.c stns_shadow.c stns_passwd.c stns_test.c stns_group_test.c stns_shadow_test.c stns_passwd_test.c \
-		-lcurl -ljansson -lcriterion -lpthread -o $(BUILD)/test && \
+	$(CC) -g3 -O0 stns.c stns_group.c toml.c parson.c stns_shadow.c stns_passwd.c stns_test.c stns_group_test.c stns_shadow_test.c stns_passwd_test.c \
+		-lcurl -lcriterion -lpthread -o $(BUILD)/test && \
 		$(BUILD)/test --verbose
 build: nss_build key_wrapper_build
 nss_build: build_dir ## Build nss_stns
 	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Building nss_stns$(RESET)"
+	$(CC) $(CFLAGS) -c parson.c -o $(BUILD)/parson.o
 	$(CC) $(CFLAGS) -c toml.c -o $(BUILD)/toml.o
 	$(CC) $(CFLAGS) -c stns_passwd.c -o $(BUILD)/stns_passwd.o
 	$(CC) $(CFLAGS) -c stns_group.c -o $(BUILD)/stns_group.o
@@ -56,20 +57,23 @@ nss_build: build_dir ## Build nss_stns
 	$(CC) -shared $(LD_SONAME) -o $(BUILD)/$(LIBRARY) \
 		$(BUILD)/stns.o \
 		$(BUILD)/stns_passwd.o \
+		$(BUILD)/parson.o \
 		$(BUILD)/toml.o \
 		$(BUILD)/stns_group.o \
 		$(BUILD)/stns_shadow.o \
-		-lcurl -ljansson -lpthread
+		-lcurl -lpthread
 key_wrapper_build: build_dir ## Build nss_stns
 	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Building nss_stns$(RESET)"
 	$(CC) $(CFLAGS) -c toml.c -o $(BUILD)/toml.o
+	$(CC) $(CFLAGS) -c parson.c -o $(BUILD)/parson.o
 	$(CC) $(CFLAGS) -c stns_key_wrapper.c -o $(BUILD)/stns_key_wrapper.o
 	$(CC) $(CFLAGS) -c stns.c -o $(BUILD)/stns.o
 	$(CC) -o $(BUILD)/$(KEY_WRAPPER) \
 		$(BUILD)/stns.o \
 		$(BUILD)/stns_key_wrapper.o \
+		$(BUILD)/parson.o \
 		$(BUILD)/toml.o \
-		-lcurl -ljansson -lpthread
+		-lcurl -lpthread
 
 integration: build install depsdev ## Run integration test
 	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Integration Testing$(RESET)"
