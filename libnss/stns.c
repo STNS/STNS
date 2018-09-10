@@ -35,6 +35,20 @@ ID_QUERY_AVAILABLE(group, low, >)
       }                                                                                                                \
     }                                                                                                                  \
   }
+
+static void stns_force_create_cache_dir(stns_conf_t *c)
+{
+  if (c->cache && getuid() == 0) {
+    struct stat statBuf;
+    if (stat(c->cache_dir, &statBuf) != 0) {
+      mode_t um = {0};
+      um        = umask(0);
+      mkdir(c->cache_dir, S_IRUSR | S_IWUSR | S_IXUSR | S_IRGRP | S_IWGRP | S_IXGRP | S_IROTH | S_IWOTH | S_IXOTH);
+      umask(um);
+    }
+  }
+}
+
 void stns_load_config(char *filename, stns_conf_t *c)
 {
   char errbuf[200];
@@ -76,16 +90,7 @@ void stns_load_config(char *filename, stns_conf_t *c)
   TRIM_SLASH(api_endpoint)
   TRIM_SLASH(cache_dir)
 
-  if (c->cache && getuid() == 0) {
-    struct stat statBuf;
-    if (stat(c->cache_dir, &statBuf) != 0) {
-      mode_t um = {0};
-      um        = umask(0);
-      mkdir(c->cache_dir, S_IRUSR | S_IWUSR | S_IXUSR | S_IRGRP | S_IWGRP | S_IXGRP | S_IROTH | S_IWOTH | S_IXOTH);
-      umask(um);
-    }
-  }
-
+  stns_force_create_cache_dir(c);
   fclose(fp);
   toml_free(tab);
 }
@@ -434,9 +439,6 @@ request:
 
   if (c->cache) {
     pthread_join(pthread, NULL);
-  }
-
-  if (c->cache) {
     pthread_mutex_lock(&delete_mutex);
     stns_export_file(fpath, res->data);
     pthread_mutex_unlock(&delete_mutex);
