@@ -132,7 +132,6 @@ Test(stns_request, wrapper_request_ng)
   res = stns_request(&c, NULL, &r);
   cr_assert_eq(res, 22);
 }
-
 Test(stns_request_available, ok)
 {
   char expect_body[1024];

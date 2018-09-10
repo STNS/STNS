@@ -76,6 +76,16 @@ void stns_load_config(char *filename, stns_conf_t *c)
   TRIM_SLASH(api_endpoint)
   TRIM_SLASH(cache_dir)
 
+  if (c->cache && getuid() == 0) {
+    struct stat statBuf;
+    if (stat(c->cache_dir, &statBuf) != 0) {
+      mode_t um = {0};
+      um        = umask(0);
+      mkdir(c->cache_dir, S_IRUSR | S_IWUSR | S_IXUSR | S_IRGRP | S_IWGRP | S_IXGRP | S_IROTH | S_IWOTH | S_IXOTH);
+      umask(um);
+    }
+  }
+
   fclose(fp);
   toml_free(tab);
 }
@@ -274,7 +284,10 @@ void stns_export_file(char *file, char *data)
   }
   fclose(fp);
 
+  mode_t um = {0};
+  um        = umask(0);
   chmod(file, S_IRUSR | S_IWUSR | S_IXUSR | S_IRGRP | S_IWGRP | S_IXGRP | S_IROTH | S_IWOTH | S_IXOTH);
+  umask(um);
 }
 
 // base: https://github.com/linyows/octopass/blob/master/octopass.c

@@ -8,9 +8,9 @@ Source:           %{name}-%{version}.tar.gz
 Group:            System Environment/Base
 Packager:         pyama86 <www.kazu.com@gmail.com>
 %if 0%{?rhel} < 6
-Requires:         glibc curl-devel jansson-devel
+Requires:         glibc curl-devel
 %else
-Requires:         glibc libcurl-devel jansson-devel
+Requires:         glibc libcurl-devel
 %endif
 BuildRequires:    gcc make
 BuildRoot:        %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -32,8 +32,8 @@ make
 mkdir -p %{buildroot}/usr/{lib64,bin}
 mkdir -p %{buildroot}%{_sysconfdir}
 make PREFIX=%{buildroot}/usr install
-install -d -m 777 %{buildroot}/var/cache/stns
-install -d -m 744 %{buildroot}%{_sysconfdir}/stns/client/
+install -d -m 0777 %{buildroot}/var/cache/stns
+install -d -m 0744 %{buildroot}%{_sysconfdir}/stns/client/
 install -m 644 stns.conf.example %{buildroot}%{_sysconfdir}/stns/client/stns.conf
 
 %clean
