@@ -1,6 +1,8 @@
 package stns
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestNewConfig(t *testing.T) {
 	c, err := NewConfig("test.toml")
@@ -30,6 +32,15 @@ func TestNewConfig(t *testing.T) {
 
 	if c.TokenAuth.Tokens[0] != "a" && c.TokenAuth.Tokens[1] != "b" {
 		t.Errorf("config cannot parse token auth")
+	}
+
+	yc, err := NewConfig("test.yaml")
+	if err != nil {
+		t.Fatalf(err.Error())
+	}
+	yu := (*yc.Users)["test"]
+	if yu.ID != 20000 {
+		t.Errorf("config cannot parse User")
 	}
 }
 

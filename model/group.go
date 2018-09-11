@@ -1,9 +1,9 @@
 package model
 
 type Group struct {
-	Base
+	Base       `yaml:",inline"`
 	Users      []string `toml:"users" json:"users"`
-	LinkGroups []string `toml:"link_groups" json:"-"`
+	LinkGroups []string `toml:"link_groups" yaml:"link_groups" json:"-"`
 }
 
 type Groups map[string]*Group
