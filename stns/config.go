@@ -2,17 +2,52 @@ package stns
 
 import (
 	"fmt"
+	"io/ioutil"
 	"path/filepath"
+	"strings"
 
 	"github.com/BurntSushi/toml"
 	"github.com/STNS/STNS/model"
+	yaml "gopkg.in/yaml.v2"
 )
+
+type decoder interface {
+	decode(string, *Config) error
+}
+
+type tomlDecoder struct{}
+type yamlDecoder struct{}
+
+func (t *tomlDecoder) decode(path string, conf *Config) error {
+	_, err := toml.DecodeFile(path, conf)
+	return err
+}
+
+func (y *yamlDecoder) decode(path string, conf *Config) error {
+	_, err := toml.DecodeFile(path, conf)
+
+	buf, err := ioutil.ReadFile(path)
+	if err != nil {
+		return err
+	}
+	err = yaml.Unmarshal(buf, conf)
+	return err
+}
+
+func decode(path string, conf *Config) error {
+	var d decoder
+	d = new(tomlDecoder)
+	if strings.HasSuffix(path, "yaml") || strings.HasSuffix(path, "yml") {
+		d = new(yamlDecoder)
+	}
+	return d.decode(path, conf)
+}
 
 func NewConfig(confPath string) (Config, error) {
 	var conf Config
 	defaultConfig(&conf)
 
-	if _, err := toml.DecodeFile(confPath, &conf); err != nil {
+	if err := decode(confPath, &conf); err != nil {
 		return conf, err
 	}
 
@@ -27,8 +62,8 @@ func NewConfig(confPath string) (Config, error) {
 
 type Config struct {
 	Port      int        `toml:"port"`
-	BasicAuth *BasicAuth `toml:"basic_auth"`
-	TokenAuth *TokenAuth `toml:"token_auth"`
+	BasicAuth *BasicAuth `toml:"basic_auth" yaml:"basic_auth"`
+	TokenAuth *TokenAuth `toml:"token_auth" yaml:"token_auth"`
 
 	UseServerStarter bool
 	Users            *model.Users
@@ -55,8 +90,7 @@ func includeConfigFile(config *Config, include string) error {
 	}
 
 	for _, file := range files {
-		_, err := toml.DecodeFile(file, &config)
-		if err != nil {
+		if err := decode(file, config); err != nil {
 			return fmt.Errorf("while loading included config file %s: %s", file, err)
 		}
 	}

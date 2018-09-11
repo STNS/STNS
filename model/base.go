@@ -1,8 +1,8 @@
 package model
 
 type Base struct {
-	ID   int    `toml:"id" json:"id"`
-	Name string `toml:"name" json:"name"`
+	ID   int    `toml:"id" json:"id" yaml:"id"`
+	Name string `toml:"name" json:"name" yaml:"name"`
 }
 
 func (b *Base) id() int {
