@@ -158,6 +158,8 @@ extern void set_group_lowest_id(int);
   {                                                                                                                    \
     pthread_mutex_lock(&type##ent_mutex);                                                                              \
                                                                                                                        \
+    entries          = NULL;                                                                                           \
+    entry_idx        = 0;                                                                                              \
     JSON_Value *root = json_parse_string(data);                                                                        \
     if (root == NULL) {                                                                                                \
       free(data);                                                                                                      \
@@ -166,8 +168,7 @@ extern void set_group_lowest_id(int);
       return NSS_STATUS_UNAVAIL;                                                                                       \
     }                                                                                                                  \
                                                                                                                        \
-    entries   = root;                                                                                                  \
-    entry_idx = 0;                                                                                                     \
+    entries = root;                                                                                                    \
                                                                                                                        \
     pthread_mutex_unlock(&type##ent_mutex);                                                                            \
     return NSS_STATUS_SUCCESS;                                                                                         \
