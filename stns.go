@@ -5,7 +5,6 @@ import (
 	"os"
 
 	"github.com/STNS/STNS/api"
-	log "github.com/sirupsen/logrus"
 	"github.com/urfave/cli"
 )
 
@@ -16,12 +15,6 @@ var (
 	builddate string
 	builduser string
 )
-
-func init() {
-	formatter := new(log.JSONFormatter)
-	formatter.TimestampFormat = "2006-01-02 15:04:05"
-	log.SetFormatter(formatter)
-}
 
 var flags = []cli.Flag{
 	cli.StringFlag{

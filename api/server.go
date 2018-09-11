@@ -18,7 +18,6 @@ import (
 	"github.com/facebookgo/pidfile"
 	"github.com/labstack/echo"
 
-	"github.com/sirupsen/logrus"
 	"github.com/urfave/cli"
 
 	// PostgreSQL driver
@@ -51,11 +50,19 @@ func (s *server) Run() error {
 	if err := pidfile.Write(); err != nil {
 		return err
 	}
-	defer removePidFile()
+	defer removePidFile(e)
 
 	b, err := model.NewBackendTomlFile(s.config.Users, s.config.Groups)
 	if err != nil {
 		return err
+	}
+
+	if os.Getenv("STNS_LOG") != "" {
+		f, err := os.OpenFile(os.Getenv("STNS_LOG"), os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
+		if err != nil {
+			return errors.New("error opening file :" + err.Error())
+		}
+		e.Logger.SetOutput(f)
 	}
 
 	e.Use(middleware.Backend(b))
@@ -119,12 +126,13 @@ func (s *server) Run() error {
 		}
 		e.Listener = l
 	}
+
 	go func() {
 		customServer := &http.Server{
 			WriteTimeout: 1 * time.Minute,
 		}
 		if err := e.StartServer(customServer); err != nil {
-			logrus.Info("shutting down the server")
+			e.Logger.Info("shutting down the server")
 		}
 	}()
 
@@ -147,21 +155,13 @@ func (s *server) Run() error {
 	return nil
 }
 
-func removePidFile() {
+func removePidFile(e *echo.Echo) {
 	if err := os.Remove(pidfile.GetPidfilePath()); err != nil {
-		logrus.Fatalf("Error removing %s: %s", pidfile.GetPidfilePath(), err)
+		e.Logger.Fatalf("Error removing %s: %s", pidfile.GetPidfilePath(), err)
 	}
 }
 
 func LaunchServer(c *cli.Context) error {
-	logrus.SetLevel(logrus.WarnLevel)
-	if os.Getenv("STNS_LOG") != "" {
-		f, err := os.OpenFile(os.Getenv("STNS_LOG"), os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
-		if err != nil {
-			return errors.New("error opening file :" + err.Error())
-		}
-		logrus.SetOutput(f)
-	}
 
 	pidfile.SetPidfilePath(os.Getenv("STNS_PID"))
 	serv, err := newServer(os.Getenv("STNS_CONFIG"))
