@@ -199,7 +199,9 @@ extern void set_group_lowest_id(int);
   {                                                                                                                    \
     pthread_mutex_lock(&type##ent_mutex);                                                                              \
     entry_idx = 0;                                                                                                     \
-    json_value_free(entries);                                                                                          \
+    if (entry_idx != 0)                                                                                                \
+      json_value_free(entries);                                                                                        \
+    entries = NULL;                                                                                                    \
     pthread_mutex_unlock(&type##ent_mutex);                                                                            \
     return NSS_STATUS_SUCCESS;                                                                                         \
   }                                                                                                                    \

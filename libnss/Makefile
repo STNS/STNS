@@ -84,6 +84,7 @@ integration: build install depsdev ## Run integration test
 	sed -i -e 's/^passwd:.*/passwd: files stns/g' /etc/nsswitch.conf
 	sed -i -e 's/^shadow:.*/shadow: files stns/g' /etc/nsswitch.conf
 	sed -i -e 's/^group:.*/group: files stns/g' /etc/nsswitch.conf
+	grep test /etc/sudoers || echo 'test ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 	test/integration_test.sh
 	cd .. && misc/server stop
 

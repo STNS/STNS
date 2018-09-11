@@ -55,6 +55,11 @@ test_getent_shadow()
     "$(getent shadow test)"
 }
 
+test_sudo()
+{
+  assertTrue `sudo -u test ls`
+}
+
 test_key_wrapper()
 {
   assertEquals \
@@ -72,5 +77,6 @@ ddd" \
     "User name is a required parameter" \
     "$((tmp/libs/stns-key-wrapper)2>&1)"
 }
+
 
 . /usr/include/shunit2/src/shunit2
