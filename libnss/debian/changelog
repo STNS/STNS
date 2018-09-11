@@ -1,3 +1,7 @@
+libnss-stns-v2 (1.0.0-5) xenial; urgency=medium
+
+  * #71 fix segv when sudo
+
 libnss-stns-v2 (1.0.0-4) xenial; urgency=medium
 
   * #68 json_value_free may be segv
