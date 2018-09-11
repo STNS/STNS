@@ -8,7 +8,7 @@ import (
 
 	"github.com/BurntSushi/toml"
 	"github.com/STNS/STNS/model"
-	yaml "gopkg.in/yaml.v2"
+	"github.com/go-yaml/yaml"
 )
 
 type decoder interface {
