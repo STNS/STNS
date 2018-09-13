@@ -1,4 +1,4 @@
-TEST ?= $(shell go list ./... | grep -v vendor)
+TEST ?= $(shell go list ./... | grep -v -e vendor -e keys -e tmp)
 VERSION = $(shell cat version)
 REVISION = $(shell git describe --always)
 

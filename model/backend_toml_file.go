@@ -10,6 +10,9 @@ type BackendTomlFile struct {
 	groups *Groups
 }
 
+const Highest = 0
+const Lowest = 1
+
 func NewBackendTomlFile(u *Users, g *Groups) (*BackendTomlFile, error) {
 	if u != nil {
 		ug := u.ToUserGroup()
@@ -61,19 +64,19 @@ func (t BackendTomlFile) Groups() map[string]UserGroup {
 }
 
 func (t BackendTomlFile) HighestUserID() int {
-	return tomlHighLowID(0, t.users.ToUserGroup())
+	return tomlHighLowID(Highest, t.users.ToUserGroup())
 }
 
 func (t BackendTomlFile) LowestUserID() int {
-	return tomlHighLowID(1, t.users.ToUserGroup())
+	return tomlHighLowID(Lowest, t.users.ToUserGroup())
 }
 
 func (t BackendTomlFile) HighestGroupID() int {
-	return tomlHighLowID(0, t.groups.ToUserGroup())
+	return tomlHighLowID(Highest, t.groups.ToUserGroup())
 }
 
 func (t BackendTomlFile) LowestGroupID() int {
-	return tomlHighLowID(1, t.groups.ToUserGroup())
+	return tomlHighLowID(Lowest, t.groups.ToUserGroup())
 }
 
 func tomlFileFindByID(id int, list map[string]UserGroup) map[string]UserGroup {
