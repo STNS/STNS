@@ -19,7 +19,7 @@ pthread_mutex_t spent_mutex = PTHREAD_MUTEX_INITIALIZER;
   rbuf->sp_flag   = ~0ul;
 
 STNS_ENSURE_BY(name, const char *, user_name, string, name, (strcmp(current, user_name) == 0), spwd, SHADOW)
-STNS_ENSURE_BY(uid, uid_t, uid, number, id, current == uid, spwd, SHADOW)
-STNS_GET_SINGLE_VALUE_METHOD(getspnam_r, const char *name, "users?name=%s", name, spwd, )
-STNS_GET_SINGLE_VALUE_METHOD(getspuid_r, uid_t uid, "users?id=%d", uid, spwd, )
+STNS_ENSURE_BY(uid, uid_t, uid, number, id, current + (c->uid_shift) == uid, spwd, SHADOW)
+STNS_GET_SINGLE_VALUE_METHOD(getspnam_r, const char *name, "users?name=%s", name, spwd, , )
+STNS_GET_SINGLE_VALUE_METHOD(getspuid_r, uid_t uid, "users?id=%d", uid, spwd, , -(c.uid_shift))
 STNS_SET_ENTRIES(sp, SHADOW, spwd, users)

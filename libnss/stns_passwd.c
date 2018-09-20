@@ -26,8 +26,8 @@ pthread_mutex_t pwent_mutex = PTHREAD_MUTEX_INITIALIZER;
   SET_ATTRBUTE(pw, shell, shell)
 
 STNS_ENSURE_BY(name, const char *, user_name, string, name, (strcmp(current, user_name) == 0), passwd, PASSWD)
-STNS_ENSURE_BY(uid, uid_t, uid, number, id, current == uid, passwd, PASSWD)
+STNS_ENSURE_BY(uid, uid_t, uid, number, id, current + (c->uid_shift) == uid, passwd, PASSWD)
 
-STNS_GET_SINGLE_VALUE_METHOD(getpwnam_r, const char *name, "users?name=%s", name, passwd, )
-STNS_GET_SINGLE_VALUE_METHOD(getpwuid_r, uid_t uid, "users?id=%d", uid, passwd, USER_ID_QUERY_AVAILABLE)
+STNS_GET_SINGLE_VALUE_METHOD(getpwnam_r, const char *name, "users?name=%s", name, passwd, , )
+STNS_GET_SINGLE_VALUE_METHOD(getpwuid_r, uid_t uid, "users?id=%d", uid, passwd, USER_ID_QUERY_AVAILABLE, -(c.uid_shift))
 STNS_SET_ENTRIES(pw, PASSWD, passwd, users)

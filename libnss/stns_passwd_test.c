@@ -85,7 +85,7 @@ Test(ensure_passwd_by_uid, ok)
   readfile(f, &json);
   c.uid_shift = 100;
   c.gid_shift = 200;
-  ensure_passwd_by_uid(json, &c, 1, &pwd, buffer, MAXBUF, 0);
+  ensure_passwd_by_uid(json, &c, 101, &pwd, buffer, MAXBUF, 0);
   cr_assert_eq(code, NSS_STATUS_SUCCESS);
   cr_assert_eq(pwd.pw_uid, 101);
   cr_assert_eq(pwd.pw_gid, 201);

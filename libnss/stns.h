@@ -113,7 +113,7 @@ extern void set_group_lowest_id(int);
   }                                                                                                                    \
   name = buf;
 
-#define STNS_GET_SINGLE_VALUE_METHOD(method, first, format, value, resource, query_available)                          \
+#define STNS_GET_SINGLE_VALUE_METHOD(method, first, format, value, resource, query_available, id_shift)                \
   enum nss_status _nss_stns_##method(first, struct resource *rbuf, char *buf, size_t buflen, int *errnop)              \
   {                                                                                                                    \
     int curl_result;                                                                                                   \
@@ -123,7 +123,7 @@ extern void set_group_lowest_id(int);
                                                                                                                        \
     stns_load_config(STNS_CONFIG_FILE, &c);                                                                            \
     query_available;                                                                                                   \
-    sprintf(url, format, value);                                                                                       \
+    sprintf(url, format, value id_shift);                                                                              \
     curl_result = stns_request(&c, url, &r);                                                                           \
                                                                                                                        \
     if (curl_result != CURLE_OK) {                                                                                     \
