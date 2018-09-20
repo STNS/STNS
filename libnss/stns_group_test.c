@@ -77,7 +77,7 @@ Test(ensure_group_by_gid, ok)
   // id shift
   readfile(f, &json);
   c.gid_shift = 200;
-  ensure_group_by_gid(json, &c, 1, &grd, buffer, MAXBUF, 0);
+  ensure_group_by_gid(json, &c, 201, &grd, buffer, MAXBUF, 0);
   cr_assert_eq(code, NSS_STATUS_SUCCESS);
   cr_assert_eq(grd.gr_gid, 201);
 

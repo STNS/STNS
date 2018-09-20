@@ -41,6 +41,7 @@ Test(ensure_spwd_by_uid, ok)
   char buffer[MAXBUF];
   stns_conf_t c;
   stns_response_t r;
+  c.uid_shift = 0;
 
   readfile(f, &json);
   code = ensure_spwd_by_uid(json, &c, 1, &spbuf, buffer, MAXBUF, 0);
