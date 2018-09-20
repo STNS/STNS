@@ -1,3 +1,8 @@
+libnss-stns-v2 (1.0.0-6) xenial; urgency=medium
+
+  * #73 fix id shift did not go well
+
+ -- pyama86 <www.kazu.com@gmail.com>  Thu, 20 Sep 2018 16:00:00 +0900
 libnss-stns-v2 (1.0.0-5) xenial; urgency=medium
 
   * #71 fix segv when sudo

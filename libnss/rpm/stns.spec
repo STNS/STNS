@@ -1,7 +1,7 @@
 Summary:          SimpleTomlNameService Nss Module
 Name:             libnss-stns-v2
 Version:          1.0.0
-Release:          5
+Release:          6
 License:          GPLv3
 URL:              https://github.com/STNS/STNS
 Source:           %{name}-%{version}.tar.gz
@@ -56,6 +56,8 @@ install -m 644 stns.conf.example %{buildroot}%{_sysconfdir}/stns/client/stns.con
 /etc/stns/client/stns.conf
 
 %changelog
+* Thu Sep 20 2018 pyama86 <www.kazu.com@gmail.com> - 1.0.0-6
+- #73 fix id shift did not go well
 * Mon Sep 11 2018 pyama86 <www.kazu.com@gmail.com> - 1.0.0-5
 - #71 fix segv when sudo
 * Mon Sep 11 2018 pyama86 <www.kazu.com@gmail.com> - 1.0.0-4
