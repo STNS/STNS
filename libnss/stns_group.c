@@ -51,8 +51,9 @@ pthread_mutex_t grent_mutex = PTHREAD_MUTEX_INITIALIZER;
   rbuf->gr_mem[json_array_get_count(members)] = NULL;
 
 STNS_ENSURE_BY(name, const char *, group_name, string, name, (strcmp(current, group_name) == 0), group, GROUP)
-STNS_ENSURE_BY(gid, gid_t, gid, number, id, current == gid, group, GROUP)
+STNS_ENSURE_BY(gid, gid_t, gid, number, id, current + (c->gid_shift) == gid, group, GROUP)
 
-STNS_GET_SINGLE_VALUE_METHOD(getgrnam_r, const char *name, "groups?name=%s", name, group, )
-STNS_GET_SINGLE_VALUE_METHOD(getgrgid_r, gid_t gid, "groups?id=%d", gid, group, GROUP_ID_QUERY_AVAILABLE)
+STNS_GET_SINGLE_VALUE_METHOD(getgrnam_r, const char *name, "groups?name=%s", name, group, , )
+STNS_GET_SINGLE_VALUE_METHOD(getgrgid_r, gid_t gid, "groups?id=%d", gid, group, GROUP_ID_QUERY_AVAILABLE,
+                             -(c.gid_shift))
 STNS_SET_ENTRIES(gr, GROUP, group, groups)

@@ -124,23 +124,25 @@ static void trim(char *s)
   }
 }
 
-#define SET_TRIM_ID(high_or_low, user_or_group)                                                                        \
+#define SET_TRIM_ID(high_or_low, user_or_group, short_name)                                                            \
   tp = strtok(NULL, ".");                                                                                              \
   trim(tp);                                                                                                            \
-  set_##user_or_group##_##high_or_low##est_id(atoi(tp));
+  set_##user_or_group##_##high_or_low##est_id(atoi(tp) + c->short_name##id_shift);
 
 static size_t header_callback(char *buffer, size_t size, size_t nitems, void *userdata)
 {
+
+  stns_conf_t *c = (stns_conf_t *)userdata;
   char *tp;
   tp = strtok(buffer, ":");
   if (strcmp(tp, "User-Highest-Id") == 0) {
-    SET_TRIM_ID(high, user)
+    SET_TRIM_ID(high, user, u)
   } else if (strcmp(tp, "User-Lowest-Id") == 0) {
-    SET_TRIM_ID(low, user)
+    SET_TRIM_ID(low, user, u)
   } else if (strcmp(tp, "Group-Highest-Id") == 0) {
-    SET_TRIM_ID(high, group)
+    SET_TRIM_ID(high, group, g)
   } else if (strcmp(tp, "Group-Lowest-Id") == 0) {
-    SET_TRIM_ID(low, group)
+    SET_TRIM_ID(low, group, g)
   }
 
   return nitems * size;
@@ -213,6 +215,7 @@ static CURLcode inner_http_request(stns_conf_t *c, char *path, stns_response_t *
   curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, response_callback);
   curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, header_callback);
   curl_easy_setopt(curl, CURLOPT_WRITEDATA, res);
+  curl_easy_setopt(curl, CURLOPT_HEADERDATA, c);
   curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1);
   curl_easy_setopt(curl, CURLOPT_FAILONERROR, 1);
 
