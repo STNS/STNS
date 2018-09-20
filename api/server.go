@@ -70,7 +70,7 @@ func (s *server) Run() error {
 	e.Use(emiddleware.Recover())
 	e.Use(emiddleware.LoggerWithConfig(emiddleware.LoggerConfig{
 		Format: `{"time":"${time_rfc3339_nano}","remote_ip":"${remote_ip}","host":"${host}",` +
-			`"method":"${method}","uri":"${uri}","status":${status}` + "\n",
+			`"method":"${method}","uri":"${uri}","status":${status}}` + "\n",
 	}))
 
 	if s.config.BasicAuth != nil {
