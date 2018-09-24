@@ -25,12 +25,12 @@ func getUsers(c echo.Context) error {
 
 				r, err = backend.FindUserByID(id)
 				if err != nil {
-					return c.JSON(http.StatusInternalServerError, err)
+					return errorResponse(c, err)
 				}
 			case "name":
 				r, err = backend.FindUserByName(v[0])
 				if err != nil {
-					return c.JSON(http.StatusInternalServerError, err)
+					return errorResponse(c, err)
 				}
 			default:
 				return c.JSON(http.StatusBadRequest, nil)
@@ -39,12 +39,8 @@ func getUsers(c echo.Context) error {
 	} else {
 		r, err = backend.Users()
 		if err != nil {
-			return c.JSON(http.StatusInternalServerError, err)
+			return errorResponse(c, err)
 		}
-	}
-
-	if len(r) == 0 {
-		return c.JSON(http.StatusNotFound, nil)
 	}
 	return c.JSON(http.StatusOK, toSlice(r))
 }

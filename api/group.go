@@ -25,13 +25,13 @@ func getGroups(c echo.Context) error {
 
 				r, err = backend.FindGroupByID(id)
 				if err != nil {
-					return c.JSON(http.StatusInternalServerError, err)
+					return errorResponse(c, err)
 				}
 
 			case "name":
 				r, err = backend.FindGroupByName(v[0])
 				if err != nil {
-					return c.JSON(http.StatusInternalServerError, err)
+					return errorResponse(c, err)
 				}
 			default:
 				return c.JSON(http.StatusBadRequest, nil)
@@ -40,13 +40,10 @@ func getGroups(c echo.Context) error {
 	} else {
 		r, err = backend.Groups()
 		if err != nil {
-			return c.JSON(http.StatusInternalServerError, err)
+			return errorResponse(c, err)
 		}
 	}
 
-	if len(r) == 0 {
-		return c.JSON(http.StatusNotFound, nil)
-	}
 	return c.JSON(http.StatusOK, toSlice(r))
 }
 

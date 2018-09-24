@@ -40,27 +40,33 @@ func NewBackendTomlFile(u *Users, g *Groups) (*BackendTomlFile, error) {
 }
 
 func (t BackendTomlFile) FindUserByID(id int) (map[string]UserGroup, error) {
-	return tomlFileFindByID(id, t.users.ToUserGroup())
+	r, e := tomlFileFindByID(id, t.users.ToUserGroup())
+	return errorHandler(r, e, id, "user")
 }
 
 func (t BackendTomlFile) FindUserByName(name string) (map[string]UserGroup, error) {
-	return tomlFileFindByName(name, t.users.ToUserGroup())
+	r, e := tomlFileFindByName(name, t.users.ToUserGroup())
+	return errorHandler(r, e, name, "user")
 }
 
 func (t BackendTomlFile) Users() (map[string]UserGroup, error) {
-	return t.users.ToUserGroup(), nil
+	r := t.users.ToUserGroup()
+	return errorHandler(r, nil, nil, "user")
 }
 
 func (t BackendTomlFile) FindGroupByID(id int) (map[string]UserGroup, error) {
-	return tomlFileFindByID(id, t.groups.ToUserGroup())
+	r, e := tomlFileFindByID(id, t.groups.ToUserGroup())
+	return errorHandler(r, e, id, "group")
 }
 
 func (t BackendTomlFile) FindGroupByName(name string) (map[string]UserGroup, error) {
-	return tomlFileFindByName(name, t.groups.ToUserGroup())
+	r, e := tomlFileFindByName(name, t.groups.ToUserGroup())
+	return errorHandler(r, e, name, "group")
 }
 
 func (t BackendTomlFile) Groups() (map[string]UserGroup, error) {
-	return t.groups.ToUserGroup(), nil
+	r := t.groups.ToUserGroup()
+	return errorHandler(r, nil, nil, "group")
 }
 
 func (t BackendTomlFile) HighestUserID() int {
@@ -88,6 +94,7 @@ func tomlFileFindByID(id int, list map[string]UserGroup) (map[string]UserGroup, 
 			}
 		}
 	}
+
 	return res, nil
 }
 
