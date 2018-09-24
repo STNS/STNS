@@ -163,7 +163,7 @@ func (b BackendEtcd) LowestGroupID() int {
 	return 0
 }
 
-func (b BackendEtcd) Create(path string, v map[string]model.UserGroup) error {
+func (b BackendEtcd) Create(path string, v model.UserGroup) error {
 	bjson, err := json.Marshal(v)
 	if err != nil {
 		return err

@@ -27,5 +27,5 @@ type GetterBackend interface {
 }
 
 type SetterBackend interface {
-	Create(string, map[string]UserGroup) error
+	Create(string, UserGroup) error
 }
