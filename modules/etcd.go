@@ -61,10 +61,12 @@ func (b BackendEtcd) FindUserByID(id int) (map[string]model.UserGroup, error) {
 		return nil, err
 	}
 
-	users := new(model.Users)
-	if err := json.Unmarshal([]byte(r.Node.Value), users); err != nil {
+	users := model.Users{}
+	user := new(model.User)
+	if err := json.Unmarshal([]byte(r.Node.Value), user); err != nil {
 		return nil, err
 	}
+	users[user.Name] = user
 	return users.ToUserGroup(), nil
 }
 
@@ -76,15 +78,17 @@ func (b BackendEtcd) FindUserByName(name string) (map[string]model.UserGroup, er
 		}
 	}
 
-	users := new(model.Users)
-	if err := json.Unmarshal([]byte(r.Node.Value), users); err != nil {
+	users := model.Users{}
+	user := new(model.User)
+	if err := json.Unmarshal([]byte(r.Node.Value), user); err != nil {
 		return nil, err
 	}
+	users[user.Name] = user
 	return users.ToUserGroup(), nil
 }
 
 func (b BackendEtcd) Users() (map[string]model.UserGroup, error) {
-	r, err := b.api.Get(context.Background(), "/users", nil)
+	r, err := b.api.Get(context.Background(), "/users/id", nil)
 	if err != nil {
 		if etcd.IsKeyNotFound(err) {
 			return nil, model.NewNotFoundError("user", nil)
@@ -92,9 +96,13 @@ func (b BackendEtcd) Users() (map[string]model.UserGroup, error) {
 		return nil, err
 	}
 
-	users := new(model.Users)
-	if err := json.Unmarshal([]byte(r.Node.Value), users); err != nil {
-		return nil, err
+	users := model.Users{}
+	for _, n := range r.Node.Nodes {
+		user := new(model.User)
+		if err := json.Unmarshal([]byte(n.Value), user); err != nil {
+			return nil, err
+		}
+		users[user.Name] = user
 	}
 	return users.ToUserGroup(), nil
 }
@@ -108,10 +116,13 @@ func (b BackendEtcd) FindGroupByID(id int) (map[string]model.UserGroup, error) {
 		return nil, err
 	}
 
-	groups := new(model.Groups)
-	if err := json.Unmarshal([]byte(r.Node.Value), groups); err != nil {
+	groups := model.Groups{}
+	group := new(model.Group)
+	if err := json.Unmarshal([]byte(r.Node.Value), group); err != nil {
 		return nil, err
 	}
+	groups[group.Name] = group
+
 	return groups.ToUserGroup(), nil
 }
 
@@ -124,43 +135,94 @@ func (b BackendEtcd) FindGroupByName(name string) (map[string]model.UserGroup, e
 		return nil, err
 	}
 
-	groups := new(model.Groups)
-	if err := json.Unmarshal([]byte(r.Node.Value), groups); err != nil {
+	groups := model.Groups{}
+	group := new(model.Group)
+	if err := json.Unmarshal([]byte(r.Node.Value), group); err != nil {
 		return nil, err
 	}
+	groups[group.Name] = group
 	return groups.ToUserGroup(), nil
 }
 
 func (b BackendEtcd) Groups() (map[string]model.UserGroup, error) {
-	r, err := b.api.Get(context.Background(), "/groups", nil)
+	r, err := b.api.Get(context.Background(), "/groups/id", nil)
 	if err != nil {
 		if etcd.IsKeyNotFound(err) {
-			return nil, model.NewNotFoundError("group", nil)
+			return nil, model.NewNotFoundError("user", nil)
 		}
 		return nil, err
 	}
 
-	groups := new(model.Groups)
-	if err := json.Unmarshal([]byte(r.Node.Value), groups); err != nil {
-		return nil, err
+	groups := model.Groups{}
+	for _, n := range r.Node.Nodes {
+		group := new(model.Group)
+		if err := json.Unmarshal([]byte(n.Value), group); err != nil {
+			return nil, err
+		}
+		groups[group.Name] = group
 	}
 	return groups.ToUserGroup(), nil
+
+}
+
+func (b BackendEtcd) highlowUserID(high bool) int {
+	ret := 0
+	r, err := b.api.Get(context.Background(), "/users/id", nil)
+	if err != nil {
+		if etcd.IsKeyNotFound(err) {
+			return ret
+		}
+		return ret
+	}
+
+	for _, n := range r.Node.Nodes {
+		user := new(model.User)
+		if err := json.Unmarshal([]byte(n.Value), user); err != nil {
+			return ret
+		}
+		if ret == 0 || (high && user.ID > ret) || (!high && user.ID < ret) {
+			ret = user.ID
+		}
+	}
+	return ret
 }
 
 func (b BackendEtcd) HighestUserID() int {
-	return 0
+	return b.highlowUserID(true)
 }
 
 func (b BackendEtcd) LowestUserID() int {
-	return 0
+	return b.highlowUserID(false)
+}
+
+func (b BackendEtcd) highlowGroupID(high bool) int {
+	ret := 0
+	r, err := b.api.Get(context.Background(), "/groups/id", nil)
+	if err != nil {
+		if etcd.IsKeyNotFound(err) {
+			return ret
+		}
+		return ret
+	}
+
+	for _, n := range r.Node.Nodes {
+		group := new(model.Group)
+		if err := json.Unmarshal([]byte(n.Value), group); err != nil {
+			return ret
+		}
+		if ret == 0 || (high && group.ID > ret) || (!high && group.ID < ret) {
+			ret = group.ID
+		}
+	}
+	return ret
 }
 
 func (b BackendEtcd) HighestGroupID() int {
-	return 0
+	return b.highlowGroupID(true)
 }
 
 func (b BackendEtcd) LowestGroupID() int {
-	return 0
+	return b.highlowGroupID(false)
 }
 
 func (b BackendEtcd) Create(path string, v model.UserGroup) error {
