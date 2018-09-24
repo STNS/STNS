@@ -1,6 +1,7 @@
 package stns
 
 import (
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"path/filepath"
@@ -45,6 +46,8 @@ func decode(path string, conf *Config) error {
 
 func NewConfig(confPath string) (Config, error) {
 	var conf Config
+	conf.dir = filepath.Dir(confPath)
+
 	defaultConfig(&conf)
 
 	if err := decode(confPath, &conf); err != nil {
@@ -57,10 +60,14 @@ func NewConfig(confPath string) (Config, error) {
 		}
 	}
 
+	if err := conf.validate(); err != nil {
+		return Config{}, err
+	}
 	return conf, nil
 }
 
 type Config struct {
+	dir       string
 	Port      int        `toml:"port"`
 	BasicAuth *BasicAuth `toml:"basic_auth" yaml:"basic_auth"`
 	TokenAuth *TokenAuth `toml:"token_auth" yaml:"token_auth"`
@@ -68,7 +75,10 @@ type Config struct {
 	UseServerStarter bool
 	Users            *model.Users
 	Groups           *model.Groups
-	Include          string `toml:"include"`
+	Include          string   `toml:"include"`
+	ModulePath       string   `toml: "module_path" yaml: "module_path"`
+	ResolveModules   []string `toml: "resolve_modules" yaml: "resolve_modules"`
+	Etcd             *Etcd
 }
 
 type BasicAuth struct {
@@ -79,11 +89,23 @@ type TokenAuth struct {
 	Tokens []string
 }
 
+type Etcd struct {
+	Endpoints []string
+	User      string
+	Password  string
+	SecretKey []byte `toml: "secret_key" yaml: "secret_key"`
+}
+
 func defaultConfig(c *Config) {
 	c.Port = 1104
+	c.ModulePath = "./modules.d"
 }
 
 func includeConfigFile(config *Config, include string) error {
+	if !strings.HasPrefix(include, "/") {
+		include = filepath.Join(config.dir, include)
+	}
+
 	files, err := filepath.Glob(include)
 	if err != nil {
 		return err
@@ -93,6 +115,13 @@ func includeConfigFile(config *Config, include string) error {
 		if err := decode(file, config); err != nil {
 			return fmt.Errorf("while loading included config file %s: %s", file, err)
 		}
+	}
+	return nil
+}
+
+func (c *Config) validate() error {
+	if c.Etcd != nil && len(c.Etcd.SecretKey) == 0 {
+		return errors.New("Please specify secret_key when using etcd")
 	}
 	return nil
 }

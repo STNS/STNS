@@ -3,6 +3,8 @@ module github.com/STNS/STNS
 require (
 	github.com/BurntSushi/toml v0.3.0
 	github.com/Songmu/retry v0.1.0 // indirect
+	github.com/coreos/etcd v3.3.9+incompatible // indirect
+	github.com/coreos/go-semver v0.2.0 // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
 	github.com/facebookgo/atomicfile v0.0.0-20151019160806-2de1f203e7d5 // indirect
 	github.com/facebookgo/pidfile v0.0.0-20150612191647-f242e2999868
@@ -23,9 +25,11 @@ require (
 	github.com/tcnksm/ghr v0.12.0 // indirect
 	github.com/tcnksm/go-gitconfig v0.1.2 // indirect
 	github.com/tcnksm/go-latest v0.0.0-20170313132115-e3007ae9052e // indirect
+	github.com/ugorji/go/codec v0.0.0-20180920200043-2c86ab75771c // indirect
 	github.com/urfave/cli v1.20.0
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasttemplate v0.0.0-20170224212429-dcecefd839c4 // indirect
+	go.etcd.io/etcd v3.3.9+incompatible
 	golang.org/x/crypto v0.0.0-20180910181607-0e37d006457b // indirect
 	golang.org/x/lint v0.0.0-20180702182130-06c8688daad7 // indirect
 	golang.org/x/net v0.0.0-20180906233101-161cd47e91fd // indirect
