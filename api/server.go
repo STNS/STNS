@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"path/filepath"
+	"plugin"
 	"strconv"
 	"time"
 
@@ -42,8 +44,36 @@ func status(c echo.Context) error {
 	return c.String(http.StatusOK, "OK")
 }
 
+func (s *server) loadModules(logger echo.Logger, getterBackends model.GetterBackends) error {
+	for _, v := range s.config.LoadModules {
+		p, err := plugin.Open(filepath.Join(s.config.ModulePath, v))
+		if err != nil {
+			return err
+		}
+
+		name, err := p.Lookup("ModuleName")
+		if err != nil {
+			return err
+		}
+
+		b, err := p.Lookup("NewBackend" + name.(string))
+		if err != nil {
+			return err
+		}
+
+		backend, err := b.(func(*stns.Config) (model.Backend, error))(s.config)
+		if err != nil {
+			return err
+		}
+		getterBackends = append(getterBackends, backend)
+		logger.Info("load modules %s", name.(string))
+	}
+	return nil
+}
+
 // Run サーバの起動
 func (s *server) Run() error {
+	var getterBackends model.GetterBackends
 	e := echo.New()
 	e.GET("/status", status)
 
@@ -56,6 +86,12 @@ func (s *server) Run() error {
 	if err != nil {
 		return err
 	}
+	getterBackends = append(getterBackends, b)
+
+	err = s.loadModules(e.Logger, getterBackends)
+	if err != nil {
+		return err
+	}
 
 	if os.Getenv("STNS_LOG") != "" {
 		f, err := os.OpenFile(os.Getenv("STNS_LOG"), os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
@@ -65,8 +101,8 @@ func (s *server) Run() error {
 		e.Logger.SetOutput(f)
 	}
 
-	e.Use(middleware.GetterBackend(b))
-	e.Use(middleware.AddHeader(b))
+	e.Use(middleware.GetterBackends(getterBackends))
+	e.Use(middleware.AddHeader(getterBackends))
 	e.Use(emiddleware.Recover())
 	e.Use(emiddleware.LoggerWithConfig(emiddleware.LoggerConfig{
 		Format: `{"time":"${time_rfc3339_nano}","remote_ip":"${remote_ip}","host":"${host}",` +

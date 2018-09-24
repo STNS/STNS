@@ -59,6 +59,10 @@ func NewConfig(confPath string) (Config, error) {
 		}
 	}
 
+	if !strings.HasPrefix(conf.ModulePath, "/") {
+		conf.ModulePath = filepath.Join(conf.dir, conf.ModulePath)
+	}
+
 	return conf, nil
 }
 
@@ -73,7 +77,7 @@ type Config struct {
 	Groups           *model.Groups
 	Include          string   `toml:"include"`
 	ModulePath       string   `toml: "module_path" yaml: "module_path"`
-	ResolveModules   []string `toml: "resolve_modules" yaml: "resolve_modules"`
+	LoadModules      []string `toml: "load_modules" yaml: "load_modules"`
 	Modules          map[string]interface{}
 }
 

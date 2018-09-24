@@ -31,7 +31,7 @@ depsdev: ## Installing dependencies for development
 	$(GO) get github.com/golang/lint/golint
 	$(GO) get -u github.com/tcnksm/ghr
 
-test: ## Run test
+test: generate ## Run test
 	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Testing$(RESET)"
 	$(GO) test -v $(TEST) -timeout=30s -parallel=4
 	$(GO) test -race $(TEST)
@@ -49,7 +49,7 @@ integration: ## Run integration test after Server wakeup
 	$(GO) test $(VERBOSE) -integration $(TEST) $(TEST_OPTIONS)
 	./misc/server stop
 
-build: ## Build server
+build: generate ## Build server
 	$(GO) build -o $(BUILD)/stns
 	$(GO) build -buildmode=plugin -o $(BUILD)/mod_stns_etcd.so modules/etcd.go
 
@@ -130,5 +130,9 @@ repo_release: yumrepo debrepo
 	scp -r repo/debian pyama@stns.jp:$(RELEASE_DIR)
 	scp -r package/scripts/yum-repo.sh  pyama@stns.jp:$(RELEASE_DIR)/scripts
 	scp -r package/scripts/apt-repo.sh  pyama@stns.jp:$(RELEASE_DIR)/scripts
+
+generate:
+	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Generate From ERB$(RESET)"
+	ruby model/make_backends.rb
 
 .PHONY: default test docker rpm source_for_rpm pkg source_for_deb deb

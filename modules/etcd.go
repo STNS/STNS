@@ -12,6 +12,8 @@ import (
 	"golang.org/x/net/context"
 )
 
+var ModuleName = "Etcd"
+
 type BackendEtcd struct {
 	config *stns.Config
 	api    etcd.KeysAPI

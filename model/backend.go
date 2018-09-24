@@ -13,6 +13,8 @@ type Backend interface {
 	GetterBackend
 	SetterBackend
 }
+
+type GetterBackends []GetterBackend
 type GetterBackend interface {
 	FindUserByID(int) (map[string]UserGroup, error)
 	FindUserByName(string) (map[string]UserGroup, error)
@@ -28,4 +30,16 @@ type GetterBackend interface {
 
 type SetterBackend interface {
 	Create(string, UserGroup) error
+}
+
+func mergeUserGroup(m1, m2 map[string]UserGroup) map[string]UserGroup {
+	ans := map[string]UserGroup{}
+
+	for k, v := range m1 {
+		ans[k] = v
+	}
+	for k, v := range m2 {
+		ans[k] = v
+	}
+	return (ans)
 }

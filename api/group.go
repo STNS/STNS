@@ -10,7 +10,7 @@ import (
 )
 
 func getGroups(c echo.Context) error {
-	backend := c.Get(middleware.BackendKey).(model.GetterBackend)
+	backend := c.Get(middleware.BackendKey).(model.GetterBackends)
 
 	var r map[string]model.UserGroup
 	var err error
