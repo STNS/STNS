@@ -14,6 +14,7 @@ require (
 	github.com/google/go-querystring v0.0.0-20170111101155-53e6ce116135 // indirect
 	github.com/hashicorp/go-version v1.0.0 // indirect
 	github.com/jinzhu/gorm v1.9.1
+	github.com/k0kubun/pp v2.3.0+incompatible
 	github.com/labstack/echo v3.2.1+incompatible
 	github.com/labstack/gommon v0.2.7 // indirect
 	github.com/lestrrat/go-server-starter v0.0.0-20180220115249-6ac0b358431b

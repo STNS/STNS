@@ -26,8 +26,10 @@ func TestBackendEtcd_FindUserByID(t *testing.T) {
 			name: "ok",
 			fields: fields{
 				config: &stns.Config{
-					Etcd: &stns.Etcd{
-						Endpoints: []string{"http://127.0.0.1:2379"},
+					Modules: map[string]interface{}{
+						"etcd": map[string]interface{}{
+							"endpoints": []string{"http://127.0.0.1:2379"},
+						},
 					},
 				},
 			},
@@ -47,8 +49,10 @@ func TestBackendEtcd_FindUserByID(t *testing.T) {
 			name: "notfound",
 			fields: fields{
 				config: &stns.Config{
-					Etcd: &stns.Etcd{
-						Endpoints: []string{"http://127.0.0.1:2379"},
+					Modules: map[string]interface{}{
+						"etcd": map[string]interface{}{
+							"endpoints": []string{"http://127.0.0.1:2379"},
+						},
 					},
 				},
 			},

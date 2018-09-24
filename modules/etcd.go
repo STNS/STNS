@@ -19,12 +19,27 @@ type BackendEtcd struct {
 }
 
 func NewBackendEtcd(c *stns.Config) (model.Backend, error) {
+	var endpoints []string
+	var user, password string
+
+	if c.Modules["etcd"].(map[string]interface{})["endpoints"] != nil {
+		endpoints = c.Modules["etcd"].(map[string]interface{})["endpoints"].([]string)
+	}
+
+	if c.Modules["etcd"].(map[string]interface{})["user"] != nil {
+		user = c.Modules["etcd"].(map[string]interface{})["user"].(string)
+	}
+
+	if c.Modules["etcd"].(map[string]interface{})["password"] != nil {
+		password = c.Modules["etcd"].(map[string]interface{})["password"].(string)
+	}
+
 	cfg := etcd.Config{
-		Endpoints:               c.Etcd.Endpoints,
+		Endpoints:               endpoints,
 		Transport:               etcd.DefaultTransport,
 		HeaderTimeoutPerRequest: time.Second,
-		Username:                c.Etcd.User,
-		Password:                c.Etcd.Password,
+		Username:                user,
+		Password:                password,
 	}
 	cli, err := etcd.New(cfg)
 	if err != nil {

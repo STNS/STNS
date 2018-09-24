@@ -74,7 +74,7 @@ type Config struct {
 	Include          string   `toml:"include"`
 	ModulePath       string   `toml: "module_path" yaml: "module_path"`
 	ResolveModules   []string `toml: "resolve_modules" yaml: "resolve_modules"`
-	Etcd             *Etcd
+	Modules          map[string]interface{}
 }
 
 type BasicAuth struct {
@@ -83,12 +83,6 @@ type BasicAuth struct {
 }
 type TokenAuth struct {
 	Tokens []string
-}
-
-type Etcd struct {
-	Endpoints []string
-	User      string
-	Password  string
 }
 
 func defaultConfig(c *Config) {

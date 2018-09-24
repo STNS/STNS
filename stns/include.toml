@@ -1,3 +1,7 @@
 [users.bar]
 id = 99
 password = "test"
+
+[modules.etcd]
+user = "test"
+password = "test"
