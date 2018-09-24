@@ -51,6 +51,7 @@ integration: ## Run integration test after Server wakeup
 
 build: ## Build server
 	$(GO) build -o $(BUILD)/stns
+	$(GO) build -buildmode=plugin -o $(BUILD)/mod_stns_etcd.so modules/etcd.go
 
 install: build ## Install
 	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Installing as Server$(RESET)"

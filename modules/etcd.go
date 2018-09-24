@@ -1,4 +1,4 @@
-package modules
+package main
 
 import (
 	"crypto/cipher"
@@ -232,6 +232,13 @@ func (b BackendEtcd) Create(path string, v model.UserGroup) error {
 	}
 
 	if _, err := b.api.Set(context.Background(), path, string(bjson), nil); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (b BackendEtcd) Delete(path string) error {
+	if _, err := b.api.Delete(context.Background(), path, nil); err != nil {
 		return err
 	}
 	return nil
