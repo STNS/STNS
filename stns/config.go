@@ -1,7 +1,6 @@
 package stns
 
 import (
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"path/filepath"
@@ -60,9 +59,6 @@ func NewConfig(confPath string) (Config, error) {
 		}
 	}
 
-	if err := conf.validate(); err != nil {
-		return Config{}, err
-	}
 	return conf, nil
 }
 
@@ -93,7 +89,6 @@ type Etcd struct {
 	Endpoints []string
 	User      string
 	Password  string
-	SecretKey []byte `toml: "secret_key" yaml: "secret_key"`
 }
 
 func defaultConfig(c *Config) {
@@ -114,22 +109,6 @@ func includeConfigFile(config *Config, include string) error {
 	for _, file := range files {
 		if err := decode(file, config); err != nil {
 			return fmt.Errorf("while loading included config file %s: %s", file, err)
-		}
-	}
-	return nil
-}
-
-func (c *Config) validate() error {
-	if c.Etcd != nil {
-		if len(c.Etcd.SecretKey) == 0 {
-			return errors.New("Please specify secret_key when using etcd")
-		}
-		k := len(c.Etcd.SecretKey)
-		switch k {
-		default:
-			return errors.New("Please input secret_key length is (16,24,32)")
-		case 16, 24, 32:
-			break
 		}
 	}
 	return nil

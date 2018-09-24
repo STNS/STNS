@@ -9,6 +9,10 @@ type UserGroup interface {
 	value() []string
 }
 
+type Backend interface {
+	GetterBackend
+	SetterBackend
+}
 type GetterBackend interface {
 	FindUserByID(int) (map[string]UserGroup, error)
 	FindUserByName(string) (map[string]UserGroup, error)
@@ -20,4 +24,8 @@ type GetterBackend interface {
 	LowestUserID() int
 	HighestGroupID() int
 	LowestGroupID() int
+}
+
+type SetterBackend interface {
+	Create(string, map[string]UserGroup) error
 }
