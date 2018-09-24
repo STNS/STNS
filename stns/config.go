@@ -120,8 +120,17 @@ func includeConfigFile(config *Config, include string) error {
 }
 
 func (c *Config) validate() error {
-	if c.Etcd != nil && len(c.Etcd.SecretKey) == 0 {
-		return errors.New("Please specify secret_key when using etcd")
+	if c.Etcd != nil {
+		if len(c.Etcd.SecretKey) == 0 {
+			return errors.New("Please specify secret_key when using etcd")
+		}
+		k := len(c.Etcd.SecretKey)
+		switch k {
+		default:
+			return errors.New("Please input secret_key length is (16,24,32)")
+		case 16, 24, 32:
+			break
+		}
 	}
 	return nil
 }
