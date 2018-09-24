@@ -39,28 +39,28 @@ func NewBackendTomlFile(u *Users, g *Groups) (*BackendTomlFile, error) {
 	}, nil
 }
 
-func (t BackendTomlFile) FindUserByID(id int) map[string]UserGroup {
+func (t BackendTomlFile) FindUserByID(id int) (map[string]UserGroup, error) {
 	return tomlFileFindByID(id, t.users.ToUserGroup())
 }
 
-func (t BackendTomlFile) FindUserByName(name string) map[string]UserGroup {
+func (t BackendTomlFile) FindUserByName(name string) (map[string]UserGroup, error) {
 	return tomlFileFindByName(name, t.users.ToUserGroup())
 }
 
-func (t BackendTomlFile) Users() map[string]UserGroup {
-	return t.users.ToUserGroup()
+func (t BackendTomlFile) Users() (map[string]UserGroup, error) {
+	return t.users.ToUserGroup(), nil
 }
 
-func (t BackendTomlFile) FindGroupByID(id int) map[string]UserGroup {
+func (t BackendTomlFile) FindGroupByID(id int) (map[string]UserGroup, error) {
 	return tomlFileFindByID(id, t.groups.ToUserGroup())
 }
 
-func (t BackendTomlFile) FindGroupByName(name string) map[string]UserGroup {
+func (t BackendTomlFile) FindGroupByName(name string) (map[string]UserGroup, error) {
 	return tomlFileFindByName(name, t.groups.ToUserGroup())
 }
 
-func (t BackendTomlFile) Groups() map[string]UserGroup {
-	return t.groups.ToUserGroup()
+func (t BackendTomlFile) Groups() (map[string]UserGroup, error) {
+	return t.groups.ToUserGroup(), nil
 }
 
 func (t BackendTomlFile) HighestUserID() int {
@@ -79,7 +79,7 @@ func (t BackendTomlFile) LowestGroupID() int {
 	return tomlHighLowID(Lowest, t.groups.ToUserGroup())
 }
 
-func tomlFileFindByID(id int, list map[string]UserGroup) map[string]UserGroup {
+func tomlFileFindByID(id int, list map[string]UserGroup) (map[string]UserGroup, error) {
 	res := map[string]UserGroup{}
 	if list != nil {
 		for k, v := range list {
@@ -88,10 +88,10 @@ func tomlFileFindByID(id int, list map[string]UserGroup) map[string]UserGroup {
 			}
 		}
 	}
-	return res
+	return res, nil
 }
 
-func tomlFileFindByName(name string, list map[string]UserGroup) map[string]UserGroup {
+func tomlFileFindByName(name string, list map[string]UserGroup) (map[string]UserGroup, error) {
 	res := map[string]UserGroup{}
 	if list != nil {
 		for k, v := range list {
@@ -100,7 +100,7 @@ func tomlFileFindByName(name string, list map[string]UserGroup) map[string]UserG
 			}
 		}
 	}
-	return res
+	return res, nil
 }
 
 func ensureName(list map[string]UserGroup) {

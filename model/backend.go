@@ -10,12 +10,12 @@ type UserGroup interface {
 }
 
 type Backend interface {
-	FindUserByID(int) map[string]UserGroup
-	FindUserByName(string) map[string]UserGroup
-	FindGroupByID(int) map[string]UserGroup
-	FindGroupByName(string) map[string]UserGroup
-	Users() map[string]UserGroup
-	Groups() map[string]UserGroup
+	FindUserByID(int) (map[string]UserGroup, error)
+	FindUserByName(string) (map[string]UserGroup, error)
+	FindGroupByID(int) (map[string]UserGroup, error)
+	FindGroupByName(string) (map[string]UserGroup, error)
+	Users() (map[string]UserGroup, error)
+	Groups() (map[string]UserGroup, error)
 	HighestUserID() int
 	LowestUserID() int
 	HighestGroupID() int

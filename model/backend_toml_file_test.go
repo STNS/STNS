@@ -55,7 +55,7 @@ func Test_tomlFileFindByID(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := tomlFileFindByID(tt.args.id, tt.args.list); !reflect.DeepEqual(got, tt.want) {
+			if got, _ := tomlFileFindByID(tt.args.id, tt.args.list); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("tomlFileFindByID() = %v, want %v", got, tt.want)
 			}
 		})
@@ -112,7 +112,7 @@ func Test_tomlFileFindByName(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := tomlFileFindByName(tt.args.name, tt.args.list); !reflect.DeepEqual(got, tt.want) {
+			if got, _ := tomlFileFindByName(tt.args.name, tt.args.list); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("tomlFileFindByName() = %v, want %v", got, tt.want)
 			}
 		})

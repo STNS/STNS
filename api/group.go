@@ -13,6 +13,7 @@ func getGroups(c echo.Context) error {
 	backend := c.Get(middleware.BackendKey).(model.Backend)
 
 	var r map[string]model.UserGroup
+	var err error
 	if len(c.QueryParams()) > 0 {
 		for k, v := range c.QueryParams() {
 			switch k {
@@ -22,15 +23,25 @@ func getGroups(c echo.Context) error {
 					return c.JSON(http.StatusBadRequest, nil)
 				}
 
-				r = backend.FindGroupByID(id)
+				r, err = backend.FindGroupByID(id)
+				if err != nil {
+					return c.JSON(http.StatusInternalServerError, err)
+				}
+
 			case "name":
-				r = backend.FindGroupByName(v[0])
+				r, err = backend.FindGroupByName(v[0])
+				if err != nil {
+					return c.JSON(http.StatusInternalServerError, err)
+				}
 			default:
 				return c.JSON(http.StatusBadRequest, nil)
 			}
 		}
 	} else {
-		r = backend.Groups()
+		r, err = backend.Groups()
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, err)
+		}
 	}
 
 	if len(r) == 0 {
