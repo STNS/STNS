@@ -24,6 +24,9 @@ default: build
 
 ci: depsdev test lint integration ## Run test and more...
 
+etcd:
+	brew services start etcd
+
 depsdev: ## Installing dependencies for development
 	$(GO) get github.com/golang/lint/golint
 	$(GO) get -u github.com/tcnksm/ghr
