@@ -19,7 +19,7 @@ type BackendEtcd struct {
 	block  cipher.Block
 }
 
-func NewBackendEtcd(c *stns.Config) (model.Backend, error) {
+func NewBackendEtcd(c *stns.Config) (model.GetterBackend, error) {
 	cfg := etcd.Config{
 		Endpoints:               c.Etcd.Endpoints,
 		Transport:               etcd.DefaultTransport,

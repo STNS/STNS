@@ -9,7 +9,7 @@ type UserGroup interface {
 	value() []string
 }
 
-type Backend interface {
+type GetterBackend interface {
 	FindUserByID(int) (map[string]UserGroup, error)
 	FindUserByName(string) (map[string]UserGroup, error)
 	FindGroupByID(int) (map[string]UserGroup, error)

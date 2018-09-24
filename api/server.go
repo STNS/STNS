@@ -65,7 +65,7 @@ func (s *server) Run() error {
 		e.Logger.SetOutput(f)
 	}
 
-	e.Use(middleware.Backend(b))
+	e.Use(middleware.GetterBackend(b))
 	e.Use(middleware.AddHeader(b))
 	e.Use(emiddleware.Recover())
 	e.Use(emiddleware.LoggerWithConfig(emiddleware.LoggerConfig{
