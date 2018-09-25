@@ -41,7 +41,7 @@ lint: ## Exec golint
 	golint -min_confidence 1.1 -set_exit_status $(TEST)
 
 server: ## Run server
-	$(GO) run github.com/STNS/STNS --logfile ./stns.log --pidfile ./stns.pid --config ./stns/test.toml server
+	$(GO) run github.com/STNS/STNS --pidfile ./stns.pid --config ./stns/test.toml server
 
 integration: ## Run integration test after Server wakeup
 	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Integration Testing$(RESET)"
