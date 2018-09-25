@@ -20,13 +20,32 @@ highlow = %w(
 user_groups_template = <<~EOS
 func (gb GetterBackends) <%= t[0] %>(<%= t[1] ? "v " + t[1] : "" %>) (map[string]UserGroup, error) {
 	r := map[string]UserGroup{}
+  var notfound error
+  eg := errgroup.Group{}
 	for _, b := range gb {
-    lr, err := b.<%= t[0] %>(<%= t[1] ? "v" : "" %>)
-    if err != nil {
-      return nil, err
-    }
-		r = mergeUserGroup(r, lr)
+    eg.Go(func() error {
+      lr, err := b.<%= t[0] %>(<%= t[1] ? "v" : "" %>)
+      if err != nil {
+        switch err.(type) {
+          case NotFoundError:
+            notfound = err
+          default:
+            return err
+        }
+      }
+      r = mergeUserGroup(r, lr)
+      return nil
+    })
 	}
+  if err := eg.Wait(); err != nil {
+      return nil, err
+  }
+
+  // record notfound
+  if len(r) == 0 {
+    return nil, notfound
+  }
+
 	return r, nil
 }
 EOS
@@ -49,7 +68,6 @@ file = File.open(fname,'w')
 
 file.puts "package model"
 
-
 user_groups.each do |t|
   erb = ERB.new(user_groups_template)
   file.puts erb.result(binding)
@@ -62,3 +80,4 @@ end
 file.close
 
 `go fmt #{fname}`
+`goimports -w #{fname}`
