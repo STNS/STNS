@@ -12,14 +12,14 @@ import (
 	"strconv"
 	"time"
 
-	emiddleware "github.com/labstack/echo/middleware"
-
 	"github.com/STNS/STNS/middleware"
 	"github.com/STNS/STNS/model"
 	"github.com/STNS/STNS/stns"
 	"github.com/facebookgo/pidfile"
 	"github.com/labstack/echo"
+	emiddleware "github.com/labstack/echo/middleware"
 
+	"github.com/labstack/gommon/log"
 	"github.com/urfave/cli"
 
 	// PostgreSQL driver
@@ -44,19 +44,19 @@ func status(c echo.Context) error {
 	return c.String(http.StatusOK, "OK")
 }
 
-func (s *server) loadModules(logger echo.Logger, getterBackends model.GetterBackends) error {
+func (s *server) loadModules(logger echo.Logger, getterBackends *model.GetterBackends) error {
 	for _, v := range s.config.LoadModules {
 		p, err := plugin.Open(filepath.Join(s.config.ModulePath, v))
 		if err != nil {
 			return err
 		}
 
-		name, err := p.Lookup("ModuleName")
+		n, err := p.Lookup("ModuleName")
 		if err != nil {
 			return err
 		}
-
-		b, err := p.Lookup("NewBackend" + name.(string))
+		name := *(n.(*string))
+		b, err := p.Lookup("NewBackend" + name)
 		if err != nil {
 			return err
 		}
@@ -65,8 +65,8 @@ func (s *server) loadModules(logger echo.Logger, getterBackends model.GetterBack
 		if err != nil {
 			return err
 		}
-		getterBackends = append(getterBackends, backend)
-		logger.Info("load modules %s", name.(string))
+		*getterBackends = append(*getterBackends, backend)
+		logger.Infof("load modules %s", name)
 	}
 	return nil
 }
@@ -75,6 +75,15 @@ func (s *server) loadModules(logger echo.Logger, getterBackends model.GetterBack
 func (s *server) Run() error {
 	var getterBackends model.GetterBackends
 	e := echo.New()
+	if os.Getenv("STNS_LOG") != "" {
+		f, err := os.OpenFile(os.Getenv("STNS_LOG"), os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
+		if err != nil {
+			return errors.New("error opening file :" + err.Error())
+		}
+		e.Logger.SetOutput(f)
+	} else {
+		e.Logger.SetLevel(log.DEBUG)
+	}
 	e.GET("/status", status)
 
 	if err := pidfile.Write(); err != nil {
@@ -88,17 +97,9 @@ func (s *server) Run() error {
 	}
 	getterBackends = append(getterBackends, b)
 
-	err = s.loadModules(e.Logger, getterBackends)
+	err = s.loadModules(e.Logger, &getterBackends)
 	if err != nil {
 		return err
-	}
-
-	if os.Getenv("STNS_LOG") != "" {
-		f, err := os.OpenFile(os.Getenv("STNS_LOG"), os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
-		if err != nil {
-			return errors.New("error opening file :" + err.Error())
-		}
-		e.Logger.SetOutput(f)
 	}
 
 	e.Use(middleware.GetterBackends(getterBackends))
