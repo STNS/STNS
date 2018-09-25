@@ -30,7 +30,7 @@ func TestBackendEtcd_FindUserByID(t *testing.T) {
 				config: &stns.Config{
 					Modules: map[string]interface{}{
 						"etcd": map[string]interface{}{
-							"endpoints": []string{"http://127.0.0.1:2379"},
+							"endpoints": []interface{}{"http://127.0.0.1:2379"},
 						},
 					},
 				},
@@ -59,7 +59,7 @@ func TestBackendEtcd_FindUserByID(t *testing.T) {
 				config: &stns.Config{
 					Modules: map[string]interface{}{
 						"etcd": map[string]interface{}{
-							"endpoints": []string{"http://127.0.0.1:2379"},
+							"endpoints": []interface{}{"http://127.0.0.1:2379"},
 						},
 					},
 				},
@@ -112,7 +112,7 @@ func TestBackendEtcd_FindUserByName(t *testing.T) {
 				config: &stns.Config{
 					Modules: map[string]interface{}{
 						"etcd": map[string]interface{}{
-							"endpoints": []string{"http://127.0.0.1:2379"},
+							"endpoints": []interface{}{"http://127.0.0.1:2379"},
 						},
 					},
 				},
@@ -141,7 +141,7 @@ func TestBackendEtcd_FindUserByName(t *testing.T) {
 				config: &stns.Config{
 					Modules: map[string]interface{}{
 						"etcd": map[string]interface{}{
-							"endpoints": []string{"http://127.0.0.1:2379"},
+							"endpoints": []interface{}{"http://127.0.0.1:2379"},
 						},
 					},
 				},
@@ -190,7 +190,7 @@ func TestBackendEtcd_Users(t *testing.T) {
 				config: &stns.Config{
 					Modules: map[string]interface{}{
 						"etcd": map[string]interface{}{
-							"endpoints": []string{"http://127.0.0.1:2379"},
+							"endpoints": []interface{}{"http://127.0.0.1:2379"},
 						},
 					},
 				},
@@ -269,7 +269,7 @@ func TestBackendEtcd_FindGroupByID(t *testing.T) {
 				config: &stns.Config{
 					Modules: map[string]interface{}{
 						"etcd": map[string]interface{}{
-							"endpoints": []string{"http://127.0.0.1:2379"},
+							"endpoints": []interface{}{"http://127.0.0.1:2379"},
 						},
 					},
 				},
@@ -298,7 +298,7 @@ func TestBackendEtcd_FindGroupByID(t *testing.T) {
 				config: &stns.Config{
 					Modules: map[string]interface{}{
 						"etcd": map[string]interface{}{
-							"endpoints": []string{"http://127.0.0.1:2379"},
+							"endpoints": []interface{}{"http://127.0.0.1:2379"},
 						},
 					},
 				},
@@ -351,7 +351,7 @@ func TestBackendEtcd_FindGroupByName(t *testing.T) {
 				config: &stns.Config{
 					Modules: map[string]interface{}{
 						"etcd": map[string]interface{}{
-							"endpoints": []string{"http://127.0.0.1:2379"},
+							"endpoints": []interface{}{"http://127.0.0.1:2379"},
 						},
 					},
 				},
@@ -380,7 +380,7 @@ func TestBackendEtcd_FindGroupByName(t *testing.T) {
 				config: &stns.Config{
 					Modules: map[string]interface{}{
 						"etcd": map[string]interface{}{
-							"endpoints": []string{"http://127.0.0.1:2379"},
+							"endpoints": []interface{}{"http://127.0.0.1:2379"},
 						},
 					},
 				},
@@ -429,7 +429,7 @@ func TestBackendEtcd_Groups(t *testing.T) {
 				config: &stns.Config{
 					Modules: map[string]interface{}{
 						"etcd": map[string]interface{}{
-							"endpoints": []string{"http://127.0.0.1:2379"},
+							"endpoints": []interface{}{"http://127.0.0.1:2379"},
 						},
 					},
 				},
@@ -506,7 +506,7 @@ func TestBackendEtcd_highlowUserID(t *testing.T) {
 				config: &stns.Config{
 					Modules: map[string]interface{}{
 						"etcd": map[string]interface{}{
-							"endpoints": []string{"http://127.0.0.1:2379"},
+							"endpoints": []interface{}{"http://127.0.0.1:2379"},
 						},
 					},
 				},
@@ -534,7 +534,7 @@ func TestBackendEtcd_highlowUserID(t *testing.T) {
 				config: &stns.Config{
 					Modules: map[string]interface{}{
 						"etcd": map[string]interface{}{
-							"endpoints": []string{"http://127.0.0.1:2379"},
+							"endpoints": []interface{}{"http://127.0.0.1:2379"},
 						},
 					},
 				},
@@ -601,7 +601,7 @@ func TestBackendEtcd_highlowGroupID(t *testing.T) {
 				config: &stns.Config{
 					Modules: map[string]interface{}{
 						"etcd": map[string]interface{}{
-							"endpoints": []string{"http://127.0.0.1:2379"},
+							"endpoints": []interface{}{"http://127.0.0.1:2379"},
 						},
 					},
 				},
@@ -629,7 +629,7 @@ func TestBackendEtcd_highlowGroupID(t *testing.T) {
 				config: &stns.Config{
 					Modules: map[string]interface{}{
 						"etcd": map[string]interface{}{
-							"endpoints": []string{"http://127.0.0.1:2379"},
+							"endpoints": []interface{}{"http://127.0.0.1:2379"},
 						},
 					},
 				},

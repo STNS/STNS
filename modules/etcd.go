@@ -23,9 +23,11 @@ type BackendEtcd struct {
 func NewBackendEtcd(c *stns.Config) (model.Backend, error) {
 	var endpoints []string
 	var user, password string
-
 	if c.Modules["etcd"].(map[string]interface{})["endpoints"] != nil {
-		endpoints = c.Modules["etcd"].(map[string]interface{})["endpoints"].([]string)
+		ep := c.Modules["etcd"].(map[string]interface{})["endpoints"].([]interface{})
+		for _, e := range ep {
+			endpoints = append(endpoints, e.(string))
+		}
 	}
 
 	if c.Modules["etcd"].(map[string]interface{})["user"] != nil {
