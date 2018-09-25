@@ -32,7 +32,7 @@ depsdev: ## Installing dependencies for development
 	$(GO) get -u github.com/tcnksm/ghr
 	$(GO) get -u golang.org/x/tools/cmd/goimports
 
-test: generate ## Run test
+test: ## Run test
 	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Testing$(RESET)"
 	$(GO) test -v $(TEST) -timeout=30s -parallel=4
 	$(GO) test -race $(TEST)
