@@ -16,7 +16,7 @@ require (
 	github.com/jinzhu/gorm v1.9.1
 	github.com/k0kubun/pp v2.3.0+incompatible
 	github.com/labstack/echo v3.2.1+incompatible
-	github.com/labstack/gommon v0.2.7 // indirect
+	github.com/labstack/gommon v0.2.7
 	github.com/lestrrat/go-server-starter v0.0.0-20180220115249-6ac0b358431b
 	github.com/lib/pq v1.0.0
 	github.com/mattn/go-colorable v0.0.9 // indirect
@@ -35,6 +35,6 @@ require (
 	golang.org/x/lint v0.0.0-20180702182130-06c8688daad7 // indirect
 	golang.org/x/net v0.0.0-20180906233101-161cd47e91fd
 	golang.org/x/oauth2 v0.0.0-20180821212333-d2e6202438be // indirect
-	golang.org/x/sync v0.0.0-20180314180146-1d60e4601c6f // indirect
+	golang.org/x/sync v0.0.0-20180314180146-1d60e4601c6f
 	golang.org/x/tools v0.0.0-20180910180008-18207bb12d3a // indirect
 )
