@@ -2,7 +2,7 @@ language: go
 sudo: required
 before_install:
   - sudo apt-get update -q
-  - sudo apt-get -qqy install build-essential git curl libcurl4-openssl-dev libjansson-dev gdb sudo
+  - sudo apt-get -qqy install build-essential git curl libcurl4-openssl-dev libjansson-dev gdb sudo netcat
   - curl -L  https://github.com/coreos/etcd/releases/download/v3.3.3/etcd-v3.3.3-linux-amd64.tar.gz -o etcd-v3.3.3-linux-amd64.tar.gz
   - tar xzvf etcd-v3.3.3-linux-amd64.tar.gz
   - ./etcd-v3.3.3-linux-amd64/etcd &

@@ -78,7 +78,6 @@ key_wrapper_build: build_dir ## Build nss_stns
 integration: build install depsdev ## Run integration test
 	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Integration Testing$(RESET)"
 	cd .. && misc/server start
-	sleep 3
 	test -d /usr/lib/x86_64-linux-gnu && ln -sf /usr/lib/libnss_stns.so.2.0 /usr/lib/x86_64-linux-gnu/libnss_stns.so.2.0 || true
 	mkdir -p /etc/stns/client
 	cp test/integration.conf /etc/stns/client/stns.conf

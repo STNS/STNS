@@ -3,7 +3,7 @@
 start_server() {
   export CI=1
   make server &
-  sleep 5
+  while ! nc -w 1 127.0.0.1 1104 > /dev/null 2>&1; do sleep 1; echo 'sleeping'; done;
 }
 
 stop_server() {
