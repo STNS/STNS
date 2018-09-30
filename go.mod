@@ -36,5 +36,5 @@ require (
 	golang.org/x/net v0.0.0-20180906233101-161cd47e91fd
 	golang.org/x/oauth2 v0.0.0-20180821212333-d2e6202438be // indirect
 	golang.org/x/sync v0.0.0-20180314180146-1d60e4601c6f
-	golang.org/x/tools v0.0.0-20180910180008-18207bb12d3a // indirect
+	golang.org/x/tools v0.0.0-20180928181343-b3c0be4c978b // indirect
 )

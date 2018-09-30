@@ -13,7 +13,6 @@ func (b *Base) GetID() int {
 
 func (b *Base) GetName() string {
 	return b.Name
-
 }
 
 func (b *Base) setName(n string) {
