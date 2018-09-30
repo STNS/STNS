@@ -1,5 +1,9 @@
 package model
 
+import (
+	"fmt"
+)
+
 type UserGroup interface {
 	GetID() int
 	GetName() string
@@ -30,6 +34,7 @@ type GetterBackend interface {
 
 type SetterBackend interface {
 	Create(string, UserGroup) error
+	Delete(string) error
 }
 
 func mergeUserGroup(m1, m2 map[string]UserGroup) map[string]UserGroup {
@@ -42,4 +47,48 @@ func mergeUserGroup(m1, m2 map[string]UserGroup) map[string]UserGroup {
 		ans[k] = v
 	}
 	return (ans)
+}
+
+func SyncConfig(resourceName string, b Backend, configResources, backendResources map[string]UserGroup) error {
+	if configResources != nil {
+		for _, cu := range configResources {
+			found := false
+
+			if backendResources != nil {
+				for _, eu := range backendResources {
+					if cu.GetID() == eu.GetID() {
+						found = true
+						break
+					}
+				}
+			}
+
+			if !found {
+				if err := b.Create(fmt.Sprintf("/%s/name/%s", resourceName, cu.GetName()), cu); err != nil {
+					return err
+				}
+			}
+		}
+	}
+
+	if backendResources != nil {
+		for _, eu := range backendResources {
+			found := false
+			if configResources != nil {
+				for _, cu := range configResources {
+					if cu.GetID() == eu.GetID() {
+						found = true
+						break
+					}
+				}
+			}
+			if !found {
+				if err := b.Delete(fmt.Sprintf("/%s/name/%s", resourceName, eu.GetName())); err != nil {
+					return err
+				}
+			}
+		}
+
+	}
+	return nil
 }
