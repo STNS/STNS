@@ -89,7 +89,7 @@ func tomlFileFindByID(id int, list map[string]UserGroup) (map[string]UserGroup, 
 	res := map[string]UserGroup{}
 	if list != nil {
 		for k, v := range list {
-			if id == v.id() {
+			if id == v.GetID() {
 				res[k] = v
 			}
 		}
@@ -102,7 +102,7 @@ func tomlFileFindByName(name string, list map[string]UserGroup) (map[string]User
 	res := map[string]UserGroup{}
 	if list != nil {
 		for k, v := range list {
-			if name == v.name() {
+			if name == v.GetName() {
 				res[k] = v
 			}
 		}
@@ -125,7 +125,7 @@ func (las linkAttributers) find(keys []string) linkAttributers {
 	if las != nil {
 		for _, key := range keys {
 			for _, lv := range las {
-				if lv.name() == key {
+				if lv.GetName() == key {
 					result[key] = lv
 				}
 			}
@@ -155,8 +155,8 @@ func mergeLinkAttribute(master, current linkAttributers, result map[string][]str
 		if len(links) > 0 {
 			ls := master.find(links)
 			for _, iv := range ls {
-				if len(result[iv.name()]) == 0 {
-					result[iv.name()] = append(result[iv.name()], iv.value()...)
+				if len(result[iv.GetName()]) == 0 {
+					result[iv.GetName()] = append(result[iv.GetName()], iv.value()...)
 					*nest++
 					result = mergeLinkAttribute(master, ls, result, nest)
 					*nest--
@@ -206,8 +206,8 @@ func tomlHighLowID(highorlow int, list map[string]UserGroup) int {
 	current := 0
 	if list != nil {
 		for _, v := range list {
-			if current == 0 || (highorlow == 0 && current < v.id()) || (highorlow == 1 && current > v.id()) {
-				current = v.id()
+			if current == 0 || (highorlow == 0 && current < v.GetID()) || (highorlow == 1 && current > v.GetID()) {
+				current = v.GetID()
 			}
 		}
 	}
@@ -218,10 +218,10 @@ func checkDuplicateID(attr map[string]UserGroup) error {
 	b := map[int]bool{}
 
 	for _, a := range attr {
-		if a.id() != 0 && b[a.id()] {
-			return fmt.Errorf("Duplicate id is not allowed: %d", a.id())
+		if a.GetID() != 0 && b[a.GetID()] {
+			return fmt.Errorf("Duplicate id is not allowed: %d", a.GetID())
 		}
-		b[a.id()] = true
+		b[a.GetID()] = true
 	}
 	return nil
 }

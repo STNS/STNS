@@ -7,12 +7,13 @@ type Base struct {
 	Name string `toml:"name" json:"name" yaml:"name"`
 }
 
-func (b *Base) id() int {
+func (b *Base) GetID() int {
 	return b.ID
 }
 
-func (b *Base) name() string {
+func (b *Base) GetName() string {
 	return b.Name
+
 }
 
 func (b *Base) setName(n string) {

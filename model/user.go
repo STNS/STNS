@@ -24,10 +24,6 @@ func (u *User) value() []string {
 	return u.Keys
 }
 
-func (u *User) name() string {
-	return u.Base.Name
-}
-
 func (us *Users) ToUserGroup() map[string]UserGroup {
 	if us != nil {
 		iusers := make(map[string]UserGroup, len(*us))

@@ -1,8 +1,8 @@
 package model
 
 type UserGroup interface {
-	id() int
-	name() string
+	GetID() int
+	GetName() string
 	setName(string)
 	linkValues() []string
 	setLinkValues([]string)
