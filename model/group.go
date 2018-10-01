@@ -30,7 +30,3 @@ func (u *Group) linkValues() []string {
 func (u *Group) value() []string {
 	return u.Users
 }
-
-func (u *Group) name() string {
-	return u.Base.Name
-}

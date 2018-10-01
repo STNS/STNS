@@ -10,9 +10,10 @@ import (
 )
 
 func getUsers(c echo.Context) error {
-	backend := c.Get(middleware.BackendKey).(model.Backend)
+	backend := c.Get(middleware.BackendKey).(model.GetterBackends)
 
 	var r map[string]model.UserGroup
+	var err error
 	if len(c.QueryParams()) > 0 {
 		for k, v := range c.QueryParams() {
 			switch k {
@@ -22,19 +23,24 @@ func getUsers(c echo.Context) error {
 					return c.JSON(http.StatusBadRequest, nil)
 				}
 
-				r = backend.FindUserByID(id)
+				r, err = backend.FindUserByID(id)
+				if err != nil {
+					return errorResponse(c, err)
+				}
 			case "name":
-				r = backend.FindUserByName(v[0])
+				r, err = backend.FindUserByName(v[0])
+				if err != nil {
+					return errorResponse(c, err)
+				}
 			default:
 				return c.JSON(http.StatusBadRequest, nil)
 			}
 		}
 	} else {
-		r = backend.Users()
-	}
-
-	if len(r) == 0 {
-		return c.JSON(http.StatusNotFound, nil)
+		r, err = backend.Users()
+		if err != nil {
+			return errorResponse(c, err)
+		}
 	}
 	return c.JSON(http.StatusOK, toSlice(r))
 }

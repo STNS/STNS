@@ -24,9 +24,13 @@ default: build
 
 ci: depsdev test lint integration ## Run test and more...
 
+etcd:
+	brew services start etcd
+
 depsdev: ## Installing dependencies for development
 	$(GO) get github.com/golang/lint/golint
 	$(GO) get -u github.com/tcnksm/ghr
+	$(GO) get -u golang.org/x/tools/cmd/goimports
 
 test: ## Run test
 	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Testing$(RESET)"
@@ -38,7 +42,7 @@ lint: ## Exec golint
 	golint -min_confidence 1.1 -set_exit_status $(TEST)
 
 server: ## Run server
-	$(GO) run github.com/STNS/STNS --logfile ./stns.log --pidfile ./stns.pid --config ./stns/test.toml server
+	$(GO) run github.com/STNS/STNS --pidfile ./stns.pid --config ./stns/test.toml server
 
 integration: ## Run integration test after Server wakeup
 	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Integration Testing$(RESET)"
@@ -46,8 +50,9 @@ integration: ## Run integration test after Server wakeup
 	$(GO) test $(VERBOSE) -integration $(TEST) $(TEST_OPTIONS)
 	./misc/server stop
 
-build: ## Build server
+build: generate ## Build server
 	$(GO) build -o $(BUILD)/stns
+	$(GO) build -buildmode=plugin -o $(BUILD)/mod_stns_etcd.so modules/etcd.go
 
 install: build ## Install
 	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Installing as Server$(RESET)"
@@ -126,5 +131,9 @@ repo_release: yumrepo debrepo
 	scp -r repo/debian pyama@stns.jp:$(RELEASE_DIR)
 	scp -r package/scripts/yum-repo.sh  pyama@stns.jp:$(RELEASE_DIR)/scripts
 	scp -r package/scripts/apt-repo.sh  pyama@stns.jp:$(RELEASE_DIR)/scripts
+
+generate:
+	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Generate From ERB$(RESET)"
+	ruby model/make_backends.rb
 
 .PHONY: default test docker rpm source_for_rpm pkg source_for_deb deb

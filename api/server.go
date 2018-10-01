@@ -7,17 +7,19 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"path/filepath"
+	"plugin"
 	"strconv"
 	"time"
-
-	emiddleware "github.com/labstack/echo/middleware"
 
 	"github.com/STNS/STNS/middleware"
 	"github.com/STNS/STNS/model"
 	"github.com/STNS/STNS/stns"
 	"github.com/facebookgo/pidfile"
 	"github.com/labstack/echo"
+	emiddleware "github.com/labstack/echo/middleware"
 
+	"github.com/labstack/gommon/log"
 	"github.com/urfave/cli"
 
 	// PostgreSQL driver
@@ -42,9 +44,46 @@ func status(c echo.Context) error {
 	return c.String(http.StatusOK, "OK")
 }
 
+func (s *server) loadModules(logger echo.Logger, getterBackends *model.GetterBackends) error {
+	for _, v := range s.config.LoadModules {
+		p, err := plugin.Open(filepath.Join(s.config.ModulePath, v))
+		if err != nil {
+			return err
+		}
+
+		n, err := p.Lookup("ModuleName")
+		if err != nil {
+			return err
+		}
+		name := *(n.(*string))
+		b, err := p.Lookup("NewBackend" + name)
+		if err != nil {
+			return err
+		}
+
+		backend, err := b.(func(*stns.Config) (model.Backend, error))(s.config)
+		if err != nil {
+			return err
+		}
+		*getterBackends = append(*getterBackends, backend)
+		logger.Infof("load modules %s", name)
+	}
+	return nil
+}
+
 // Run サーバの起動
 func (s *server) Run() error {
+	var getterBackends model.GetterBackends
 	e := echo.New()
+	if os.Getenv("STNS_LOG") != "" {
+		f, err := os.OpenFile(os.Getenv("STNS_LOG"), os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
+		if err != nil {
+			return errors.New("error opening file :" + err.Error())
+		}
+		e.Logger.SetOutput(f)
+	} else {
+		e.Logger.SetLevel(log.DEBUG)
+	}
 	e.GET("/status", status)
 
 	if err := pidfile.Write(); err != nil {
@@ -56,17 +95,15 @@ func (s *server) Run() error {
 	if err != nil {
 		return err
 	}
+	getterBackends = append(getterBackends, b)
 
-	if os.Getenv("STNS_LOG") != "" {
-		f, err := os.OpenFile(os.Getenv("STNS_LOG"), os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
-		if err != nil {
-			return errors.New("error opening file :" + err.Error())
-		}
-		e.Logger.SetOutput(f)
+	err = s.loadModules(e.Logger, &getterBackends)
+	if err != nil {
+		return err
 	}
 
-	e.Use(middleware.Backend(b))
-	e.Use(middleware.AddHeader(b))
+	e.Use(middleware.GetterBackends(getterBackends))
+	e.Use(middleware.AddHeader(getterBackends))
 	e.Use(emiddleware.Recover())
 	e.Use(emiddleware.LoggerWithConfig(emiddleware.LoggerConfig{
 		Format: `{"time":"${time_rfc3339_nano}","remote_ip":"${remote_ip}","host":"${host}",` +

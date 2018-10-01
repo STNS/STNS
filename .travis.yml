@@ -1,16 +1,22 @@
 language: go
 sudo: required
 before_install:
-- sudo apt-get -qqy update
-- sudo apt-get -qqy install build-essential git curl libcurl4-openssl-dev libjansson-dev gdb sudo
+  - sudo apt-get update -q
+  - sudo apt-get -qqy install build-essential git curl libcurl4-openssl-dev libjansson-dev gdb sudo netcat
+  - curl -L  https://github.com/coreos/etcd/releases/download/v3.3.3/etcd-v3.3.3-linux-amd64.tar.gz -o etcd-v3.3.3-linux-amd64.tar.gz
+  - tar xzvf etcd-v3.3.3-linux-amd64.tar.gz
+  - ./etcd-v3.3.3-linux-amd64/etcd &
+  - while ! nc -w 1 127.0.0.1 2379 > /dev/null 2>&1; do sleep 1; echo 'sleeping'; done;
 script:
-- sudo PATH=$PATH GOPATH=$GOPATH GO="GO111MODULE=on go" make ci
-- cd libnss
-- sudo PATH=$PATH GOPATH=$GOPATH GO="GO111MODULE=on go" make ci
+  - sudo PATH=$PATH GOPATH=$GOPATH GO="GO111MODULE=on go" make ci
+  - cd libnss
+  - sudo PATH=$PATH GOPATH=$GOPATH GO="GO111MODULE=on go" make ci
 go:
   - 1.11
+  - tip
+
 notifications:
-  slack: pepabo:urThJPQ6Vh8m3cI7riDpYAbn
+  slack: pepabo:CQkcN0cdvPSJvVsK2D48qYyV
 
 cache:
   directories:

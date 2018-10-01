@@ -89,12 +89,12 @@ func Test_getGroups(t *testing.T) {
 				t.Errorf("getGroups status code does not match, expected %d, got %d", tt.wantStatus, rec.Code)
 			}
 
-			groups := []model.Group{}
-			if err := json.Unmarshal(rec.Body.Bytes(), &groups); err != nil {
-				t.Errorf(err.Error())
-			}
-
 			if tt.wantID != 0 {
+				groups := []model.Group{}
+				if err := json.Unmarshal(rec.Body.Bytes(), &groups); err != nil {
+					t.Errorf(err.Error())
+				}
+
 				if len(groups) != tt.wantRecords {
 					t.Error("getGroups Record has not been acquired")
 				}

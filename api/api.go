@@ -1,6 +1,11 @@
 package api
 
-import "github.com/STNS/STNS/model"
+import (
+	"net/http"
+
+	"github.com/STNS/STNS/model"
+	"github.com/labstack/echo"
+)
 
 func toSlice(ug map[string]model.UserGroup) []model.UserGroup {
 	if ug == nil {
@@ -11,4 +16,12 @@ func toSlice(ug map[string]model.UserGroup) []model.UserGroup {
 		r = append(r, v)
 	}
 	return r
+}
+
+func errorResponse(c echo.Context, err error) error {
+	switch err.(type) {
+	case model.NotFoundError:
+		return c.JSON(http.StatusNotFound, err)
+	}
+	return c.JSON(http.StatusInternalServerError, err)
 }

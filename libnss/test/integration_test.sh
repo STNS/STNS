@@ -57,7 +57,8 @@ test_getent_shadow()
 
 test_sudo()
 {
-  assertTrue `sudo -u test ls`
+  sudo -u test true
+  assertTrue $?
 }
 
 test_key_wrapper()

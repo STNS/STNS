@@ -55,7 +55,7 @@ func Test_tomlFileFindByID(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := tomlFileFindByID(tt.args.id, tt.args.list); !reflect.DeepEqual(got, tt.want) {
+			if got, _ := tomlFileFindByID(tt.args.id, tt.args.list); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("tomlFileFindByID() = %v, want %v", got, tt.want)
 			}
 		})
@@ -112,7 +112,7 @@ func Test_tomlFileFindByName(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := tomlFileFindByName(tt.args.name, tt.args.list); !reflect.DeepEqual(got, tt.want) {
+			if got, _ := tomlFileFindByName(tt.args.name, tt.args.list); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("tomlFileFindByName() = %v, want %v", got, tt.want)
 			}
 		})
@@ -259,6 +259,103 @@ func Test_tomlHighLowID(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := tomlHighLowID(tt.args.highorlow, tt.args.list); got != tt.want {
 				t.Errorf("tomlHighLowID() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+func TestBackendTomlFile_Users(t *testing.T) {
+	tests := []struct {
+		name    string
+		users   Users
+		want    map[string]UserGroup
+		wantErr bool
+	}{
+		{
+			name: "ok",
+			users: Users{
+				"test": &User{
+					Base: Base{
+						ID:   1,
+						Name: "user1",
+					},
+				},
+			},
+			want: map[string]UserGroup{
+				"test": &User{
+					Base: Base{
+						ID:   1,
+						Name: "user1",
+					},
+				},
+			},
+		},
+		{
+			name:    "not found",
+			users:   Users{},
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			b := BackendTomlFile{
+				users: &tt.users,
+			}
+			got, err := b.Users()
+			if (err != nil) != tt.wantErr {
+				t.Errorf("BackendTomlFile.Users() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("BackendTomlFile.Users() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestBackendTomlFile_Groups(t *testing.T) {
+	tests := []struct {
+		name    string
+		groups  Groups
+		want    map[string]UserGroup
+		wantErr bool
+	}{
+		{
+			name: "ok",
+			groups: Groups{
+				"test": &Group{
+					Base: Base{
+						ID:   1,
+						Name: "group1",
+					},
+				},
+			},
+			want: map[string]UserGroup{
+				"test": &Group{
+					Base: Base{
+						ID:   1,
+						Name: "group1",
+					},
+				},
+			},
+		},
+		{
+			name:    "not found",
+			groups:  Groups{},
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			b := BackendTomlFile{
+				groups: &tt.groups,
+			}
+			got, err := b.Groups()
+			if (err != nil) != tt.wantErr {
+				t.Errorf("BackendTomlFile.Groups() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("BackendTomlFile.Groups() = %v, want %v", got, tt.want)
 			}
 		})
 	}

@@ -89,12 +89,12 @@ func Test_getUsers(t *testing.T) {
 				t.Errorf("getUsers status code does not match, expected %d, got %d", tt.wantStatus, rec.Code)
 			}
 
-			users := []model.User{}
-			if err := json.Unmarshal(rec.Body.Bytes(), &users); err != nil {
-				t.Errorf(err.Error())
-			}
-
 			if tt.wantID != 0 {
+				users := []model.User{}
+				if err := json.Unmarshal(rec.Body.Bytes(), &users); err != nil {
+					t.Errorf(err.Error())
+				}
+
 				if len(users) != tt.wantRecords {
 					t.Error("getUsers Record has not been acquired")
 				}

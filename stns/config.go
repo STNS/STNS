@@ -45,6 +45,8 @@ func decode(path string, conf *Config) error {
 
 func NewConfig(confPath string) (Config, error) {
 	var conf Config
+	conf.dir = filepath.Dir(confPath)
+
 	defaultConfig(&conf)
 
 	if err := decode(confPath, &conf); err != nil {
@@ -57,10 +59,15 @@ func NewConfig(confPath string) (Config, error) {
 		}
 	}
 
+	if !strings.HasPrefix(conf.ModulePath, "/") {
+		conf.ModulePath = filepath.Join(conf.dir, conf.ModulePath)
+	}
+
 	return conf, nil
 }
 
 type Config struct {
+	dir       string
 	Port      int        `toml:"port"`
 	BasicAuth *BasicAuth `toml:"basic_auth" yaml:"basic_auth"`
 	TokenAuth *TokenAuth `toml:"token_auth" yaml:"token_auth"`
@@ -68,7 +75,10 @@ type Config struct {
 	UseServerStarter bool
 	Users            *model.Users
 	Groups           *model.Groups
-	Include          string `toml:"include"`
+	Include          string   `toml:"include"`
+	ModulePath       string   `toml:"module_path" yaml:"module_path"`
+	LoadModules      []string `toml:"load_modules" yaml:"load_modules"`
+	Modules          map[string]interface{}
 }
 
 type BasicAuth struct {
@@ -81,9 +91,14 @@ type TokenAuth struct {
 
 func defaultConfig(c *Config) {
 	c.Port = 1104
+	c.ModulePath = "./modules.d"
 }
 
 func includeConfigFile(config *Config, include string) error {
+	if !strings.HasPrefix(include, "/") {
+		include = filepath.Join(config.dir, include)
+	}
+
 	files, err := filepath.Glob(include)
 	if err != nil {
 		return err

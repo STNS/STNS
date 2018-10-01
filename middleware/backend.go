@@ -6,10 +6,10 @@ import (
 )
 
 const (
-	BackendKey = "Backend"
+	BackendKey = "GetterBackends"
 )
 
-func Backend(b model.Backend) echo.MiddlewareFunc {
+func GetterBackends(b model.GetterBackends) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return echo.HandlerFunc(func(c echo.Context) error {
 			c.Set(BackendKey, b)

@@ -53,7 +53,7 @@ func TestGetUserList(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	expectedCount := 2
+	expectedCount := 3
 	gotCount := len(users.([]interface{}))
 	if gotCount != expectedCount {
 		t.Errorf("GetUsers API returned wrong count: got %v expected %v",
@@ -67,7 +67,7 @@ func TestGetUserList(t *testing.T) {
 			gotHighestID, expectedHighestID)
 	}
 
-	expectedLowestID := "10001"
+	expectedLowestID := "99"
 	gotLowestID := res.Header.Get("User-Lowest-Id")
 	if gotLowestID != expectedLowestID {
 		t.Errorf("GetUsers API returned wrong lowest id: got %v expected %v",
