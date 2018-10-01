@@ -6,6 +6,7 @@ before_install:
   - curl -L  https://github.com/coreos/etcd/releases/download/v3.3.3/etcd-v3.3.3-linux-amd64.tar.gz -o etcd-v3.3.3-linux-amd64.tar.gz
   - tar xzvf etcd-v3.3.3-linux-amd64.tar.gz
   - ./etcd-v3.3.3-linux-amd64/etcd &
+  - while ! nc -w 1 127.0.0.1 2379 > /dev/null 2>&1; do sleep 1; echo 'sleeping'; done;
 script:
   - sudo PATH=$PATH GOPATH=$GOPATH GO="GO111MODULE=on go" make ci
   - cd libnss
