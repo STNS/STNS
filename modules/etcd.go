@@ -64,20 +64,32 @@ func NewBackendEtcd(c *stns.Config) (model.Backend, error) {
 }
 
 func (b BackendEtcd) syncConfig() error {
-	if users, err := b.Users(); err != nil {
-		return err
-	} else {
-		if err := model.SyncConfig("users", b, b.config.Users.ToUserGroup(), users); err != nil {
+	users, err := b.Users()
+	if err != nil {
+		switch err.(type) {
+		case model.NotFoundError:
+			users = map[string]model.UserGroup{}
+		default:
 			return err
 		}
 	}
 
-	if groups, err := b.Groups(); err != nil {
+	if err := model.SyncConfig("users", b, b.config.Users.ToUserGroup(), users); err != nil {
 		return err
-	} else {
-		if err := model.SyncConfig("groups", b, b.config.Groups.ToUserGroup(), groups); err != nil {
+	}
+
+	groups, err := b.Groups()
+	if err != nil {
+		switch err.(type) {
+		case model.NotFoundError:
+			groups = map[string]model.UserGroup{}
+		default:
 			return err
 		}
+	}
+
+	if err := model.SyncConfig("groups", b, b.config.Groups.ToUserGroup(), groups); err != nil {
+		return err
 	}
 	return nil
 }
