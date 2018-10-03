@@ -147,5 +147,7 @@ deb: source_for_deb ## Packaging for DEB
 pkg: ## Create some distribution packages
 	rm -rf builds && mkdir builds
 	docker-compose up $(DISTS)
+changelog:
+	git-chglog -o CHANGELOG.md
 
 .PHONY: depsdev test testdev build

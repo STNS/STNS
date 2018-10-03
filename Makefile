@@ -31,6 +31,10 @@ depsdev: ## Installing dependencies for development
 	$(GO) get github.com/golang/lint/golint
 	$(GO) get -u github.com/tcnksm/ghr
 	$(GO) get -u golang.org/x/tools/cmd/goimports
+	$(GO) get -u github.com/git-chglog/git-chglog/cmd/git-chglog
+
+changelog:
+	git-chglog -o CHANGELOG.md
 
 test: ## Run test
 	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Testing$(RESET)"
