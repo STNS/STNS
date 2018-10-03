@@ -91,7 +91,7 @@ type TokenAuth struct {
 
 func defaultConfig(c *Config) {
 	c.Port = 1104
-	c.ModulePath = "./modules.d"
+	c.ModulePath = "/usr/local/stns/modules.d"
 }
 
 func includeConfigFile(config *Config, include string) error {

@@ -14,6 +14,7 @@ BOLD=\033[1m
 DIST ?= unknown
 PREFIX=/usr
 BINDIR=$(PREFIX)/sbin
+MODDIR ?= $(PREFIX)/local/stns/modules.d
 SOURCES=Makefile go.mod go.sum version model api middleware modules stns stns.go package/
 DISTS=centos7 centos6 ubuntu16
 RELEASE_DIR=/var/www/releases
@@ -61,6 +62,8 @@ build: ## Build server
 install: build ## Install
 	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Installing as Server$(RESET)"
 	cp $(BUILD)/stns $(BINDIR)/stns
+	mkdir -p $(MODDIR)/
+	cp $(BUILD)/*so $(MODDIR)/
 
 docker:
 	docker build -t nss_develop .

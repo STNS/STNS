@@ -67,6 +67,7 @@ install -m 644 package/stns-v2.logrotate %{buildroot}%{_sysconfdir}/logrotate.d/
 %defattr(-, root, root)
 /usr/sbin/stns
 /etc/stns/server/stns.conf
+/usr/local/stns/modules.d/mod_stns_etcd.so
 /etc/logrotate.d/stns
 
 %if 0%{?rhel} < 7
