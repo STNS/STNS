@@ -1,13 +1,5 @@
 include = "include.toml"
 
-
-[basic_auth]
-user = "foo"
-password = "bar"
-
-[token_auth]
-tokens = ["a", "b"]
-
 [users.test]
 id = 10001
 password = "test"

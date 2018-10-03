@@ -31,11 +31,11 @@ pthread_mutex_t grent_mutex = PTHREAD_MUTEX_INITIALIZER;
   }                                                                                                                    \
                                                                                                                        \
   next_member = buf + ptr_area_size;                                                                                   \
+  buflen -= ptr_area_size;                                                                                             \
   for (i = 0; i < json_array_get_count(members); i++) {                                                                \
     const char *user = json_array_get_string(members, i);                                                              \
     if (user == NULL) {                                                                                                \
-      pthread_mutex_unlock(&grent_mutex);                                                                              \
-      return NSS_STATUS_UNAVAIL;                                                                                       \
+      continue;                                                                                                        \
     }                                                                                                                  \
     int user_length = strlen(user) + 1;                                                                                \
     if (buflen < user_length) {                                                                                        \
@@ -45,8 +45,8 @@ pthread_mutex_t grent_mutex = PTHREAD_MUTEX_INITIALIZER;
     }                                                                                                                  \
     strcpy(next_member, user);                                                                                         \
     rbuf->gr_mem[i] = next_member;                                                                                     \
-    next_member += user_length + 1;                                                                                    \
-    buflen -= user_length + 1;                                                                                         \
+    next_member += user_length;                                                                                        \
+    buflen -= user_length;                                                                                             \
   }                                                                                                                    \
   rbuf->gr_mem[json_array_get_count(members)] = NULL;
 

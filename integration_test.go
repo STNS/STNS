@@ -53,7 +53,7 @@ func TestGetUserList(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	expectedCount := 3
+	expectedCount := 203
 	gotCount := len(users.([]interface{}))
 	if gotCount != expectedCount {
 		t.Errorf("GetUsers API returned wrong count: got %v expected %v",
@@ -178,7 +178,7 @@ func TestGetGroupList(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	expectedCount := 2
+	expectedCount := 3
 	gotCount := len(groups.([]interface{}))
 	if gotCount != expectedCount {
 		t.Errorf("GetGroups API returned wrong count: got %v expected %v",
@@ -192,7 +192,7 @@ func TestGetGroupList(t *testing.T) {
 			gotHighestID, expectedHighestID)
 	}
 
-	expectedLowestID := "10001"
+	expectedLowestID := "100"
 	gotLowestID := res.Header.Get("Group-Lowest-Id")
 	if gotLowestID != expectedLowestID {
 		t.Errorf("GetGroups API returned wrong lowest id: got %v expected %v",
