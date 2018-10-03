@@ -50,7 +50,7 @@ integration: ## Run integration test after Server wakeup
 	$(GO) test $(VERBOSE) -integration $(TEST) $(TEST_OPTIONS)
 	./misc/server stop
 
-build: generate ## Build server
+build: ## Build server
 	$(GO) build -o $(BUILD)/stns
 	$(GO) build -buildmode=plugin -o $(BUILD)/mod_stns_etcd.so modules/etcd.go
 
