@@ -14,7 +14,7 @@ BOLD=\033[1m
 DIST ?= unknown
 PREFIX=/usr
 BINDIR=$(PREFIX)/sbin
-SOURCES=Makefile go.mod go.sum version model api middleware stns stns.go package/
+SOURCES=Makefile go.mod go.sum version model api middleware modules stns stns.go package/
 DISTS=centos7 centos6 ubuntu16
 RELEASE_DIR=/var/www/releases
 
