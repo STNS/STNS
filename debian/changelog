@@ -1,3 +1,8 @@
+stns-v2 (2.0.1-1) xenial; urgency=medium
+
+  * #77 add module to package
+
+ -- pyama86 <www.kazu.com@gmail.com>  Wed, 3 Oct 2018 18:00:00 +0900
 stns-v2 (2.0.0-1) xenial; urgency=medium
 
   * #75 Support etcd Backend
