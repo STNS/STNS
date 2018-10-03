@@ -2,6 +2,12 @@
 ## [Unreleased]
 
 
+<a name="v2.0.1"></a>
+## [v2.0.1] - 2018-10-03
+### Pull Requests
+- Merge pull request [#77](https://github.com/STNS/STNS/issues/77) from STNS/add-modules-package
+
+
 <a name="v2.0.0"></a>
 ## [v2.0.0] - 2018-10-03
 ### Pull Requests
@@ -165,7 +171,8 @@
 <a name="0.0.1"></a>
 ## 0.0.1 - 2016-01-03
 
-[Unreleased]: https://github.com/STNS/STNS/compare/v2.0.0...HEAD
+[Unreleased]: https://github.com/STNS/STNS/compare/v2.0.1...HEAD
+[v2.0.1]: https://github.com/STNS/STNS/compare/v2.0.0...v2.0.1
 [v2.0.0]: https://github.com/STNS/STNS/compare/v1.0.0...v2.0.0
 [v1.0.0]: https://github.com/STNS/STNS/compare/v...v1.0.0
 [v]: https://github.com/STNS/STNS/compare/v0.4...v

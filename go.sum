@@ -86,6 +86,8 @@ golang.org/x/tools v0.0.0-20180928181343-b3c0be4c978b h1:hjfKpJoTfQ2QXKPX9eCDFBZ
 golang.org/x/tools v0.0.0-20180928181343-b3c0be4c978b/go.mod h1:n7NCudcB/nEzxVGmLbDWY5pfWTLqBcC2KZ6jyYvM4mQ=
 golang.org/x/tools v0.0.0-20181003024731-2f84ea8ef872 h1:sNGw2eV2rbpD791+BR7mIgTvvDf+pS18dKJqIoyyYME=
 golang.org/x/tools v0.0.0-20181003024731-2f84ea8ef872/go.mod h1:n7NCudcB/nEzxVGmLbDWY5pfWTLqBcC2KZ6jyYvM4mQ=
+golang.org/x/tools v0.0.0-20181003201635-140737fa61ec h1:6DUoF2olQpsgKMTEo/tWabgWL2o+AmnSGBhSvnabx6A=
+golang.org/x/tools v0.0.0-20181003201635-140737fa61ec/go.mod h1:n7NCudcB/nEzxVGmLbDWY5pfWTLqBcC2KZ6jyYvM4mQ=
 gopkg.in/AlecAivazis/survey.v1 v1.6.2 h1:vAFgA47sDEoYoqDd8NMoCsewZmqnUSy2yVeaTBFrfY0=
 gopkg.in/AlecAivazis/survey.v1 v1.6.2/go.mod h1:2Ehl7OqkBl3Xb8VmC4oFW2bItAhnUfzIjrOzwRxCrOU=
 gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405/go.mod h1:Co6ibVJAznAaIkqp8huTwlJQCZ016jof/cbN4VW5Yz0=
