@@ -293,3 +293,14 @@ func (b BackendEtcd) Delete(path string) error {
 	}
 	return nil
 }
+
+func (b BackendEtcd) Update(path string, v model.UserGroup) error {
+	bjson, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+	if _, err := b.api.Update(context.Background(), path, string(bjson)); err != nil {
+		return err
+	}
+	return nil
+}

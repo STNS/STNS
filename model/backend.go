@@ -35,6 +35,7 @@ type GetterBackend interface {
 type SetterBackend interface {
 	Create(string, UserGroup) error
 	Delete(string) error
+	Update(string, UserGroup) error
 }
 
 func mergeUserGroup(m1, m2 map[string]UserGroup) map[string]UserGroup {
