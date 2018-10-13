@@ -18,15 +18,23 @@ MODDIR ?= $(PREFIX)/local/stns/modules.d
 SOURCES=Makefile go.mod go.sum version model api middleware modules stns stns.go package/
 DISTS=centos7 centos6 ubuntu16
 RELEASE_DIR=/var/www/releases
-
+ETCD_VER=3.3.3
 BUILD=tmp/bin
+UNAME_S := $(shell uname -s)
 
 default: build
 
 ci: depsdev test lint integration ## Run test and more...
 
 etcd:
+ifeq ($(UNAME_S),Linux)
+	test -e ./etcd-v$(ETCD_VER)-linux-amd64/etcd || curl -L  https://github.com/coreos/etcd/releases/download/v$(ETCD_VER)/etcd-v$(ETCD_VER)-linux-amd64.tar.gz -o etcd-v$(ETCD_VER)-linux-amd64.tar.gz
+	test -e ./etcd-v$(ETCD_VER)-linux-amd64/etcd || tar xzf etcd-v$(ETCD_VER)-linux-amd64.tar.gz
+	ps -ef | grep -q etcd-v$(ETCD_VER)-linux-amd64/etcd || ./etcd-v$(ETCD_VER)-linux-amd64/etcd &
+endif
+ifeq ($(UNAME_S),Darwin)
 	brew services start etcd
+endif
 
 depsdev: ## Installing dependencies for development
 	$(GO) get github.com/golang/lint/golint

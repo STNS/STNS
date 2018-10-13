@@ -14,3 +14,5 @@ builds/*
 tmp*
 keys/*
 repo/*
+etcd*
+default.etcd
