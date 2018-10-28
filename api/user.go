@@ -1,7 +1,6 @@
 package api
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -72,12 +71,13 @@ func updateUserPassword(c echo.Context) error {
 		if user.Password == u.CurrentPassword {
 			user.Password = u.CurrentPassword
 
-			err := backend.Update(fmt.Sprintf("/users/name/%s", user.Name), user)
+			err := backend.UpdateUser(user.ID, user)
 			if err != nil {
 				return errorResponse(c, err)
 			}
 			return c.JSON(http.StatusOK, user)
 		}
+		return c.JSON(http.StatusBadRequest, nil)
 	}
 	return c.JSON(http.StatusBadRequest, nil)
 }

@@ -276,7 +276,15 @@ func (b BackendEtcd) LowestGroupID() int {
 	return b.highlowGroupID(false)
 }
 
-func (b BackendEtcd) Create(path string, v model.UserGroup) error {
+func (b BackendEtcd) CreateUser(v model.UserGroup) error {
+	return b.create(fmt.Sprintf("/users/name/%s", v.GetName()), v)
+}
+
+func (b BackendEtcd) CreateGroup(v model.UserGroup) error {
+	return b.create(fmt.Sprintf("/groups/name/%s", v.GetName()), v)
+}
+
+func (b BackendEtcd) create(path string, v model.UserGroup) error {
 	bjson, err := json.Marshal(v)
 	if err != nil {
 		return err
@@ -287,14 +295,62 @@ func (b BackendEtcd) Create(path string, v model.UserGroup) error {
 	return nil
 }
 
-func (b BackendEtcd) Delete(path string) error {
+func (b BackendEtcd) DeleteUser(id int) error {
+	us, err := b.FindUserByID(id)
+	if err != nil {
+		return nil
+	}
+
+	for _, v := range us {
+		return b.delete(fmt.Sprintf("/users/name/%s", v.GetName()))
+	}
+	return nil
+}
+
+func (b BackendEtcd) DeleteGroup(id int) error {
+	us, err := b.FindGroupByID(id)
+	if err != nil {
+		return nil
+	}
+
+	for _, v := range us {
+		return b.delete(fmt.Sprintf("/groups/name/%s", v.GetName()))
+	}
+	return nil
+}
+
+func (b BackendEtcd) delete(path string) error {
 	if _, err := b.api.Delete(context.Background(), path, nil); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (b BackendEtcd) Update(path string, v model.UserGroup) error {
+func (b BackendEtcd) UpdateUser(id int, v model.UserGroup) error {
+	us, err := b.FindUserByID(id)
+	if err != nil {
+		return nil
+	}
+
+	for _, v := range us {
+		return b.update(fmt.Sprintf("/users/name/%s", v.GetName()), v)
+	}
+	return nil
+}
+
+func (b BackendEtcd) UpdateGroup(id int, v model.UserGroup) error {
+	us, err := b.FindGroupByID(id)
+	if err != nil {
+		return nil
+	}
+
+	for _, v := range us {
+		return b.update(fmt.Sprintf("/groups/name/%s", v.GetName()), v)
+	}
+	return nil
+}
+
+func (b BackendEtcd) update(path string, v model.UserGroup) error {
 	bjson, err := json.Marshal(v)
 	if err != nil {
 		return err
