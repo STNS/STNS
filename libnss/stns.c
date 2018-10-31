@@ -390,35 +390,33 @@ int stns_request(stns_conf_t *c, char *path, stns_response_t *res)
   }
 
   char *base = curl_escape(path, strlen(path));
+  char dpath[MAXBUF];
   char fpath[MAXBUF];
-  sprintf(fpath, "%s/%d/%s", c->cache_dir, geteuid(), base);
+  sprintf(dpath, "%s/%d", c->cache_dir, geteuid());
+  sprintf(fpath, "%s/%s", dpath, base);
   free(base);
 
   if (c->cache) {
-    FILE *fp = fopen(fpath, "r");
-    if (fp != NULL) {
-      fclose(fp);
-      struct stat statbuf;
-      if (stat(fpath, &statbuf) != -1 && statbuf.st_uid == geteuid()) {
-        unsigned long now  = time(NULL);
-        unsigned long diff = now - statbuf.st_mtime;
+    struct stat statbuf;
+    if (stat(fpath, &statbuf) == 0 && statbuf.st_uid == geteuid()) {
+      unsigned long now  = time(NULL);
+      unsigned long diff = now - statbuf.st_mtime;
 
-        // resource notfound
-        if ((diff < c->cache_ttl && statbuf.st_size > 0) || (diff < c->negative_cache_ttl && statbuf.st_size == 0)) {
-          if (statbuf.st_size == 0) {
-            res->status_code = STNS_HTTP_NOTFOUND;
-            return CURLE_HTTP_RETURNED_ERROR;
-          }
-
-          pthread_mutex_lock(&delete_mutex);
-          if (!stns_import_file(fpath, res)) {
-            pthread_mutex_unlock(&delete_mutex);
-            goto request;
-          }
-          pthread_mutex_unlock(&delete_mutex);
-          res->size = strlen(res->data);
-          return CURLE_OK;
+      // resource notfound
+      if ((diff < c->cache_ttl && statbuf.st_size > 0) || (diff < c->negative_cache_ttl && statbuf.st_size == 0)) {
+        if (statbuf.st_size == 0) {
+          res->status_code = STNS_HTTP_NOTFOUND;
+          return CURLE_HTTP_RETURNED_ERROR;
         }
+
+        pthread_mutex_lock(&delete_mutex);
+        if (!stns_import_file(fpath, res)) {
+          pthread_mutex_unlock(&delete_mutex);
+          goto request;
+        }
+        pthread_mutex_unlock(&delete_mutex);
+        res->size = strlen(res->data);
+        return CURLE_OK;
       }
     }
   }
