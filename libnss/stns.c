@@ -40,10 +40,13 @@ static void stns_force_create_cache_dir(stns_conf_t *c)
 {
   if (c->cache && getuid() == 0) {
     struct stat statBuf;
-    if (stat(c->cache_dir, &statBuf) != 0) {
+
+    char path[MAXBUF];
+    sprintf(path, "%s/%d", c->cache_dir, getuid());
+    if (stat(path, &statBuf) != 0) {
       mode_t um = {0};
       um        = umask(0);
-      mkdir(c->cache_dir, S_IRUSR | S_IWUSR | S_IXUSR | S_IRGRP | S_IWGRP | S_IXGRP | S_IROTH | S_IWOTH | S_IXOTH);
+      mkdir(path, S_IRUSR | S_IWUSR | S_IXUSR | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
       umask(um);
     }
   }
@@ -294,7 +297,7 @@ void stns_export_file(char *file, char *data)
 
   mode_t um = {0};
   um        = umask(0);
-  chmod(file, S_IRUSR | S_IWUSR | S_IXUSR | S_IRGRP | S_IWGRP | S_IXGRP | S_IROTH | S_IWOTH | S_IXOTH);
+  chmod(file, S_IRUSR | S_IWUSR | S_IXUSR | S_IRGRP | S_IROTH);
   umask(um);
 }
 
@@ -333,18 +336,20 @@ static void *delete_cache_files(void *data)
   struct dirent *ent;
   struct stat statbuf;
   unsigned long now = time(NULL);
+  char dir[MAXBUF];
+  sprintf(dir, "%s/%d", c->cache_dir, getuid());
 
   pthread_mutex_lock(&delete_mutex);
-  if ((dp = opendir(c->cache_dir)) == NULL) {
-    syslog(LOG_ERR, "%s(stns)[L%d] cannot open %s: %s", __func__, __LINE__, c->cache_dir, strerror(errno));
+  if ((dp = opendir(dir)) == NULL) {
+    syslog(LOG_ERR, "%s(stns)[L%d] cannot open %s: %s", __func__, __LINE__, dir, strerror(errno));
     pthread_mutex_unlock(&delete_mutex);
     return NULL;
   }
 
   char *buf = malloc(1);
   while ((ent = readdir(dp)) != NULL) {
-    buf = (char *)realloc(buf, strlen(c->cache_dir) + strlen(ent->d_name) + 2);
-    sprintf(buf, "%s/%s", c->cache_dir, ent->d_name);
+    buf = (char *)realloc(buf, strlen(dir) + strlen(ent->d_name) + 2);
+    sprintf(buf, "%s/%s", dir, ent->d_name);
 
     if (stat(buf, &statbuf) == 0 && (statbuf.st_uid == getuid() || getuid() == 0)) {
       unsigned long diff = now - statbuf.st_mtime;
@@ -378,8 +383,8 @@ int stns_request(stns_conf_t *c, char *path, stns_response_t *res)
   }
 
   char *base = curl_escape(path, strlen(path));
-  char fpath[strlen(c->cache_dir) + strlen(base) + 1];
-  sprintf(fpath, "%s/%s", c->cache_dir, base);
+  char fpath[MAXBUF];
+  sprintf(fpath, "%s/%d/%s", c->cache_dir, getuid(), base);
   free(base);
 
   if (c->cache) {
