@@ -16,3 +16,4 @@ keys/*
 repo/*
 etcd*
 default.etcd
+.vagrant
