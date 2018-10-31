@@ -42,11 +42,11 @@ static void stns_force_create_cache_dir(stns_conf_t *c)
     struct stat statBuf;
 
     char path[MAXBUF];
-    sprintf(path, "%s/%d", c->cache_dir, geteuid());
+    sprintf(path, "%s", c->cache_dir);
     if (stat(path, &statBuf) != 0) {
       mode_t um = {0};
       um        = umask(0);
-      mkdir(path, S_IRUSR | S_IWUSR | S_IXUSR | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
+      mkdir(path, S_IRUSR | S_IWUSR | S_IXUSR | S_IRGRP | S_IWGRP | S_IXGRP | S_IROTH | S_IWOTH | S_IXOTH);
       umask(um);
     }
   }
