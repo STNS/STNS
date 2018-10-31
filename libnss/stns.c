@@ -392,7 +392,7 @@ int stns_request(stns_conf_t *c, char *path, stns_response_t *res)
     if (fp != NULL) {
       fclose(fp);
       struct stat statbuf;
-      if (stat(fpath, &statbuf) != -1) {
+      if (stat(fpath, &statbuf) != -1 && statbuf.st_uid == geteuid()) {
         unsigned long now  = time(NULL);
         unsigned long diff = now - statbuf.st_mtime;
 
