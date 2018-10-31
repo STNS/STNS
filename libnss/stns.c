@@ -38,11 +38,11 @@ ID_QUERY_AVAILABLE(group, low, >)
 
 static void stns_force_create_cache_dir(stns_conf_t *c)
 {
-  if (c->cache && getuid() == 0) {
+  if (c->cache && geteuid() == 0) {
     struct stat statBuf;
 
     char path[MAXBUF];
-    sprintf(path, "%s/%d", c->cache_dir, getuid());
+    sprintf(path, "%s/%d", c->cache_dir, geteuid());
     if (stat(path, &statBuf) != 0) {
       mode_t um = {0};
       um        = umask(0);
@@ -281,7 +281,7 @@ void stns_make_lockfile(char *path)
 void stns_export_file(char *file, char *data)
 {
   struct stat statbuf;
-  if (stat(file, &statbuf) != -1 && statbuf.st_uid != getuid()) {
+  if (stat(file, &statbuf) != -1 && statbuf.st_uid != geteuid()) {
     return;
   }
 
@@ -337,7 +337,7 @@ static void *delete_cache_files(void *data)
   struct stat statbuf;
   unsigned long now = time(NULL);
   char dir[MAXBUF];
-  sprintf(dir, "%s/%d", c->cache_dir, getuid());
+  sprintf(dir, "%s/%d", c->cache_dir, geteuid());
 
   pthread_mutex_lock(&delete_mutex);
   if ((dp = opendir(dir)) == NULL) {
@@ -351,7 +351,7 @@ static void *delete_cache_files(void *data)
     buf = (char *)realloc(buf, strlen(dir) + strlen(ent->d_name) + 2);
     sprintf(buf, "%s/%s", dir, ent->d_name);
 
-    if (stat(buf, &statbuf) == 0 && (statbuf.st_uid == getuid() || getuid() == 0)) {
+    if (stat(buf, &statbuf) == 0 && (statbuf.st_uid == geteuid() || geteuid() == 0)) {
       unsigned long diff = now - statbuf.st_mtime;
 
       if (!S_ISDIR(statbuf.st_mode) &&
@@ -384,7 +384,7 @@ int stns_request(stns_conf_t *c, char *path, stns_response_t *res)
 
   char *base = curl_escape(path, strlen(path));
   char fpath[MAXBUF];
-  sprintf(fpath, "%s/%d/%s", c->cache_dir, getuid(), base);
+  sprintf(fpath, "%s/%d/%s", c->cache_dir, geteuid(), base);
   free(base);
 
   if (c->cache) {
