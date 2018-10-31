@@ -278,10 +278,17 @@ void stns_make_lockfile(char *path)
 }
 
 // base: https://github.com/linyows/octopass/blob/master/octopass.c
-void stns_export_file(char *file, char *data)
+void stns_export_file(char *dir, char *file, char *data)
 {
   struct stat statbuf;
-  if (stat(file, &statbuf) != -1 && statbuf.st_uid != geteuid()) {
+  if (stat(dir, &statbuf) != 0) {
+    mode_t um = {0};
+    um        = umask(0);
+    mkdir(dir, S_IRUSR | S_IWUSR | S_IXUSR);
+    umask(um);
+  }
+
+  if (stat(file, &statbuf) == 0 && statbuf.st_uid != geteuid()) {
     return;
   }
 
@@ -448,7 +455,7 @@ request:
   if (c->cache) {
     pthread_join(pthread, NULL);
     pthread_mutex_lock(&delete_mutex);
-    stns_export_file(fpath, res->data);
+    stns_export_file(dpath, fpath, res->data);
     pthread_mutex_unlock(&delete_mutex);
   }
   return result;
