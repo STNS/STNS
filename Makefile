@@ -27,6 +27,7 @@ default: build
 ci: depsdev test lint integration ## Run test and more...
 
 etcd:
+	echo $(UNAME_S)
 ifeq ($(UNAME_S),Linux)
 	test -e ./etcd-v$(ETCD_VER)-linux-amd64/etcd || curl -L  https://github.com/coreos/etcd/releases/download/v$(ETCD_VER)/etcd-v$(ETCD_VER)-linux-amd64.tar.gz -o etcd-v$(ETCD_VER)-linux-amd64.tar.gz
 	test -e ./etcd-v$(ETCD_VER)-linux-amd64/etcd || tar xzf etcd-v$(ETCD_VER)-linux-amd64.tar.gz
