@@ -1,3 +1,7 @@
+libnss-stns-v2 (2.0.1-1) xenial; urgency=medium
+
+  * #78 Cache can be vulnerable
+
 libnss-stns-v2 (2.0.0-1) xenial; urgency=medium
 
   * #76 FIX SEGV if too many members
