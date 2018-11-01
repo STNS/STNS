@@ -83,7 +83,8 @@ Test(stns_request, http_cache)
   struct stat st;
   stns_conf_t c;
   stns_response_t r;
-  char *path = "/var/cache/stns/get%3Fexample";
+  char path[MAXBUF];
+  sprintf(path, "/var/cache/stns/%d/%s", geteuid(), "get%3Fexample");
 
   c.api_endpoint    = "https://httpbin.org";
   c.http_proxy      = NULL;

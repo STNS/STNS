@@ -38,12 +38,15 @@ ID_QUERY_AVAILABLE(group, low, >)
 
 static void stns_force_create_cache_dir(stns_conf_t *c)
 {
-  if (c->cache && getuid() == 0) {
+  if (c->cache && geteuid() == 0) {
     struct stat statBuf;
-    if (stat(c->cache_dir, &statBuf) != 0) {
+
+    char path[MAXBUF];
+    sprintf(path, "%s", c->cache_dir);
+    if (stat(path, &statBuf) != 0) {
       mode_t um = {0};
       um        = umask(0);
-      mkdir(c->cache_dir, S_IRUSR | S_IWUSR | S_IXUSR | S_IRGRP | S_IWGRP | S_IXGRP | S_IROTH | S_IWOTH | S_IXOTH);
+      mkdir(path, S_IRUSR | S_IWUSR | S_IXUSR | S_IRGRP | S_IWGRP | S_IXGRP | S_IROTH | S_IWOTH | S_IXOTH);
       umask(um);
     }
   }
@@ -275,10 +278,17 @@ void stns_make_lockfile(char *path)
 }
 
 // base: https://github.com/linyows/octopass/blob/master/octopass.c
-void stns_export_file(char *file, char *data)
+void stns_export_file(char *dir, char *file, char *data)
 {
   struct stat statbuf;
-  if (stat(file, &statbuf) != -1 && statbuf.st_uid != getuid()) {
+  if (stat(dir, &statbuf) != 0) {
+    mode_t um = {0};
+    um        = umask(0);
+    mkdir(dir, S_IRUSR | S_IWUSR | S_IXUSR);
+    umask(um);
+  }
+
+  if (stat(file, &statbuf) == 0 && statbuf.st_uid != geteuid()) {
     return;
   }
 
@@ -294,7 +304,7 @@ void stns_export_file(char *file, char *data)
 
   mode_t um = {0};
   um        = umask(0);
-  chmod(file, S_IRUSR | S_IWUSR | S_IXUSR | S_IRGRP | S_IWGRP | S_IXGRP | S_IROTH | S_IWOTH | S_IXOTH);
+  chmod(file, S_IRUSR | S_IWUSR | S_IXUSR | S_IRGRP | S_IROTH);
   umask(um);
 }
 
@@ -333,20 +343,22 @@ static void *delete_cache_files(void *data)
   struct dirent *ent;
   struct stat statbuf;
   unsigned long now = time(NULL);
+  char dir[MAXBUF];
+  sprintf(dir, "%s/%d", c->cache_dir, geteuid());
 
   pthread_mutex_lock(&delete_mutex);
-  if ((dp = opendir(c->cache_dir)) == NULL) {
-    syslog(LOG_ERR, "%s(stns)[L%d] cannot open %s: %s", __func__, __LINE__, c->cache_dir, strerror(errno));
+  if ((dp = opendir(dir)) == NULL) {
+    syslog(LOG_ERR, "%s(stns)[L%d] cannot open %s: %s", __func__, __LINE__, dir, strerror(errno));
     pthread_mutex_unlock(&delete_mutex);
     return NULL;
   }
 
   char *buf = malloc(1);
   while ((ent = readdir(dp)) != NULL) {
-    buf = (char *)realloc(buf, strlen(c->cache_dir) + strlen(ent->d_name) + 2);
-    sprintf(buf, "%s/%s", c->cache_dir, ent->d_name);
+    buf = (char *)realloc(buf, strlen(dir) + strlen(ent->d_name) + 2);
+    sprintf(buf, "%s/%s", dir, ent->d_name);
 
-    if (stat(buf, &statbuf) == 0 && (statbuf.st_uid == getuid() || getuid() == 0)) {
+    if (stat(buf, &statbuf) == 0 && (statbuf.st_uid == geteuid() || geteuid() == 0)) {
       unsigned long diff = now - statbuf.st_mtime;
 
       if (!S_ISDIR(statbuf.st_mode) &&
@@ -378,35 +390,33 @@ int stns_request(stns_conf_t *c, char *path, stns_response_t *res)
   }
 
   char *base = curl_escape(path, strlen(path));
-  char fpath[strlen(c->cache_dir) + strlen(base) + 1];
-  sprintf(fpath, "%s/%s", c->cache_dir, base);
+  char dpath[MAXBUF];
+  char fpath[MAXBUF];
+  sprintf(dpath, "%s/%d", c->cache_dir, geteuid());
+  sprintf(fpath, "%s/%s", dpath, base);
   free(base);
 
   if (c->cache) {
-    FILE *fp = fopen(fpath, "r");
-    if (fp != NULL) {
-      fclose(fp);
-      struct stat statbuf;
-      if (stat(fpath, &statbuf) != -1) {
-        unsigned long now  = time(NULL);
-        unsigned long diff = now - statbuf.st_mtime;
+    struct stat statbuf;
+    if (stat(fpath, &statbuf) == 0 && statbuf.st_uid == geteuid()) {
+      unsigned long now  = time(NULL);
+      unsigned long diff = now - statbuf.st_mtime;
 
-        // resource notfound
-        if ((diff < c->cache_ttl && statbuf.st_size > 0) || (diff < c->negative_cache_ttl && statbuf.st_size == 0)) {
-          if (statbuf.st_size == 0) {
-            res->status_code = STNS_HTTP_NOTFOUND;
-            return CURLE_HTTP_RETURNED_ERROR;
-          }
-
-          pthread_mutex_lock(&delete_mutex);
-          if (!stns_import_file(fpath, res)) {
-            pthread_mutex_unlock(&delete_mutex);
-            goto request;
-          }
-          pthread_mutex_unlock(&delete_mutex);
-          res->size = strlen(res->data);
-          return CURLE_OK;
+      // resource notfound
+      if ((diff < c->cache_ttl && statbuf.st_size > 0) || (diff < c->negative_cache_ttl && statbuf.st_size == 0)) {
+        if (statbuf.st_size == 0) {
+          res->status_code = STNS_HTTP_NOTFOUND;
+          return CURLE_HTTP_RETURNED_ERROR;
         }
+
+        pthread_mutex_lock(&delete_mutex);
+        if (!stns_import_file(fpath, res)) {
+          pthread_mutex_unlock(&delete_mutex);
+          goto request;
+        }
+        pthread_mutex_unlock(&delete_mutex);
+        res->size = strlen(res->data);
+        return CURLE_OK;
       }
     }
   }
@@ -443,7 +453,7 @@ request:
   if (c->cache) {
     pthread_join(pthread, NULL);
     pthread_mutex_lock(&delete_mutex);
-    stns_export_file(fpath, res->data);
+    stns_export_file(dpath, fpath, res->data);
     pthread_mutex_unlock(&delete_mutex);
   }
   return result;
