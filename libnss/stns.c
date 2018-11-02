@@ -43,12 +43,14 @@ static void stns_force_create_cache_dir(stns_conf_t *c)
 
     char path[MAXBUF];
     sprintf(path, "%s", c->cache_dir);
+    mode_t um = {0};
+    um        = umask(0);
     if (stat(path, &statBuf) != 0) {
-      mode_t um = {0};
-      um        = umask(0);
-      mkdir(path, S_IRUSR | S_IWUSR | S_IXUSR | S_IRGRP | S_IWGRP | S_IXGRP | S_IROTH | S_IWOTH | S_IXOTH);
-      umask(um);
+      mkdir(path, S_ISVTX | S_IRWXU | S_IRWXG | S_IRWXO);
+    } else if ((S_ISVTX & statBuf.st_mode) == 0) {
+      chmod(path, S_ISVTX | S_IRWXU | S_IRWXG | S_IRWXO);
     }
+    umask(um);
   }
 }
 
