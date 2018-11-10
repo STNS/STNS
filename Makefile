@@ -22,6 +22,11 @@ ETCD_VER=3.3.3
 BUILD=tmp/bin
 UNAME_S := $(shell uname -s)
 
+REVISION=$(shell git describe --always)
+GOVERSION=$(shell go version)
+BUILDDATE=$(shell date '+%Y/%m/%d %H:%M:%S %Z')
+
+ME=$(shell whoami)
 default: build
 
 ci: depsdev test lint integration ## Run test and more...
@@ -65,7 +70,7 @@ integration: ## Run integration test after Server wakeup
 	./misc/server stop
 
 build: ## Build server
-	$(GO) build -o $(BUILD)/stns
+	$(GO) build -ldflags "-X main.version=$(VERSION) -X main.revision=$(REVISION) -X \"main.goversion=$(GOVERSION)\" -X \"main.builddate=$(BUILDDATE)\" -X \"main.builduser=$(ME)\"" -o $(BUILD)/stns
 	$(GO) build -buildmode=plugin -o $(BUILD)/mod_stns_etcd.so modules/etcd.go
 
 install: build ## Install
