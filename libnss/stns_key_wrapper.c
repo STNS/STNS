@@ -1,4 +1,5 @@
 #include "stns.h"
+#include <signal.h>
 #include <getopt.h>
 int main(int argc, char *argv[])
 {
@@ -10,6 +11,7 @@ int main(int argc, char *argv[])
   char *keys      = NULL;
   char *conf_path = NULL;
   int ret;
+  signal(SIGPIPE, SIG_IGN);
 
   while ((ret = getopt(argc, argv, "c:")) != -1) {
     if (ret == -1)
