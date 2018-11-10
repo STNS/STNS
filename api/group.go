@@ -10,7 +10,7 @@ import (
 )
 
 func getGroups(c echo.Context) error {
-	backend := c.Get(middleware.BackendKey).(model.GetterBackends)
+	backend := c.Get(middleware.BackendKey).(model.Backends)
 
 	var r map[string]model.UserGroup
 	var err error
@@ -20,7 +20,7 @@ func getGroups(c echo.Context) error {
 			case "id":
 				id, err := strconv.Atoi(v[0])
 				if err != nil {
-					return c.JSON(http.StatusBadRequest, nil)
+					return echo.NewHTTPError(http.StatusBadRequest, nil)
 				}
 
 				r, err = backend.FindGroupByID(id)
@@ -34,7 +34,7 @@ func getGroups(c echo.Context) error {
 					return errorResponse(c, err)
 				}
 			default:
-				return c.JSON(http.StatusBadRequest, nil)
+				return echo.NewHTTPError(http.StatusBadRequest, nil)
 			}
 		}
 	} else {

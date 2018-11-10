@@ -1,7 +1,6 @@
 require 'erb'
 
-
-user_groups = [
+getter_user_groups = [
 	["FindUserByID", "int"],
 	["FindUserByName", "string"],
 	["FindGroupByID", "int"],
@@ -10,15 +9,8 @@ user_groups = [
 	["Groups", nil]
 ]
 
-highlow = %w(
-  HighestUserID
-  LowestUserID
-  HighestGroupID
-  LowestGroupID
-)
-
-user_groups_template = <<~EOS
-func (gb GetterBackends) <%= t[0] %>(<%= t[1] ? "v " + t[1] : "" %>) (map[string]UserGroup, error) {
+getter_user_groups_template = <<~EOS
+func (gb Backends) <%= t[0] %>(<%= t[1] ? "v " + t[1] : "" %>) (map[string]UserGroup, error) {
 	r := map[string]UserGroup{}
   var notfound error
   eg := errgroup.Group{}
@@ -50,8 +42,15 @@ func (gb GetterBackends) <%= t[0] %>(<%= t[1] ? "v " + t[1] : "" %>) (map[string
 }
 EOS
 
+highlow = %w(
+  HighestUserID
+  LowestUserID
+  HighestGroupID
+  LowestGroupID
+)
+
 highlow_template = <<~EOS
-func (gb GetterBackends) <%= t %>() int {
+func (gb Backends) <%= t %>() int {
 	r := 0
 	for _, b := range gb {
     lr := b.<%= t %>()
@@ -63,13 +62,48 @@ func (gb GetterBackends) <%= t %>() int {
 }
 EOS
 
+
+setter_user_groups = [
+	["CreateUser", "v UserGroup"],
+	["CreateGroup", "v UserGroup"],
+	["DeleteUser", "v int"],
+	["DeleteGroup", "v int"],
+	["UpdateUser", "v int", "vv UserGroup"],
+	["UpdateGroup", "v int", "vv UserGroup"],
+]
+
+setter_user_groups_template = <<~EOS
+func (gb Backends) <%= t[0] %>(<%= t[1] %><%= t[2] ? "," + t[2] : "" %>) error {
+  eg := errgroup.Group{}
+	for _, b := range gb {
+    eg.Go(func() error {
+      err := b.<%= t[0] %>(<%= t[1] ? "v" : "" %><%= t[2] ? ", vv" : "" %>)
+      if err != nil {
+          return err
+      }
+      return nil
+    })
+	}
+  if err := eg.Wait(); err != nil {
+      return nil
+  }
+
+	return nil
+}
+EOS
+
 fname = 'model/backends.go'
 file = File.open(fname,'w')
 
 file.puts "package model"
 
-user_groups.each do |t|
-  erb = ERB.new(user_groups_template)
+getter_user_groups.each do |t|
+  erb = ERB.new(getter_user_groups_template)
+  file.puts erb.result(binding)
+end
+
+setter_user_groups.each do |t|
+  erb = ERB.new(setter_user_groups_template)
   file.puts erb.result(binding)
 end
 

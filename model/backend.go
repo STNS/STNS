@@ -8,14 +8,9 @@ type UserGroup interface {
 	setLinkValues([]string)
 	value() []string
 }
-
+type Backends []Backend
 type Backend interface {
-	GetterBackend
-	SetterBackend
-}
-
-type GetterBackends []GetterBackend
-type GetterBackend interface {
+	// Getter
 	FindUserByID(int) (map[string]UserGroup, error)
 	FindUserByName(string) (map[string]UserGroup, error)
 	FindGroupByID(int) (map[string]UserGroup, error)
@@ -26,9 +21,8 @@ type GetterBackend interface {
 	LowestUserID() int
 	HighestGroupID() int
 	LowestGroupID() int
-}
 
-type SetterBackend interface {
+	// Setter
 	CreateUser(UserGroup) error
 	DeleteUser(int) error
 	UpdateUser(int, UserGroup) error

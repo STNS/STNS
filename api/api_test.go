@@ -1,17 +1,21 @@
 package api
 
 import (
+	"bytes"
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"testing"
 
 	"github.com/STNS/STNS/middleware"
 	"github.com/STNS/STNS/model"
 	"github.com/STNS/STNS/stns"
 	"github.com/labstack/echo"
+	"github.com/stretchr/testify/assert"
 )
 
-func newContext(path string, queryParams map[string]string, config *stns.Config) (echo.Context, *httptest.ResponseRecorder) {
+func tomlContext(path string, queryParams map[string]string, config *stns.Config) (echo.Context, *httptest.ResponseRecorder) {
 	rec := httptest.NewRecorder()
 	q := make(url.Values)
 	for k, v := range queryParams {
@@ -26,12 +30,38 @@ func newContext(path string, queryParams map[string]string, config *stns.Config)
 	e := echo.New()
 	ctx := e.NewContext(req, rec)
 
-	var getterBackends model.GetterBackends
+	var backends model.Backends
 	b, _ := model.NewBackendTomlFile(config.Users, config.Groups)
-	getterBackends = append(getterBackends, b)
-	ctx.Set(middleware.BackendKey, getterBackends)
+	backends = append(backends, b)
+	ctx.Set(middleware.BackendKey, backends)
 	ctx.SetPath(path)
 
+	return ctx, rec
+}
+
+func dummyContext(t *testing.T, reqType, reqPath string, args interface{}) (echo.Context, *httptest.ResponseRecorder) {
+	var rp []byte
+	var jsonerr error
+	if args != nil {
+		switch args.(type) {
+		case string:
+			rp = []byte(args.(string))
+		default:
+			rp, jsonerr = json.Marshal(args)
+			assert.NoError(t, jsonerr)
+		}
+	}
+	req := httptest.NewRequest(reqType, reqPath, bytes.NewReader(rp))
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+	rec := httptest.NewRecorder()
+	e := echo.New()
+	ctx := e.NewContext(req, rec)
+
+	var backends model.Backends
+	b, _ := model.NewBackendDummy()
+	backends = append(backends, b)
+
+	ctx.Set(middleware.BackendKey, backends)
 	return ctx, rec
 }
 
