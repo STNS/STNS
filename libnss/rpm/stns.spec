@@ -1,6 +1,6 @@
 Summary:          SimpleTomlNameService Nss Module
 Name:             libnss-stns-v2
-Version:          2.0.2
+Version:          2.0.3
 Release:          1
 License:          GPLv3
 URL:              https://github.com/STNS/STNS
@@ -56,6 +56,8 @@ install -m 644 stns.conf.example %{buildroot}%{_sysconfdir}/stns/client/stns.con
 /etc/stns/client/stns.conf
 
 %changelog
+* Thu Nov 10 2018 pyama86 <www.kazu.com@gmail.com> - 2.0.3-1
+- #80 Ignore sigpipe signal in key wrapper
 * Thu Nov 2 2018 pyama86 <www.kazu.com@gmail.com> - 2.0.2-1
 - #79 add sticky bit to cache dir
 * Thu Nov 1 2018 pyama86 <www.kazu.com@gmail.com> - 2.0.1-1
