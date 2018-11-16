@@ -1,7 +1,7 @@
 Summary:          SimpleTomlNameService Nss Module
 Name:             libnss-stns-v2
 Version:          2.0.3
-Release:          1
+Release:          2
 License:          GPLv3
 URL:              https://github.com/STNS/STNS
 Source:           %{name}-%{version}.tar.gz
@@ -47,18 +47,19 @@ install -m 644 stns.conf.example %{buildroot}%{_sysconfdir}/stns/client/stns.con
 
 %files
 %defattr(-, root, root)
+%doc stns.conf.example
 /usr/lib64/libnss_stns.so
 /usr/lib64/libnss_stns.so.2
 /usr/lib64/libnss_stns.so.2.0
 /usr/lib/stns/stns-key-wrapper
 /usr/local/bin/stns-key-wrapper
 /var/cache/stns
-/etc/stns/client/stns.conf
+%config(noreplace) /etc/stns/client/stns.conf
 
 %changelog
-* Thu Nov 10 2018 pyama86 <www.kazu.com@gmail.com> - 2.0.3-1
+* Sat Nov 10 2018 pyama86 <www.kazu.com@gmail.com> - 2.0.3-1
 - #80 Ignore sigpipe signal in key wrapper
-* Thu Nov 2 2018 pyama86 <www.kazu.com@gmail.com> - 2.0.2-1
+* Fri Nov 2 2018 pyama86 <www.kazu.com@gmail.com> - 2.0.2-1
 - #79 add sticky bit to cache dir
 * Thu Nov 1 2018 pyama86 <www.kazu.com@gmail.com> - 2.0.1-1
 - #78 Cache can be vulnerable
@@ -66,14 +67,14 @@ install -m 644 stns.conf.example %{buildroot}%{_sysconfdir}/stns/client/stns.con
 - #76 FIX SEGV if too many members
 * Thu Sep 20 2018 pyama86 <www.kazu.com@gmail.com> - 1.0.0-6
 - #73 fix id shift did not go well
-* Mon Sep 11 2018 pyama86 <www.kazu.com@gmail.com> - 1.0.0-5
+* Tue Sep 11 2018 pyama86 <www.kazu.com@gmail.com> - 1.0.0-5
 - #71 fix segv when sudo
-* Mon Sep 11 2018 pyama86 <www.kazu.com@gmail.com> - 1.0.0-4
+* Tue Sep 11 2018 pyama86 <www.kazu.com@gmail.com> - 1.0.0-4
 - #68 json_value_free may be segv
 * Mon Sep 10 2018 pyama86 <www.kazu.com@gmail.com> - 1.0.0-3
 - #65 I made http proxy available at http request
 - #66 Replaced json library
-* Mon Sep 4 2018 pyama86 <www.kazu.com@gmail.com> - 1.0.0-2
+* Tue Sep 4 2018 pyama86 <www.kazu.com@gmail.com> - 1.0.0-2
 - Add symbolic link to key-wrapper
 * Mon Sep 3 2018 pyama86 <www.kazu.com@gmail.com> - 1.0.0-1
 - Release
