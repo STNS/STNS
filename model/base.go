@@ -3,8 +3,8 @@ package model
 import "fmt"
 
 type Base struct {
-	ID   int    `toml:"id" json:"id" yaml:"id"`
-	Name string `toml:"name" json:"name" yaml:"name"`
+	ID   int    `toml:"id" json:"id" yaml:"id" validate:"required,gte=0"`
+	Name string `toml:"name" json:"name" yaml:"name" validate:"required"`
 }
 
 func (b *Base) GetID() int {
