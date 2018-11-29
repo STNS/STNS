@@ -5,6 +5,7 @@ After=syslog.target network.target
 [Service]
 Type=simple
 PIDFile=/var/run/stns.pid
+ExecStartPre=/usr/sbin/stns --pidfile /var/run/stns.pid --logfile /var/log/stns.log checkconf
 ExecStart=/usr/sbin/stns --pidfile /var/run/stns.pid --logfile /var/log/stns.log server
 KillMode=process
 Restart=always
