@@ -10,6 +10,8 @@ require (
 	github.com/facebookgo/pidfile v0.0.0-20150612191647-f242e2999868
 	github.com/fatih/color v1.7.0 // indirect
 	github.com/git-chglog/git-chglog v0.0.0-20180506054919-594ec82eaf08 // indirect
+	github.com/go-playground/locales v0.12.1 // indirect
+	github.com/go-playground/universal-translator v0.16.0 // indirect
 	github.com/go-yaml/yaml v2.1.0+incompatible
 	github.com/golang/lint v0.0.0-20180702182130-06c8688daad7 // indirect
 	github.com/google/go-github v17.0.0+incompatible // indirect
@@ -44,6 +46,7 @@ require (
 	golang.org/x/sync v0.0.0-20180314180146-1d60e4601c6f
 	golang.org/x/tools v0.0.0-20181003201635-140737fa61ec // indirect
 	gopkg.in/AlecAivazis/survey.v1 v1.6.2 // indirect
+	gopkg.in/go-playground/validator.v9 v9.23.0
 	gopkg.in/kyokomi/emoji.v1 v1.5.1 // indirect
 	gopkg.in/yaml.v2 v2.2.1 // indirect
 )
