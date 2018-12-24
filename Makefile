@@ -30,7 +30,7 @@ etcd:
 ifeq ($(UNAME_S),Linux)
 	test -e ./etcd-v$(ETCD_VER)-linux-amd64/etcd || curl -L  https://github.com/coreos/etcd/releases/download/v$(ETCD_VER)/etcd-v$(ETCD_VER)-linux-amd64.tar.gz -o etcd-v$(ETCD_VER)-linux-amd64.tar.gz
 	test -e ./etcd-v$(ETCD_VER)-linux-amd64/etcd || tar xzf etcd-v$(ETCD_VER)-linux-amd64.tar.gz
-	ps -ef | grep -q etcd-v$(ETCD_VER)-linux-amd64/etcd || ./etcd-v$(ETCD_VER)-linux-amd64/etcd &
+	pgrep -f etcd-v$(ETCD_VER)-linux-amd64/etcd || ./etcd-v$(ETCD_VER)-linux-amd64/etcd &
 endif
 ifeq ($(UNAME_S),Darwin)
 	brew services start etcd
