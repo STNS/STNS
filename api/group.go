@@ -20,21 +20,20 @@ func getGroups(c echo.Context) error {
 			case "id":
 				id, err := strconv.Atoi(v[0])
 				if err != nil {
-					return echo.NewHTTPError(http.StatusBadRequest, nil)
+					return c.JSON(http.StatusBadRequest, err)
 				}
 
 				r, err = backend.FindGroupByID(id)
 				if err != nil {
 					return errorResponse(c, err)
 				}
-
 			case "name":
 				r, err = backend.FindGroupByName(v[0])
 				if err != nil {
 					return errorResponse(c, err)
 				}
 			default:
-				return echo.NewHTTPError(http.StatusBadRequest, nil)
+				return c.JSON(http.StatusBadRequest, err)
 			}
 		}
 	} else {

@@ -21,7 +21,7 @@ func toSlice(ug map[string]model.UserGroup) []model.UserGroup {
 func errorResponse(c echo.Context, err error) error {
 	switch err.(type) {
 	case model.NotFoundError:
-		return echo.NewHTTPError(http.StatusNotFound, err)
+		return c.JSON(http.StatusNotFound, err)
 	}
-	return echo.NewHTTPError(http.StatusInternalServerError, err)
+	return c.JSON(http.StatusInternalServerError, err)
 }

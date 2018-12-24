@@ -110,10 +110,11 @@ func Test_getUsers(t *testing.T) {
 }
 func Test_updateUserPassword(t *testing.T) {
 	tests := []struct {
-		name    string
-		id      int
-		wantErr bool
-		params  PasswordChangeParams
+		name       string
+		id         int
+		wantErr    bool
+		wantStatus int
+		params     PasswordChangeParams
 	}{
 		{
 			name:    "ok",
@@ -123,11 +124,13 @@ func Test_updateUserPassword(t *testing.T) {
 				CurrentPassword: "foo",
 				NewPassword:     "bar",
 			},
+			wantStatus: http.StatusNoContent,
 		},
 		{
-			name:    "id notfound",
-			id:      2,
-			wantErr: true,
+			name:       "id notfound",
+			id:         2,
+			wantErr:    false,
+			wantStatus: http.StatusNotFound,
 		},
 		{
 			name: "bad password",
@@ -136,17 +139,21 @@ func Test_updateUserPassword(t *testing.T) {
 				CurrentPassword: "bar",
 				NewPassword:     "bar",
 			},
-			wantErr: true,
+			wantErr:    false,
+			wantStatus: http.StatusBadRequest,
 		},
 	}
 	for _, tt := range tests {
-		ctx, _ := dummyContext(t, "PUT", "/users/password/:", tt.params)
+		ctx, rec := dummyContext(t, "PUT", "/users/password/:", tt.params)
 		ctx.SetParamNames("id")
 		ctx.SetParamValues(fmt.Sprint(tt.id))
 
 		t.Run(tt.name, func(t *testing.T) {
 			if err := updateUserPassword(ctx); (err != nil) != tt.wantErr {
 				t.Errorf("updateUserPassword() error = %v, wantErr %v", err, tt.wantErr)
+			}
+			if rec.Code != tt.wantStatus {
+				t.Errorf("updateUserPassword status code does not match, expected %d, got %d", tt.wantStatus, rec.Code)
 			}
 		})
 	}

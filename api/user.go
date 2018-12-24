@@ -21,7 +21,7 @@ func getUsers(c echo.Context) error {
 			case "id":
 				id, err := strconv.Atoi(v[0])
 				if err != nil {
-					return echo.NewHTTPError(http.StatusBadRequest, nil)
+					return c.JSON(http.StatusBadRequest, err)
 				}
 
 				r, err = backend.FindUserByID(id)
@@ -34,7 +34,7 @@ func getUsers(c echo.Context) error {
 					return errorResponse(c, err)
 				}
 			default:
-				return echo.NewHTTPError(http.StatusBadRequest, nil)
+				return c.JSON(http.StatusBadRequest, err)
 			}
 		}
 	} else {
@@ -55,12 +55,12 @@ func updateUserPassword(c echo.Context) error {
 	backend := c.Get(middleware.BackendKey).(model.Backends)
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, err)
+		return c.JSON(http.StatusBadRequest, err)
 	}
 
 	u := PasswordChangeParams{}
 	if err := c.Bind(&u); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, err)
+		return c.JSON(http.StatusBadRequest, err)
 	}
 
 	r, err := backend.FindUserByID(id)
@@ -77,11 +77,11 @@ func updateUserPassword(c echo.Context) error {
 			if err != nil {
 				return errorResponse(c, err)
 			}
-			return c.JSON(http.StatusOK, user)
+			return c.JSON(http.StatusNoContent, user)
 		}
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Errorf("user id:%d unmatch password", id))
+		return c.JSON(http.StatusBadRequest, fmt.Errorf("user id:%d unmatch password", id))
 	}
-	return echo.NewHTTPError(http.StatusBadRequest, "user notfound")
+	return c.JSON(http.StatusBadRequest, "user notfound")
 }
 
 func UserEndpoints(g *echo.Group) {
