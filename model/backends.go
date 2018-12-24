@@ -2,7 +2,7 @@ package model
 
 import "golang.org/x/sync/errgroup"
 
-func (gb GetterBackends) FindUserByID(v int) (map[string]UserGroup, error) {
+func (gb Backends) FindUserByID(v int) (map[string]UserGroup, error) {
 	r := map[string]UserGroup{}
 	var notfound error
 	eg := errgroup.Group{}
@@ -32,7 +32,7 @@ func (gb GetterBackends) FindUserByID(v int) (map[string]UserGroup, error) {
 
 	return r, nil
 }
-func (gb GetterBackends) FindUserByName(v string) (map[string]UserGroup, error) {
+func (gb Backends) FindUserByName(v string) (map[string]UserGroup, error) {
 	r := map[string]UserGroup{}
 	var notfound error
 	eg := errgroup.Group{}
@@ -62,7 +62,7 @@ func (gb GetterBackends) FindUserByName(v string) (map[string]UserGroup, error) 
 
 	return r, nil
 }
-func (gb GetterBackends) FindGroupByID(v int) (map[string]UserGroup, error) {
+func (gb Backends) FindGroupByID(v int) (map[string]UserGroup, error) {
 	r := map[string]UserGroup{}
 	var notfound error
 	eg := errgroup.Group{}
@@ -92,7 +92,7 @@ func (gb GetterBackends) FindGroupByID(v int) (map[string]UserGroup, error) {
 
 	return r, nil
 }
-func (gb GetterBackends) FindGroupByName(v string) (map[string]UserGroup, error) {
+func (gb Backends) FindGroupByName(v string) (map[string]UserGroup, error) {
 	r := map[string]UserGroup{}
 	var notfound error
 	eg := errgroup.Group{}
@@ -122,7 +122,7 @@ func (gb GetterBackends) FindGroupByName(v string) (map[string]UserGroup, error)
 
 	return r, nil
 }
-func (gb GetterBackends) Users() (map[string]UserGroup, error) {
+func (gb Backends) Users() (map[string]UserGroup, error) {
 	r := map[string]UserGroup{}
 	var notfound error
 	eg := errgroup.Group{}
@@ -152,7 +152,7 @@ func (gb GetterBackends) Users() (map[string]UserGroup, error) {
 
 	return r, nil
 }
-func (gb GetterBackends) Groups() (map[string]UserGroup, error) {
+func (gb Backends) Groups() (map[string]UserGroup, error) {
 	r := map[string]UserGroup{}
 	var notfound error
 	eg := errgroup.Group{}
@@ -182,7 +182,109 @@ func (gb GetterBackends) Groups() (map[string]UserGroup, error) {
 
 	return r, nil
 }
-func (gb GetterBackends) HighestUserID() int {
+func (gb Backends) CreateUser(v UserGroup) error {
+	eg := errgroup.Group{}
+	for _, b := range gb {
+		eg.Go(func() error {
+			err := b.CreateUser(v)
+			if err != nil {
+				return err
+			}
+			return nil
+		})
+	}
+	if err := eg.Wait(); err != nil {
+		return nil
+	}
+
+	return nil
+}
+func (gb Backends) CreateGroup(v UserGroup) error {
+	eg := errgroup.Group{}
+	for _, b := range gb {
+		eg.Go(func() error {
+			err := b.CreateGroup(v)
+			if err != nil {
+				return err
+			}
+			return nil
+		})
+	}
+	if err := eg.Wait(); err != nil {
+		return nil
+	}
+
+	return nil
+}
+func (gb Backends) DeleteUser(v int) error {
+	eg := errgroup.Group{}
+	for _, b := range gb {
+		eg.Go(func() error {
+			err := b.DeleteUser(v)
+			if err != nil {
+				return err
+			}
+			return nil
+		})
+	}
+	if err := eg.Wait(); err != nil {
+		return nil
+	}
+
+	return nil
+}
+func (gb Backends) DeleteGroup(v int) error {
+	eg := errgroup.Group{}
+	for _, b := range gb {
+		eg.Go(func() error {
+			err := b.DeleteGroup(v)
+			if err != nil {
+				return err
+			}
+			return nil
+		})
+	}
+	if err := eg.Wait(); err != nil {
+		return nil
+	}
+
+	return nil
+}
+func (gb Backends) UpdateUser(v int, vv UserGroup) error {
+	eg := errgroup.Group{}
+	for _, b := range gb {
+		eg.Go(func() error {
+			err := b.UpdateUser(v, vv)
+			if err != nil {
+				return err
+			}
+			return nil
+		})
+	}
+	if err := eg.Wait(); err != nil {
+		return nil
+	}
+
+	return nil
+}
+func (gb Backends) UpdateGroup(v int, vv UserGroup) error {
+	eg := errgroup.Group{}
+	for _, b := range gb {
+		eg.Go(func() error {
+			err := b.UpdateGroup(v, vv)
+			if err != nil {
+				return err
+			}
+			return nil
+		})
+	}
+	if err := eg.Wait(); err != nil {
+		return nil
+	}
+
+	return nil
+}
+func (gb Backends) HighestUserID() int {
 	r := 0
 	for _, b := range gb {
 		lr := b.HighestUserID()
@@ -192,7 +294,7 @@ func (gb GetterBackends) HighestUserID() int {
 	}
 	return r
 }
-func (gb GetterBackends) LowestUserID() int {
+func (gb Backends) LowestUserID() int {
 	r := 0
 	for _, b := range gb {
 		lr := b.LowestUserID()
@@ -202,7 +304,7 @@ func (gb GetterBackends) LowestUserID() int {
 	}
 	return r
 }
-func (gb GetterBackends) HighestGroupID() int {
+func (gb Backends) HighestGroupID() int {
 	r := 0
 	for _, b := range gb {
 		lr := b.HighestGroupID()
@@ -212,7 +314,7 @@ func (gb GetterBackends) HighestGroupID() int {
 	}
 	return r
 }
-func (gb GetterBackends) LowestGroupID() int {
+func (gb Backends) LowestGroupID() int {
 	r := 0
 	for _, b := range gb {
 		lr := b.LowestGroupID()

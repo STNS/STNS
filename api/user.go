@@ -1,6 +1,7 @@
 package api
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -10,7 +11,7 @@ import (
 )
 
 func getUsers(c echo.Context) error {
-	backend := c.Get(middleware.BackendKey).(model.GetterBackends)
+	backend := c.Get(middleware.BackendKey).(model.Backends)
 
 	var r map[string]model.UserGroup
 	var err error
@@ -20,7 +21,7 @@ func getUsers(c echo.Context) error {
 			case "id":
 				id, err := strconv.Atoi(v[0])
 				if err != nil {
-					return c.JSON(http.StatusBadRequest, nil)
+					return c.JSON(http.StatusBadRequest, err)
 				}
 
 				r, err = backend.FindUserByID(id)
@@ -33,7 +34,7 @@ func getUsers(c echo.Context) error {
 					return errorResponse(c, err)
 				}
 			default:
-				return c.JSON(http.StatusBadRequest, nil)
+				return c.JSON(http.StatusBadRequest, err)
 			}
 		}
 	} else {
@@ -45,6 +46,45 @@ func getUsers(c echo.Context) error {
 	return c.JSON(http.StatusOK, toSlice(r))
 }
 
+type PasswordChangeParams struct {
+	CurrentPassword string
+	NewPassword     string
+}
+
+func updateUserPassword(c echo.Context) error {
+	backend := c.Get(middleware.BackendKey).(model.Backends)
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, err)
+	}
+
+	u := PasswordChangeParams{}
+	if err := c.Bind(&u); err != nil {
+		return c.JSON(http.StatusBadRequest, err)
+	}
+
+	r, err := backend.FindUserByID(id)
+	if err != nil {
+		return errorResponse(c, err)
+	}
+
+	for _, us := range r {
+		user := us.(*model.User)
+		if user.Password == u.CurrentPassword {
+			user.Password = u.CurrentPassword
+
+			err := backend.UpdateUser(user.ID, user)
+			if err != nil {
+				return errorResponse(c, err)
+			}
+			return c.JSON(http.StatusNoContent, user)
+		}
+		return c.JSON(http.StatusBadRequest, fmt.Errorf("user id:%d unmatch password", id))
+	}
+	return c.JSON(http.StatusBadRequest, "user notfound")
+}
+
 func UserEndpoints(g *echo.Group) {
 	g.GET("/users", getUsers)
+	g.PUT("/users/password/:id", updateUserPassword)
 }

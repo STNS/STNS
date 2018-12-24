@@ -78,7 +78,7 @@ func Test_getGroups(t *testing.T) {
 		},
 	}
 	for _, tt := range tests {
-		ctx, rec := newContext("/groups", tt.params, tt.config)
+		ctx, rec := tomlContext("/groups", tt.params, tt.config)
 
 		t.Run(tt.name, func(t *testing.T) {
 			if err := getGroups(ctx); (err != nil) != tt.wantErr {

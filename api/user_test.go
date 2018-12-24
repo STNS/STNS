@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"testing"
 
@@ -78,7 +79,7 @@ func Test_getUsers(t *testing.T) {
 		},
 	}
 	for _, tt := range tests {
-		ctx, rec := newContext("/users", tt.params, tt.config)
+		ctx, rec := tomlContext("/users", tt.params, tt.config)
 
 		t.Run(tt.name, func(t *testing.T) {
 			if err := getUsers(ctx); (err != nil) != tt.wantErr {
@@ -103,6 +104,56 @@ func Test_getUsers(t *testing.T) {
 					t.Errorf("getUsers ID does not match, expected %d, got %d", tt.wantID, users[0].ID)
 
 				}
+			}
+		})
+	}
+}
+func Test_updateUserPassword(t *testing.T) {
+	tests := []struct {
+		name       string
+		id         int
+		wantErr    bool
+		wantStatus int
+		params     PasswordChangeParams
+	}{
+		{
+			name:    "ok",
+			id:      1,
+			wantErr: false,
+			params: PasswordChangeParams{
+				CurrentPassword: "foo",
+				NewPassword:     "bar",
+			},
+			wantStatus: http.StatusNoContent,
+		},
+		{
+			name:       "id notfound",
+			id:         2,
+			wantErr:    false,
+			wantStatus: http.StatusNotFound,
+		},
+		{
+			name: "bad password",
+			id:   1,
+			params: PasswordChangeParams{
+				CurrentPassword: "bar",
+				NewPassword:     "bar",
+			},
+			wantErr:    false,
+			wantStatus: http.StatusBadRequest,
+		},
+	}
+	for _, tt := range tests {
+		ctx, rec := dummyContext(t, "PUT", "/users/password/:", tt.params)
+		ctx.SetParamNames("id")
+		ctx.SetParamValues(fmt.Sprint(tt.id))
+
+		t.Run(tt.name, func(t *testing.T) {
+			if err := updateUserPassword(ctx); (err != nil) != tt.wantErr {
+				t.Errorf("updateUserPassword() error = %v, wantErr %v", err, tt.wantErr)
+			}
+			if rec.Code != tt.wantStatus {
+				t.Errorf("updateUserPassword status code does not match, expected %d, got %d", tt.wantStatus, rec.Code)
 			}
 		})
 	}

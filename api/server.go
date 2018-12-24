@@ -44,7 +44,7 @@ func status(c echo.Context) error {
 	return c.String(http.StatusOK, "OK")
 }
 
-func (s *server) loadModules(logger echo.Logger, getterBackends *model.GetterBackends) error {
+func (s *server) loadModules(logger echo.Logger, backends *model.Backends) error {
 	for _, v := range s.config.LoadModules {
 		p, err := plugin.Open(filepath.Join(s.config.ModulePath, v))
 		if err != nil {
@@ -65,7 +65,7 @@ func (s *server) loadModules(logger echo.Logger, getterBackends *model.GetterBac
 		if err != nil {
 			return err
 		}
-		*getterBackends = append(*getterBackends, backend)
+		*backends = append(*backends, backend)
 		logger.Infof("load modules %s", name)
 	}
 	return nil
@@ -73,7 +73,7 @@ func (s *server) loadModules(logger echo.Logger, getterBackends *model.GetterBac
 
 // Run サーバの起動
 func (s *server) Run() error {
-	var getterBackends model.GetterBackends
+	var backends model.Backends
 	e := echo.New()
 	if os.Getenv("STNS_LOG") != "" {
 		f, err := os.OpenFile(os.Getenv("STNS_LOG"), os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
@@ -95,15 +95,16 @@ func (s *server) Run() error {
 	if err != nil {
 		return err
 	}
-	getterBackends = append(getterBackends, b)
+	backends = append(backends, b)
 
-	err = s.loadModules(e.Logger, &getterBackends)
+	err = s.loadModules(e.Logger, &backends)
 	if err != nil {
 		return err
 	}
 
-	e.Use(middleware.GetterBackends(getterBackends))
-	e.Use(middleware.AddHeader(getterBackends))
+	e.Use(middleware.Backends(backends))
+	e.Use(middleware.AddHeader(backends))
+
 	e.Use(emiddleware.Recover())
 	e.Use(emiddleware.LoggerWithConfig(emiddleware.LoggerConfig{
 		Format: `{"time":"${time_rfc3339_nano}","remote_ip":"${remote_ip}","host":"${host}",` +
