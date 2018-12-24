@@ -150,4 +150,8 @@ pkg: ## Create some distribution packages
 changelog:
 	git-chglog -o CHANGELOG.md
 
+docker:
+	docker build -f dockerfiles/Dockerfile -t libnss_develop .
+	docker run --cap-add=SYS_PTRACE --security-opt="seccomp=unconfined" -v "`pwd`":/stns -it libnss_develop /bin/bash
+
 .PHONY: depsdev test testdev build

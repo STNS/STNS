@@ -22,11 +22,17 @@ ETCD_VER=3.3.10
 BUILD=tmp/bin
 UNAME_S := $(shell uname -s)
 
+REVISION=$(shell git describe --always)
+GOVERSION=$(shell go version)
+BUILDDATE=$(shell date '+%Y/%m/%d %H:%M:%S %Z')
+
+ME=$(shell whoami)
 default: build
 
 ci: depsdev test lint integration ## Run test and more...
 
 etcd:
+	echo $(UNAME_S)
 ifeq ($(UNAME_S),Linux)
 	test -e ./etcd-v$(ETCD_VER)-linux-amd64/etcd || curl -L  https://github.com/coreos/etcd/releases/download/v$(ETCD_VER)/etcd-v$(ETCD_VER)-linux-amd64.tar.gz -o etcd-v$(ETCD_VER)-linux-amd64.tar.gz
 	test -e ./etcd-v$(ETCD_VER)-linux-amd64/etcd || tar xzf etcd-v$(ETCD_VER)-linux-amd64.tar.gz
@@ -64,7 +70,7 @@ integration: ## Run integration test after Server wakeup
 	./misc/server stop
 
 build: ## Build server
-	$(GO) build -o $(BUILD)/stns
+	$(GO) build -ldflags "-X main.version=$(VERSION) -X main.revision=$(REVISION) -X \"main.goversion=$(GOVERSION)\" -X \"main.builddate=$(BUILDDATE)\" -X \"main.builduser=$(ME)\"" -o $(BUILD)/stns
 	$(GO) build -buildmode=plugin -o $(BUILD)/mod_stns_etcd.so modules/etcd.go
 
 install: build ## Install
@@ -74,8 +80,8 @@ install: build ## Install
 	cp $(BUILD)/*so $(MODDIR)/
 
 docker:
-	docker build -t nss_develop .
-	docker run --cap-add=SYS_PTRACE --security-opt="seccomp=unconfined" -v $(GOPATH):/go/ -v $(GOPATH)/pkg/mod/cache:/go/pkg/mod/cache -w /go/src/github.com/STNS/STNS -it nss_develop /bin/bash
+	docker build -t stns_develop .
+	docker run --cap-add=SYS_PTRACE --security-opt="seccomp=unconfined" -v $(GOPATH):/go/ -v $(GOPATH)/pkg/mod/cache:/go/pkg/mod/cache -w /go/src/github.com/STNS/STNS -it stns_develop /bin/bash
 
 source_for_rpm: ## Create source for RPM
 	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Distributing$(RESET)"

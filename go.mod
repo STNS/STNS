@@ -10,7 +10,13 @@ require (
 	github.com/facebookgo/atomicfile v0.0.0-20151019160806-2de1f203e7d5 // indirect
 	github.com/facebookgo/pidfile v0.0.0-20150612191647-f242e2999868
 	github.com/fatih/color v1.7.0 // indirect
+<<<<<<< HEAD
 	github.com/git-chglog/git-chglog v0.0.0-20181110013429-44fcaed553e3 // indirect
+=======
+	github.com/git-chglog/git-chglog v0.0.0-20180506054919-594ec82eaf08 // indirect
+	github.com/go-playground/locales v0.12.1 // indirect
+	github.com/go-playground/universal-translator v0.16.0 // indirect
+>>>>>>> 239b5407667a1d6f3cf06bd49aed0c3be94c5f51
 	github.com/go-yaml/yaml v2.1.0+incompatible
 	github.com/golang/lint v0.0.0-20181217174547-8f45f776aaf1 // indirect
 	github.com/google/go-github v17.0.0+incompatible // indirect
@@ -48,9 +54,15 @@ require (
 	golang.org/x/net v0.0.0-20181102091132-c10e9556a7bc
 	golang.org/x/oauth2 v0.0.0-20181203162652-d668ce993890 // indirect
 	golang.org/x/sync v0.0.0-20180314180146-1d60e4601c6f
+<<<<<<< HEAD
 	golang.org/x/sys v0.0.0-20181221143128-b4a75ba826a6 // indirect
 	golang.org/x/tools v0.0.0-20181221235234-d00ac6d27372 // indirect
 	gopkg.in/AlecAivazis/survey.v1 v1.7.1 // indirect
+=======
+	golang.org/x/tools v0.0.0-20181003201635-140737fa61ec // indirect
+	gopkg.in/AlecAivazis/survey.v1 v1.6.2 // indirect
+	gopkg.in/go-playground/validator.v9 v9.23.0
+>>>>>>> 239b5407667a1d6f3cf06bd49aed0c3be94c5f51
 	gopkg.in/kyokomi/emoji.v1 v1.5.1 // indirect
 	gopkg.in/yaml.v2 v2.2.2 // indirect
 )

@@ -16,8 +16,17 @@ github.com/facebookgo/pidfile v0.0.0-20150612191647-f242e2999868 h1:KZ75X3ZCl6yy
 github.com/facebookgo/pidfile v0.0.0-20150612191647-f242e2999868/go.mod h1:3Hzo46xzfVpIdv4lJw7YBp9fUJ7HpUgbjH1fFDgy4qM=
 github.com/fatih/color v1.7.0 h1:DkWD4oS2D8LGGgTQ6IvwJJXSL5Vp2ffcQg58nFV38Ys=
 github.com/fatih/color v1.7.0/go.mod h1:Zm6kSWBoL9eyXnKyktHP6abPY2pDugNf5KwzbycvMj4=
+<<<<<<< HEAD
 github.com/git-chglog/git-chglog v0.0.0-20181110013429-44fcaed553e3 h1:uQQGeShIuWg9CEVjJkEqwiqF9ugi9nwMxsVgOiNM02s=
 github.com/git-chglog/git-chglog v0.0.0-20181110013429-44fcaed553e3/go.mod h1:Dcsy1kii/xFyNad5JqY/d0GO5mu91sungp5xotbm3Yk=
+=======
+github.com/git-chglog/git-chglog v0.0.0-20180506054919-594ec82eaf08 h1:6hs5MWUKV1TJGL9NiVkYukPMgbFQ8wNGr6aFPCixrg0=
+github.com/git-chglog/git-chglog v0.0.0-20180506054919-594ec82eaf08/go.mod h1:Dcsy1kii/xFyNad5JqY/d0GO5mu91sungp5xotbm3Yk=
+github.com/go-playground/locales v0.12.1 h1:2FITxuFt/xuCNP1Acdhv62OzaCiviiE4kotfhkmOqEc=
+github.com/go-playground/locales v0.12.1/go.mod h1:IUMDtCfWo/w/mtMfIE/IG2K+Ey3ygWanZIBtBW0W2TM=
+github.com/go-playground/universal-translator v0.16.0 h1:X++omBR/4cE2MNg91AoC3rmGrCjJ8eAeUP/K/EKx4DM=
+github.com/go-playground/universal-translator v0.16.0/go.mod h1:1AnU7NaIRDWWzGEKwgtJRd2xk99HeFyHw3yid4rvQIY=
+>>>>>>> 239b5407667a1d6f3cf06bd49aed0c3be94c5f51
 github.com/go-yaml/yaml v2.1.0+incompatible h1:RYi2hDdss1u4YE7GwixGzWwVo47T8UQwnTLB6vQiq+o=
 github.com/go-yaml/yaml v2.1.0+incompatible/go.mod h1:w2MrLa16VYP0jy6N7M5kHaCkaLENm+P+Tv+MfurjSw0=
 github.com/golang/lint v0.0.0-20181217174547-8f45f776aaf1 h1:6DVPu65tee05kY0/rciBQ47ue+AnuY8KTayV6VHikIo=
@@ -99,6 +108,8 @@ golang.org/x/tools v0.0.0-20181221235234-d00ac6d27372/go.mod h1:n7NCudcB/nEzxVGm
 gopkg.in/AlecAivazis/survey.v1 v1.7.1 h1:mzQIVyOPSXJaQWi1m6AFCjrCEPIwQBSOn48Ri8ZpzAg=
 gopkg.in/AlecAivazis/survey.v1 v1.7.1/go.mod h1:2Ehl7OqkBl3Xb8VmC4oFW2bItAhnUfzIjrOzwRxCrOU=
 gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405/go.mod h1:Co6ibVJAznAaIkqp8huTwlJQCZ016jof/cbN4VW5Yz0=
+gopkg.in/go-playground/validator.v9 v9.23.0 h1:oq297iqu7qsywIbeW5DBUTtV1nV750Y4q+H8MnDh0Yc=
+gopkg.in/go-playground/validator.v9 v9.23.0/go.mod h1:+c9/zcJMFNgbLvly1L1V+PpxWdVbfP1avr/N00E2vyQ=
 gopkg.in/kyokomi/emoji.v1 v1.5.1 h1:beetH5mWDMzFznJ+Qzd5KVHp79YKhVUMcdO8LpRLeGw=
 gopkg.in/kyokomi/emoji.v1 v1.5.1/go.mod h1:N9AZ6hi1jHOPn34PsbpufQZUcKftSD7WgS2pgpmH4Lg=
 gopkg.in/yaml.v2 v2.2.2 h1:ZCJp+EgiOT7lHqUV2J862kp8Qj64Jo6az82+3Td9dZw=

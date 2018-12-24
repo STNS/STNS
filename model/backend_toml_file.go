@@ -3,6 +3,8 @@ package model
 import (
 	"fmt"
 	"sort"
+
+	validator "gopkg.in/go-playground/validator.v9"
 )
 
 type BackendTomlFile struct {
@@ -22,6 +24,9 @@ func NewBackendTomlFile(u *Users, g *Groups) (*BackendTomlFile, error) {
 		if err := checkDuplicateID(ug); err != nil {
 			return nil, err
 		}
+		if err := validateUserGroup(ug); err != nil {
+			return nil, err
+		}
 	}
 
 	if g != nil {
@@ -29,6 +34,9 @@ func NewBackendTomlFile(u *Users, g *Groups) (*BackendTomlFile, error) {
 		ensureName(gg)
 		mergeLinkAttribute(gg, nil, nil, nil)
 		if err := checkDuplicateID(gg); err != nil {
+			return nil, err
+		}
+		if err := validateUserGroup(gg); err != nil {
 			return nil, err
 		}
 	}
@@ -232,3 +240,13 @@ func (t BackendTomlFile) UpdateUser(int, UserGroup) error  { return nil }
 func (t BackendTomlFile) CreateGroup(UserGroup) error      { return nil }
 func (t BackendTomlFile) DeleteGroup(int) error            { return nil }
 func (t BackendTomlFile) UpdateGroup(int, UserGroup) error { return nil }
+func validateUserGroup(attr map[string]UserGroup) error {
+	validate := validator.New()
+	for _, a := range attr {
+		err := validate.Struct(a)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}

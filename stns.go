@@ -44,6 +44,12 @@ var commands = []cli.Command{
 		Usage:   "Launch core api server",
 		Action:  api.LaunchServer,
 	},
+	{
+		Name:    "checkconf",
+		Aliases: []string{"c"},
+		Usage:   "Check Config",
+		Action:  api.CheckConfig,
+	},
 }
 
 func printVersion(c *cli.Context) {

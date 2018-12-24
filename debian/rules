@@ -36,5 +36,6 @@ override_dh_auto_install:
 	install -pm 755 package/stns-v2.systemd $(CONFDIR)/systemd/system/stns.service
 	install -pm 755 package/stns-v2.sysv $(CONFDIR)/init.d/stns
 	find $(DESTDIR)
+override_dh_usrlocal:
 
 override_dh_auto_test:

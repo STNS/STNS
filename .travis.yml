@@ -3,9 +3,9 @@ sudo: required
 before_install:
   - sudo apt-get update -q
   - sudo apt-get -qqy install build-essential git curl libcurl4-openssl-dev libjansson-dev gdb sudo netcat
+script:
   - make etcd
   - while ! nc -w 1 127.0.0.1 2379 > /dev/null 2>&1; do sleep 1; echo 'sleeping'; done;
-script:
   - sudo PATH=$PATH GOPATH=$GOPATH GO="GO111MODULE=on go" make ci
   - cd libnss
   - sudo PATH=$PATH GOPATH=$GOPATH GO="GO111MODULE=on go" make ci
