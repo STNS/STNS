@@ -18,7 +18,7 @@ MODDIR ?= $(PREFIX)/local/stns/modules.d
 SOURCES=Makefile go.mod go.sum version model api middleware modules stns stns.go package/
 DISTS=centos7 centos6 ubuntu16
 RELEASE_DIR=/var/www/releases
-ETCD_VER=3.3.3
+ETCD_VER=3.3.10
 BUILD=tmp/bin
 UNAME_S := $(shell uname -s)
 
