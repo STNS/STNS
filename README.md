@@ -37,13 +37,5 @@ Please give me a pull request anything!
 $ make depsdev
 $ make test
 ```
-#### Client
-```
-$ make docker
-# cd libnss
-# make depsdev
-# make test
-```
-
 ## author
 * pyama86
