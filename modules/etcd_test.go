@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"reflect"
 	"sync"
 	"testing"
@@ -80,8 +79,10 @@ func TestBackendEtcd_FindUserByID(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			if err := b.Create("/users/name/user1", tt.params); err != nil {
-				t.Fatal(err)
+			if tt.params != nil {
+				if err := b.CreateUser(tt.params); err != nil {
+					t.Fatal(err)
+				}
 			}
 			got, err := b.FindUserByID(tt.args.id)
 			if (err != nil) != tt.wantErr {
@@ -152,8 +153,10 @@ func TestBackendEtcd_FindUserByName(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			if err := b.Create("/users/name/user1", tt.params); err != nil {
-				t.Fatal(err)
+			if tt.params != nil {
+				if err := b.CreateUser(tt.params); err != nil {
+					t.Fatal(err)
+				}
 			}
 			got, err := b.FindUserByName(tt.args.name)
 			if (err != nil) != tt.wantErr {
@@ -222,7 +225,7 @@ func TestBackendEtcd_Users(t *testing.T) {
 				t.Fatal(err)
 			}
 			for _, v := range tt.params {
-				if err := b.Create(fmt.Sprintf("/users/name/%s", v.Name), v); err != nil {
+				if err := b.CreateUser(v); err != nil {
 					t.Fatal(err)
 				}
 			}
@@ -295,8 +298,10 @@ func TestBackendEtcd_FindGroupByID(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			if err := b.Create("/groups/name/group1", tt.params); err != nil {
-				t.Fatal(err)
+			if tt.params != nil {
+				if err := b.CreateGroup(tt.params); err != nil {
+					t.Fatal(err)
+				}
 			}
 			got, err := b.FindGroupByID(tt.args.id)
 			if (err != nil) != tt.wantErr {
@@ -367,8 +372,10 @@ func TestBackendEtcd_FindGroupByName(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			if err := b.Create("/groups/name/group1", tt.params); err != nil {
-				t.Fatal(err)
+			if tt.params != nil {
+				if err := b.CreateGroup(tt.params); err != nil {
+					t.Fatal(err)
+				}
 			}
 			got, err := b.FindGroupByName(tt.args.name)
 			if (err != nil) != tt.wantErr {
@@ -437,7 +444,7 @@ func TestBackendEtcd_Groups(t *testing.T) {
 				t.Fatal(err)
 			}
 			for _, v := range tt.params {
-				if err := b.Create(fmt.Sprintf("/groups/name/%s", v.Name), v); err != nil {
+				if err := b.CreateGroup(v); err != nil {
 					t.Fatal(err)
 				}
 			}
@@ -522,7 +529,7 @@ func TestBackendEtcd_highlowUserID(t *testing.T) {
 			b := _b.(BackendEtcd)
 
 			for _, v := range tt.params {
-				if err := b.Create(fmt.Sprintf("/users/name/%s", v.Name), v); err != nil {
+				if err := b.CreateUser(v); err != nil {
 					t.Fatal(err)
 				}
 			}
@@ -607,7 +614,7 @@ func TestBackendEtcd_highlowGroupID(t *testing.T) {
 			b := _b.(BackendEtcd)
 
 			for _, v := range tt.params {
-				if err := b.Create(fmt.Sprintf("/groups/name/%s", v.Name), v); err != nil {
+				if err := b.CreateGroup(v); err != nil {
 					t.Fatal(err)
 				}
 			}

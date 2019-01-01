@@ -234,6 +234,12 @@ func checkDuplicateID(attr map[string]UserGroup) error {
 	return nil
 }
 
+func (t BackendTomlFile) CreateUser(UserGroup) error       { return nil }
+func (t BackendTomlFile) DeleteUser(int) error             { return nil }
+func (t BackendTomlFile) UpdateUser(int, UserGroup) error  { return nil }
+func (t BackendTomlFile) CreateGroup(UserGroup) error      { return nil }
+func (t BackendTomlFile) DeleteGroup(int) error            { return nil }
+func (t BackendTomlFile) UpdateGroup(int, UserGroup) error { return nil }
 func validateUserGroup(attr map[string]UserGroup) error {
 	validate := validator.New()
 	for _, a := range attr {

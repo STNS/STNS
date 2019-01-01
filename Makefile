@@ -18,7 +18,7 @@ MODDIR ?= $(PREFIX)/local/stns/modules.d
 SOURCES=Makefile go.mod go.sum version model api middleware modules stns stns.go package/
 DISTS=centos7 centos6 ubuntu16
 RELEASE_DIR=/var/www/releases
-ETCD_VER=3.3.3
+ETCD_VER=3.3.10
 BUILD=tmp/bin
 UNAME_S := $(shell uname -s)
 
@@ -36,7 +36,7 @@ etcd:
 ifeq ($(UNAME_S),Linux)
 	test -e ./etcd-v$(ETCD_VER)-linux-amd64/etcd || curl -L  https://github.com/coreos/etcd/releases/download/v$(ETCD_VER)/etcd-v$(ETCD_VER)-linux-amd64.tar.gz -o etcd-v$(ETCD_VER)-linux-amd64.tar.gz
 	test -e ./etcd-v$(ETCD_VER)-linux-amd64/etcd || tar xzf etcd-v$(ETCD_VER)-linux-amd64.tar.gz
-	pidof etcd || ./etcd-v$(ETCD_VER)-linux-amd64/etcd &
+	ps -aux |grep etcd |grep -q -v grep || ./etcd-v$(ETCD_VER)-linux-amd64/etcd &
 endif
 ifeq ($(UNAME_S),Darwin)
 	brew services start etcd

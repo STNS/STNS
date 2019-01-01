@@ -1,9 +1,5 @@
 package model
 
-import (
-	"fmt"
-)
-
 type UserGroup interface {
 	GetID() int
 	GetName() string
@@ -12,14 +8,9 @@ type UserGroup interface {
 	setLinkValues([]string)
 	value() []string
 }
-
+type Backends []Backend
 type Backend interface {
-	GetterBackend
-	SetterBackend
-}
-
-type GetterBackends []GetterBackend
-type GetterBackend interface {
+	// Getter
 	FindUserByID(int) (map[string]UserGroup, error)
 	FindUserByName(string) (map[string]UserGroup, error)
 	FindGroupByID(int) (map[string]UserGroup, error)
@@ -30,11 +21,14 @@ type GetterBackend interface {
 	LowestUserID() int
 	HighestGroupID() int
 	LowestGroupID() int
-}
 
-type SetterBackend interface {
-	Create(string, UserGroup) error
-	Delete(string) error
+	// Setter
+	CreateUser(UserGroup) error
+	DeleteUser(int) error
+	UpdateUser(int, UserGroup) error
+	CreateGroup(UserGroup) error
+	DeleteGroup(int) error
+	UpdateGroup(int, UserGroup) error
 }
 
 func mergeUserGroup(m1, m2 map[string]UserGroup) map[string]UserGroup {
@@ -64,8 +58,15 @@ func SyncConfig(resourceName string, b Backend, configResources, backendResource
 			}
 
 			if !found {
-				if err := b.Create(fmt.Sprintf("/%s/name/%s", resourceName, cu.GetName()), cu); err != nil {
-					return err
+				if resourceName == "users" {
+					if err := b.CreateUser(cu); err != nil {
+						return err
+					}
+
+				} else {
+					if err := b.CreateGroup(cu); err != nil {
+						return err
+					}
 				}
 			}
 		}
@@ -83,8 +84,15 @@ func SyncConfig(resourceName string, b Backend, configResources, backendResource
 				}
 			}
 			if !found {
-				if err := b.Delete(fmt.Sprintf("/%s/name/%s", resourceName, eu.GetName())); err != nil {
-					return err
+				if resourceName == "users" {
+					if err := b.DeleteUser(eu.GetID()); err != nil {
+						return err
+					}
+
+				} else {
+					if err := b.DeleteGroup(eu.GetID()); err != nil {
+						return err
+					}
 				}
 			}
 		}
