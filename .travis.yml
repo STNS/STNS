@@ -9,7 +9,6 @@ script:
   - sudo PATH=$PATH GOPATH=$GOPATH GO="GO111MODULE=on go" make ci
 go:
   - 1.11
-  - tip
 
 notifications:
   slack: pepabo:CQkcN0cdvPSJvVsK2D48qYyV
