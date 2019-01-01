@@ -7,8 +7,6 @@ script:
   - make etcd
   - while ! nc -w 1 127.0.0.1 2379 > /dev/null 2>&1; do sleep 1; echo 'sleeping'; done;
   - sudo PATH=$PATH GOPATH=$GOPATH GO="GO111MODULE=on go" make ci
-  - cd libnss
-  - sudo PATH=$PATH GOPATH=$GOPATH GO="GO111MODULE=on go" make ci
 go:
   - 1.11
   - tip
