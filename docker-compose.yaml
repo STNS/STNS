@@ -33,15 +33,3 @@ services:
     environment:
       DIST: xenial
     command: make deb
-  yumrepo:
-    build:
-      context: .
-      dockerfile: dockerfiles/Dockerfile.yumrepo
-    volumes:
-      - ./repo:/go/src/github.com/STNS/STNS/repo
-  debrepo:
-    build:
-      context: .
-      dockerfile: dockerfiles/Dockerfile.debrepo
-    volumes:
-      - ./repo:/go/src/github.com/STNS/STNS/repo

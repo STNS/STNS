@@ -17,7 +17,6 @@ BINDIR=$(PREFIX)/sbin
 MODDIR ?= $(PREFIX)/local/stns/modules.d
 SOURCES=Makefile go.mod go.sum version model api middleware modules stns stns.go package/
 DISTS=centos7 centos6 ubuntu16
-RELEASE_DIR=/var/www/releases
 ETCD_VER=3.3.10
 BUILD=tmp/bin
 UNAME_S := $(shell uname -s)
@@ -130,28 +129,6 @@ deb: source_for_deb ## Packaging for DEB
 
 github_release: ## Create some distribution packages
 	ghr -u STNS --replace v$(VERSION) builds/
-
-server_client_pkg: pkg ## Create some distribution packages
-	cd libnss && make pkg
-	mv libnss/builds/* builds
-
-yumrepo: ## Create some distribution packages
-	rm -rf repo/centos
-	docker-compose build yumrepo
-	docker-compose run yumrepo
-
-debrepo: ## Create some distribution packages
-	rm -rf repo/debian
-	docker-compose build debrepo
-	docker-compose run debrepo
-
-repo_release: yumrepo debrepo
-	ssh pyama@stns.jp rm -rf $(RELEASE_DIR)/centos
-	ssh pyama@stns.jp rm -rf $(RELEASE_DIR)/debian
-	scp -r repo/centos pyama@stns.jp:$(RELEASE_DIR)
-	scp -r repo/debian pyama@stns.jp:$(RELEASE_DIR)
-	scp -r package/scripts/yum-repo.sh  pyama@stns.jp:$(RELEASE_DIR)/scripts
-	scp -r package/scripts/apt-repo.sh  pyama@stns.jp:$(RELEASE_DIR)/scripts
 
 generate:
 	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Generate From ERB$(RESET)"
