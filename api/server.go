@@ -2,7 +2,10 @@ package api
 
 import (
 	"context"
+	"crypto/tls"
+	"crypto/x509"
 	"errors"
+	"io/ioutil"
 	"net"
 	"net/http"
 	"os"
@@ -169,8 +172,36 @@ func (s *server) Run() error {
 		customServer := &http.Server{
 			WriteTimeout: 1 * time.Minute,
 		}
+
+		// tls client authentication
+		if _, err := os.Stat(s.config.TLS.CA); err == nil {
+			ca, err := ioutil.ReadFile(s.config.TLS.CA)
+			if err != nil {
+				e.Logger.Fatal(err)
+			}
+			caPool := x509.NewCertPool()
+			caPool.AppendCertsFromPEM(ca)
+
+			tlsConfig := &tls.Config{
+				ClientCAs:              caPool,
+				SessionTicketsDisabled: true,
+				ClientAuth:             tls.RequireAndVerifyClientCert,
+			}
+
+			tlsConfig.BuildNameToCertificate()
+			customServer.TLSConfig = tlsConfig
+		}
+		if s.config.TLS.Cert != "" && s.config.TLS.Key != "" {
+			customServer.TLSConfig.Certificates = make([]tls.Certificate, 1)
+			customServer.TLSConfig.Certificates[0], err = tls.LoadX509KeyPair(s.config.TLS.Cert, s.config.TLS.Key)
+			if err != nil {
+				e.Logger.Fatal(err)
+			}
+
+		}
+
 		if err := e.StartServer(customServer); err != nil {
-			e.Logger.Info("shutting down the server")
+			e.Logger.Fatal("shutting down the server")
 		}
 	}()
 

@@ -1,5 +1,8 @@
 include = "include.toml"
-
+[tls]
+ca = "example_ca"
+cert = "example_cert"
+key = "example_key"
 
 [basic_auth]
 user = "foo"

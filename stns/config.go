@@ -79,8 +79,14 @@ type Config struct {
 	ModulePath       string   `toml:"module_path" yaml:"module_path"`
 	LoadModules      []string `toml:"load_modules" yaml:"load_modules"`
 	Modules          map[string]interface{}
+	TLS              *TLS
 }
 
+type TLS struct {
+	CA   string
+	Cert string
+	Key  string
+}
 type BasicAuth struct {
 	User     string
 	Password string
