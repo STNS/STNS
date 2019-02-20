@@ -34,7 +34,7 @@ func TestNewConfig(t *testing.T) {
 		t.Errorf("config cannot parse token auth")
 	}
 
-	if c.TLS.Cert != "example_cert" && c.TTLS.Key != "example_key" {
+	if c.TLS.Cert != "example_cert" && c.TLS.Key != "example_key" {
 		t.Errorf("config cannot parse tls")
 	}
 
