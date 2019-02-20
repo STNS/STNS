@@ -2,8 +2,10 @@ package api
 
 import (
 	"context"
+	"crypto/tls"
+	"crypto/x509"
 	"errors"
-	"net"
+	"io/ioutil"
 	"net/http"
 	"os"
 	"os/signal"
@@ -156,21 +158,52 @@ func (s *server) Run() error {
 			return err
 		}
 		e.Listener = listeners[0]
-	} else {
-		p := strconv.Itoa(s.config.Port)
-		l, err := net.Listen("tcp", ":"+p)
-		if err != nil {
-			return err
-		}
-		e.Listener = l
 	}
 
 	go func() {
 		customServer := &http.Server{
 			WriteTimeout: 1 * time.Minute,
 		}
+		if e.Listener == nil {
+			p := strconv.Itoa(s.config.Port)
+			customServer.Addr = ":" + p
+		}
+
+		// tls client authentication
+		if s.config.TLS != nil {
+			if _, err := os.Stat(s.config.TLS.CA); err == nil {
+				ca, err := ioutil.ReadFile(s.config.TLS.CA)
+				if err != nil {
+					e.Logger.Fatal(err)
+				}
+				caPool := x509.NewCertPool()
+				caPool.AppendCertsFromPEM(ca)
+
+				tlsConfig := &tls.Config{
+					ClientCAs:              caPool,
+					SessionTicketsDisabled: true,
+					ClientAuth:             tls.RequireAndVerifyClientCert,
+				}
+
+				tlsConfig.BuildNameToCertificate()
+				customServer.TLSConfig = tlsConfig
+			}
+		}
+
+		if s.config.TLS != nil && s.config.TLS.Cert != "" && s.config.TLS.Key != "" {
+			if customServer.TLSConfig == nil {
+				customServer.TLSConfig = new(tls.Config)
+			}
+			customServer.TLSConfig.Certificates = make([]tls.Certificate, 1)
+			customServer.TLSConfig.Certificates[0], err = tls.LoadX509KeyPair(s.config.TLS.Cert, s.config.TLS.Key)
+			if err != nil {
+				e.Logger.Fatal(err)
+			}
+
+		}
+
 		if err := e.StartServer(customServer); err != nil {
-			e.Logger.Info("shutting down the server")
+			e.Logger.Fatal("shutting down the server")
 		}
 	}()
 
