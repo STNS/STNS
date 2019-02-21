@@ -7,7 +7,7 @@ services:
       args:
         GO_VERSION: 1.11
     volumes:
-      - $GOPATH:/go
+      - ./builds:/go/src/github.com/STNS/STNS/builds
     environment:
       DIST: el7
     command: make rpm
@@ -18,7 +18,7 @@ services:
       args:
         GO_VERSION: 1.11
     volumes:
-      - $GOPATH:/go
+      - ./builds:/go/src/github.com/STNS/STNS/builds
     environment:
       DIST: el6
     command: make rpm
@@ -29,7 +29,7 @@ services:
       args:
         GO_VERSION: 1.11
     volumes:
-      - $GOPATH:/go
+      - ./builds:/go/src/github.com/STNS/STNS/builds
     environment:
       DIST: xenial
     command: make deb
