@@ -21,7 +21,7 @@ prog="stns"
 [ -e /etc/sysconfig/$prog ] && . /etc/sysconfig/$prog
 
 BIN=${BIN:="/usr/sbin/$prog"}
-LOGFILE=${LOGILE:="/var/log/$prog.log"}
+LOGFILE=${LOGFILE:="/var/log/$prog.log"}
 PIDFILE=${PIDFILE:="/var/run/$prog.pid"}
 
 lockfile=/var/lock/subsys/$prog

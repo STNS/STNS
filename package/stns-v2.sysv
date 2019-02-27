@@ -17,7 +17,7 @@ NAME=stns
 PATH=/sbin:/usr/sbin:/bin:/usr/bin
 DAEMON=${DAEMON:="/usr/sbin/$NAME"}
 SCRIPTNAME=/etc/init.d/$NAME
-LOGFILE=${LOGILE:="/var/log/$NAME.log"}
+LOGFILE=${LOGFILE:="/var/log/$NAME.log"}
 PIDFILE=${PIDFILE:="/var/run/$NAME.pid"}
 
 # Exit if the package is not installed
