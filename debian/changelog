@@ -1,3 +1,8 @@
+stns-v2 (2.1.1-1) xenial; urgency=medium
+
+  * #89 typo
+
+ -- pyama86 <www.kazu.com@gmail.com>  Wed, 27 Feb 2019 15:30:00 +0900
 stns-v2 (2.1.0-1) xenial; urgency=medium
 
   * #88 Support TLS Authentication
