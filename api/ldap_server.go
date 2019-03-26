@@ -1,11 +1,36 @@
 package api
 
+// refs: https://github.com/glauth/glauth/blob/master/configbackend.go
+/*
+	MIT License
+
+	Copyright (c) 2018 Ned McClain & Ben Yanke
+
+	Permission is hereby granted, free of charge, to any person obtaining a copy
+	of this software and associated documentation files (the "Software"), to deal
+	in the Software without restriction, including without limitation the rights
+	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+	copies of the Software, and to permit persons to whom the Software is
+	furnished to do so, subject to the following conditions:
+
+	The above copyright notice and this permission notice shall be included in all
+	copies or substantial portions of the Software.
+
+	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+	SOFTWARE.
+*/
 import (
 	"fmt"
 	"net"
 	"os"
 	"sort"
 	"strconv"
+	"strings"
 
 	"github.com/STNS/STNS/model"
 	"github.com/STNS/STNS/stns"
@@ -31,7 +56,21 @@ func (h ldapHandler) Bind(bindDN, bindSimplePw string, conn net.Conn) (ldap.LDAP
 }
 
 func (h ldapHandler) Search(bindDN string, searchReq ldap.SearchRequest, conn net.Conn) (ldap.ServerSearchResult, error) {
-	// refs: https://github.com/glauth/glauth/blob/master/configbackend.go
+	bindDN = strings.ToLower(bindDN)
+	baseDN := strings.ToLower(h.config.LDAP.BaseDN)
+	searchBaseDN := strings.ToLower(searchReq.BaseDN)
+
+	// validate the user is authenticated and has appropriate access
+	if len(bindDN) < 1 {
+		return ldap.ServerSearchResult{ResultCode: ldap.LDAPResultInsufficientAccessRights}, fmt.Errorf("Search Error: Anonymous BindDN not allowed %s", bindDN)
+	}
+	if !strings.HasSuffix(bindDN, baseDN) {
+		return ldap.ServerSearchResult{ResultCode: ldap.LDAPResultInsufficientAccessRights}, fmt.Errorf("Search Error: BindDN %s not in our BaseDN %s", bindDN, baseDN)
+	}
+	if !strings.HasSuffix(searchBaseDN, baseDN) {
+		return ldap.ServerSearchResult{ResultCode: ldap.LDAPResultInsufficientAccessRights}, fmt.Errorf("Search Error: search BaseDN %s is not in our BaseDN %s", searchBaseDN, baseDN)
+	}
+
 	entries := []*ldap.Entry{}
 	filterEntity, err := ldap.GetFilterObjectClass(searchReq.Filter)
 	if err != nil {
@@ -66,8 +105,8 @@ func (h ldapHandler) Search(bindDN string, searchReq ldap.SearchRequest, conn ne
 			attrs = append(attrs, &ldap.EntryAttribute{"description", []string{fmt.Sprintf("%s via LDAP", g.GetName())}})
 			attrs = append(attrs, &ldap.EntryAttribute{"gidNumber", []string{fmt.Sprintf("%d", g.GetID())}})
 			attrs = append(attrs, &ldap.EntryAttribute{"objectClass", []string{"posixGroup"}})
-			attrs = append(attrs, &ldap.EntryAttribute{"memberUid", h.getGroupMemberNames(g.(*model.Group), users, h.config.LDAP.BaseDN)})
-			dn := fmt.Sprintf("cn=%s,ou=groups,%s", g.GetName(), h.config.LDAP.BaseDN)
+			attrs = append(attrs, &ldap.EntryAttribute{"memberUid", h.getGroupMemberNames(g.(*model.Group), users, baseDN)})
+			dn := fmt.Sprintf("cn=%s,ou=groups,%s", g.GetName(), baseDN)
 
 			entries = append(entries, &ldap.Entry{dn, attrs})
 		}
@@ -120,9 +159,9 @@ func (h ldapHandler) Search(bindDN string, searchReq ldap.SearchRequest, conn ne
 			attrs = append(attrs, &ldap.EntryAttribute{"description", []string{fmt.Sprintf("%s via LDAP", u.GetName())}})
 			attrs = append(attrs, &ldap.EntryAttribute{"gecos", []string{u.(*model.User).Gecos}})
 			attrs = append(attrs, &ldap.EntryAttribute{"gidNumber", []string{strconv.Itoa(u.(*model.User).GroupID)}})
-			attrs = append(attrs, &ldap.EntryAttribute{"memberOf", h.getGroupDNs(memberOf, groups, h.config.LDAP.BaseDN)})
+			attrs = append(attrs, &ldap.EntryAttribute{"memberOf", h.getGroupDNs(memberOf, groups, baseDN)})
 			attrs = append(attrs, &ldap.EntryAttribute{"sshPublicKey", u.(*model.User).Keys})
-			dn := fmt.Sprintf("cn=%s,ou=%s,%s", u.GetName(), group.Name, h.config.LDAP.BaseDN)
+			dn := fmt.Sprintf("cn=%s,ou=%s,%s", u.GetName(), group.Name, baseDN)
 			entries = append(entries, &ldap.Entry{dn, attrs})
 		}
 	}
