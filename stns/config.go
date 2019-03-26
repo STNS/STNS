@@ -80,8 +80,12 @@ type Config struct {
 	LoadModules      []string `toml:"load_modules" yaml:"load_modules"`
 	Modules          map[string]interface{}
 	TLS              *TLS
+	LDAP             *LDAP
 }
 
+type LDAP struct {
+	BaseDN string
+}
 type TLS struct {
 	CA   string
 	Cert string
@@ -98,6 +102,9 @@ type TokenAuth struct {
 func defaultConfig(c *Config) {
 	c.Port = 1104
 	c.ModulePath = "/usr/local/stns/modules.d"
+	c.LDAP = &LDAP{
+		BaseDN: "dc=stns,dc=local",
+	}
 }
 
 func includeConfigFile(config *Config, include string) error {

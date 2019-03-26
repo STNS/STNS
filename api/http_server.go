@@ -75,7 +75,7 @@ func (s *httpServer) Run() error {
 	}
 	backends = append(backends, b)
 
-	err = s.loadModules(e.Logger, &backends)
+	err = s.loadModules(e.Logger.(*log.Logger), &backends)
 	if err != nil {
 		return err
 	}

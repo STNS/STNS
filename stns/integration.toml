@@ -1,12 +1,14 @@
 include = "include.toml"
-
+port = 389
 [users.test]
 id = 10001
+group_id = 10001
 password = "test"
 keys = ["key1", "key2"]
 
 [users.foo]
 id = 10002
+group_id = 10002
 password = "test"
 
 [groups.test]

@@ -1,48 +1,132 @@
 package api
 
 import (
-	"log"
+	"fmt"
 	"net"
 	"os"
+	"sort"
 	"strconv"
 
+	"github.com/STNS/STNS/model"
 	"github.com/STNS/STNS/stns"
 	"github.com/facebookgo/pidfile"
+	"github.com/labstack/gommon/log"
 	"github.com/lestrrat/go-server-starter/listener"
 	"github.com/nmcclain/ldap"
 )
 
 type ldapServer struct {
 	baseServer
+	logger *log.Logger
 }
 
 type ldapHandler struct {
+	backends model.Backends
+	logger   *log.Logger
+	config   *stns.Config
 }
 
 func (h ldapHandler) Bind(bindDN, bindSimplePw string, conn net.Conn) (ldap.LDAPResultCode, error) {
-	return ldap.LDAPResultInvalidCredentials, nil
+	return ldap.LDAPResultSuccess, nil
 }
 
-func (h ldapHandler) Search(boundDN string, searchReq ldap.SearchRequest, conn net.Conn) (ldap.ServerSearchResult, error) {
-
-	entries := []*ldap.Entry{
-		&ldap.Entry{"cn=ned," + searchReq.BaseDN, []*ldap.EntryAttribute{
-			&ldap.EntryAttribute{"cn", []string{"ned"}},
-			&ldap.EntryAttribute{"uidNumber", []string{"5000"}},
-			&ldap.EntryAttribute{"accountStatus", []string{"active"}},
-			&ldap.EntryAttribute{"uid", []string{"ned"}},
-			&ldap.EntryAttribute{"description", []string{"ned"}},
-			&ldap.EntryAttribute{"objectClass", []string{"posixAccount"}},
-		}},
-		&ldap.Entry{"cn=trent," + searchReq.BaseDN, []*ldap.EntryAttribute{
-			&ldap.EntryAttribute{"cn", []string{"trent"}},
-			&ldap.EntryAttribute{"uidNumber", []string{"5005"}},
-			&ldap.EntryAttribute{"accountStatus", []string{"active"}},
-			&ldap.EntryAttribute{"uid", []string{"trent"}},
-			&ldap.EntryAttribute{"description", []string{"trent"}},
-			&ldap.EntryAttribute{"objectClass", []string{"posixAccount"}},
-		}},
+func (h ldapHandler) Search(bindDN string, searchReq ldap.SearchRequest, conn net.Conn) (ldap.ServerSearchResult, error) {
+	// refs: https://github.com/glauth/glauth/blob/master/configbackend.go
+	entries := []*ldap.Entry{}
+	filterEntity, err := ldap.GetFilterObjectClass(searchReq.Filter)
+	if err != nil {
+		return ldap.ServerSearchResult{
+			ResultCode: ldap.LDAPResultOperationsError,
+		}, fmt.Errorf("Search Error: error parsing filter: %s", searchReq.Filter)
 	}
+
+	switch filterEntity {
+	default:
+		return ldap.ServerSearchResult{
+			ResultCode: ldap.LDAPResultOperationsError,
+		}, fmt.Errorf("Search Error: unhandled filter type: %s [%s]", filterEntity, searchReq.Filter)
+	case "posixgroup":
+		groups, err := h.backends.Groups()
+		if err != nil {
+			return ldap.ServerSearchResult{
+				ResultCode: ldap.LDAPResultOperationsError,
+			}, fmt.Errorf("Search Error: can't fetch groups: %s [%s]", filterEntity, searchReq.Filter)
+		}
+
+		users, err := h.backends.Users()
+		if err != nil {
+			return ldap.ServerSearchResult{
+				ResultCode: ldap.LDAPResultOperationsError,
+			}, fmt.Errorf("Search Error: can't fetch users: %s [%s]", filterEntity, searchReq.Filter)
+		}
+
+		for _, g := range groups {
+			attrs := []*ldap.EntryAttribute{}
+			attrs = append(attrs, &ldap.EntryAttribute{"cn", []string{g.GetName()}})
+			attrs = append(attrs, &ldap.EntryAttribute{"description", []string{fmt.Sprintf("%s via LDAP", g.GetName())}})
+			attrs = append(attrs, &ldap.EntryAttribute{"gidNumber", []string{fmt.Sprintf("%d", g.GetID())}})
+			attrs = append(attrs, &ldap.EntryAttribute{"objectClass", []string{"posixGroup"}})
+			attrs = append(attrs, &ldap.EntryAttribute{"memberUid", h.getGroupMemberNames(g.(*model.Group), users, h.config.LDAP.BaseDN)})
+			dn := fmt.Sprintf("cn=%s,ou=groups,%s", g.GetName(), h.config.LDAP.BaseDN)
+
+			entries = append(entries, &ldap.Entry{dn, attrs})
+		}
+	case "posixaccount", "":
+		users, err := h.backends.Users()
+		if err != nil {
+			return ldap.ServerSearchResult{
+				ResultCode: ldap.LDAPResultOperationsError,
+			}, fmt.Errorf("Search Error: can't fetch users: %s [%s]", filterEntity, searchReq.Filter)
+		}
+		groups, err := h.backends.Groups()
+		if err != nil {
+			return ldap.ServerSearchResult{
+				ResultCode: ldap.LDAPResultOperationsError,
+			}, fmt.Errorf("Search Error: can't fetch group: %s [%s]", filterEntity, searchReq.Filter)
+		}
+
+		for _, u := range users {
+			var group *model.Group
+			memberOf := []int{}
+			for _, g := range groups {
+				// find primary group which the user belongs
+				if g.GetID() == u.(*model.User).GroupID {
+					group = g.(*model.Group)
+				}
+
+				// find other group which the user belongs
+				for _, gm := range g.(*model.Group).Users {
+					if gm == u.GetName() {
+						memberOf = append(memberOf, g.GetID())
+					}
+				}
+			}
+
+			if group == nil {
+				return ldap.ServerSearchResult{
+					ResultCode: ldap.LDAPResultOperationsError,
+				}, fmt.Errorf("Search Error: primary group id is required : %s [%s]", filterEntity, searchReq.Filter)
+			}
+			memberOf = append(memberOf, u.(*model.User).GroupID)
+			attrs := []*ldap.EntryAttribute{}
+			attrs = append(attrs, &ldap.EntryAttribute{"cn", []string{u.GetName()}})
+			attrs = append(attrs, &ldap.EntryAttribute{"uid", []string{u.GetName()}})
+			attrs = append(attrs, &ldap.EntryAttribute{"ou", []string{group.Name}})
+			attrs = append(attrs, &ldap.EntryAttribute{"uidNumber", []string{fmt.Sprintf("%d", u.GetID())}})
+			attrs = append(attrs, &ldap.EntryAttribute{"accountStatus", []string{"active"}})
+			attrs = append(attrs, &ldap.EntryAttribute{"objectClass", []string{"posixAccount"}})
+			attrs = append(attrs, &ldap.EntryAttribute{"loginShell", []string{u.(*model.User).Shell}})
+			attrs = append(attrs, &ldap.EntryAttribute{"homeDirectory", []string{u.(*model.User).Directory}})
+			attrs = append(attrs, &ldap.EntryAttribute{"description", []string{fmt.Sprintf("%s via LDAP", u.GetName())}})
+			attrs = append(attrs, &ldap.EntryAttribute{"gecos", []string{u.(*model.User).Gecos}})
+			attrs = append(attrs, &ldap.EntryAttribute{"gidNumber", []string{strconv.Itoa(u.(*model.User).GroupID)}})
+			attrs = append(attrs, &ldap.EntryAttribute{"memberOf", h.getGroupDNs(memberOf, groups, h.config.LDAP.BaseDN)})
+			attrs = append(attrs, &ldap.EntryAttribute{"sshPublicKey", u.(*model.User).Keys})
+			dn := fmt.Sprintf("cn=%s,ou=%s,%s", u.GetName(), group.Name, h.config.LDAP.BaseDN)
+			entries = append(entries, &ldap.Entry{dn, attrs})
+		}
+	}
+
 	return ldap.ServerSearchResult{entries, []string{}, []ldap.Control{}, ldap.LDAPResultSuccess}, nil
 }
 
@@ -52,15 +136,34 @@ func newLDAPServer(confPath string) (*ldapServer, error) {
 		return nil, err
 	}
 
-	s := &ldapServer{baseServer{config: &conf}}
+	s := &ldapServer{
+		baseServer: baseServer{config: &conf},
+		logger:     log.New("stns-ldap"),
+	}
 	return s, nil
 }
 
 func (s *ldapServer) Run() error {
+	var backends model.Backends
+	b, err := model.NewBackendTomlFile(s.config.Users, s.config.Groups)
+	if err != nil {
+		return err
+	}
+	backends = append(backends, b)
+
+	err = s.loadModules(s.logger, &backends)
+	if err != nil {
+		return err
+	}
 
 	ld := ldap.NewServer()
-	ld.BindFunc("", ldapHandler{})
-	ld.SearchFunc("", ldapHandler{})
+	ld.EnforceLDAP = true
+	h := ldapHandler{
+		backends: backends,
+		config:   s.config,
+	}
+	ld.BindFunc("", h)
+	ld.SearchFunc("", h)
 
 	if err := pidfile.Write(); err != nil {
 		return err
@@ -81,9 +184,58 @@ func (s *ldapServer) Run() error {
 		lnstr = listeners[0].Addr().String()
 	}
 
+	log.Info("start ldap server")
 	if err := ld.ListenAndServe(lnstr); err != nil {
 		return err
 	}
 
 	return nil
+}
+
+func (h ldapHandler) getGroupMemberNames(group *model.Group, users map[string]model.UserGroup, baseName string) []string {
+	groupMemberNames := map[string]bool{}
+
+	// this group belongs user(primary)
+	for _, u := range users {
+		if u.(*model.User).GroupID == group.ID {
+			groupMemberNames[u.GetName()] = true
+		}
+	}
+
+	// this group belongs user(other)
+	for _, memberName := range group.Users {
+		if memberName == "" {
+			break
+		}
+		groupMemberNames[memberName] = true
+
+	}
+	g := []string{}
+	for k, _ := range groupMemberNames {
+		g = append(g, k)
+	}
+
+	sort.Strings(g)
+
+	return g
+}
+func (h ldapHandler) getGroupDNs(gids []int, usergroups map[string]model.UserGroup, baseName string) []string {
+	groups := make(map[string]bool)
+	for _, gid := range gids {
+		for _, g := range usergroups {
+			if g.GetID() == gid {
+				dn := fmt.Sprintf("cn=%s,ou=groups,%s", g.GetName(), baseName)
+				groups[dn] = true
+			}
+		}
+	}
+
+	g := []string{}
+	for k, _ := range groups {
+		g = append(g, k)
+	}
+
+	sort.Strings(g)
+
+	return g
 }

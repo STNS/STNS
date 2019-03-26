@@ -9,7 +9,7 @@ import (
 	"github.com/STNS/STNS/model"
 	"github.com/STNS/STNS/stns"
 	"github.com/facebookgo/pidfile"
-	"github.com/labstack/echo"
+	"github.com/labstack/gommon/log"
 	"github.com/urfave/cli"
 )
 
@@ -21,7 +21,8 @@ func LaunchServer(c *cli.Context) error {
 	var serv server
 	var err error
 	pidfile.SetPidfilePath(os.Getenv("STNS_PID"))
-	serv, err = newHTTPServer(os.Getenv("STNS_CONFIG"))
+	//	serv, err = newHTTPServer(os.Getenv("STNS_CONFIG"))
+	serv, err = newLDAPServer(os.Getenv("STNS_CONFIG"))
 	if err != nil {
 		return errors.New("server init:" + err.Error())
 	}
@@ -32,7 +33,7 @@ type baseServer struct {
 	config *stns.Config
 }
 
-func (s *baseServer) loadModules(logger echo.Logger, backends *model.Backends) error {
+func (s *baseServer) loadModules(logger *log.Logger, backends *model.Backends) error {
 	for _, v := range s.config.LoadModules {
 		p, err := plugin.Open(filepath.Join(s.config.ModulePath, v))
 		if err != nil {
