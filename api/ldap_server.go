@@ -38,6 +38,7 @@ import (
 	"github.com/labstack/gommon/log"
 	"github.com/lestrrat/go-server-starter/listener"
 	"github.com/nmcclain/ldap"
+	"github.com/tredoe/osutil/user/crypt"
 )
 
 type ldapServer struct {
@@ -51,8 +52,59 @@ type ldapHandler struct {
 	config   *stns.Config
 }
 
-func (h ldapHandler) Bind(bindDN, bindSimplePw string, conn net.Conn) (ldap.LDAPResultCode, error) {
+func (h ldapHandler) Bind(bindDN, rawPassword string, conn net.Conn) (ldap.LDAPResultCode, error) {
+	bindDN = strings.ToLower(bindDN)
+	baseDN := strings.ToLower(h.config.LDAP.BaseDN)
+
+	if !strings.HasSuffix(bindDN, baseDN) {
+		h.logger.Warn(fmt.Sprintf("Bind Error: BindDN %s not our BaseDN %s", bindDN, baseDN))
+		return ldap.LDAPResultInvalidCredentials, nil
+	}
+	parts := strings.Split(strings.TrimSuffix(bindDN, baseDN), ",")
+	groupName := ""
+	userName := ""
+	if len(parts) == 1 {
+		userName = strings.TrimPrefix(parts[0], "cn=")
+	} else if len(parts) == 2 {
+		userName = strings.TrimPrefix(parts[0], "cn=")
+		groupName = strings.TrimPrefix(parts[1], "ou=")
+	} else {
+		h.logger.Warn(fmt.Sprintf("Bind Error: BindDN %s should have only one or two parts (has %d)", bindDN, len(parts)))
+		return ldap.LDAPResultInvalidCredentials, nil
+	}
+
+	var user *model.User
+	var group *model.Group
+
+	users, err := h.backends.FindUserByName(userName)
+	if err != nil {
+		log.Warn(fmt.Sprintf("Bind Error: User %s not found.", userName))
+		return ldap.LDAPResultInvalidCredentials, nil
+	}
+	user = users[userName].(*model.User)
+
+	if groupName != "" {
+		groups, err := h.backends.FindGroupByName(groupName)
+		if err != nil {
+			log.Warn(fmt.Sprintf("Bind Error: Group %s not found.", groupName))
+			return ldap.LDAPResultInvalidCredentials, nil
+		}
+
+		group = groups[groupName].(*model.Group)
+
+		if user.GroupID != group.ID {
+			log.Warn(fmt.Sprintf("Bind Error: User %s primary group is not %s.", userName, groupName))
+			return ldap.LDAPResultInvalidCredentials, nil
+		}
+
+	}
+	c := crypt.NewFromHash(user.Password)
+	if c.Verify(user.Password, []byte(rawPassword)) != nil {
+		log.Warn(fmt.Sprintf("Bind Error: invalid credentials as %s from %s", bindDN, conn.RemoteAddr().String()))
+		return ldap.LDAPResultInvalidCredentials, nil
+	}
 	return ldap.LDAPResultSuccess, nil
+
 }
 
 func (h ldapHandler) Search(bindDN string, searchReq ldap.SearchRequest, conn net.Conn) (ldap.ServerSearchResult, error) {
@@ -127,6 +179,7 @@ func (h ldapHandler) Search(bindDN string, searchReq ldap.SearchRequest, conn ne
 		for _, u := range users {
 			var group *model.Group
 			memberOf := []int{}
+
 			for _, g := range groups {
 				// find primary group which the user belongs
 				if g.GetID() == u.(*model.User).GroupID {
@@ -150,6 +203,7 @@ func (h ldapHandler) Search(bindDN string, searchReq ldap.SearchRequest, conn ne
 			attrs := []*ldap.EntryAttribute{}
 			attrs = append(attrs, &ldap.EntryAttribute{"cn", []string{u.GetName()}})
 			attrs = append(attrs, &ldap.EntryAttribute{"uid", []string{u.GetName()}})
+			attrs = append(attrs, &ldap.EntryAttribute{"givenName", []string{u.GetName()}})
 			attrs = append(attrs, &ldap.EntryAttribute{"ou", []string{group.Name}})
 			attrs = append(attrs, &ldap.EntryAttribute{"uidNumber", []string{fmt.Sprintf("%d", u.GetID())}})
 			attrs = append(attrs, &ldap.EntryAttribute{"accountStatus", []string{"active"}})

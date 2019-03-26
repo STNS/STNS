@@ -69,6 +69,8 @@ github.com/kisielk/errcheck v1.2.0 h1:reN85Pxc5larApoH1keMBiu2GWtPqXQ1nc9gx+jOU+
 github.com/kisielk/errcheck v1.2.0/go.mod h1:/BMXB+zMLi60iA8Vv6Ksmxu/1UDYcXs4uQLJ+jE2L00=
 github.com/klauspost/asmfmt v1.2.0 h1:zwsyBYgEdabg32alMful/5pRtMTcR5C5w1LKNg9OD78=
 github.com/klauspost/asmfmt v1.2.0/go.mod h1:RAoUvqkWr2rUa2I19qKMEVZQe4BVtcHGTMCUOcCU2Lg=
+github.com/kless/osutil v0.0.0-20161130133508-7d3ee1afa71c h1:Ws2FH852iLedKasudbpV3+MKwbN+hXGAMPxvPUG+uvE=
+github.com/kless/osutil v0.0.0-20161130133508-7d3ee1afa71c/go.mod h1:LZaf5qvVZ+3l5zlCzA16taxy7wjDOf+5kb2StXn1rsQ=
 github.com/koron/iferr v0.0.0-20180615142939-bb332a3b1d91 h1:hunjgdb3b21ZdRmzDPXii0EcnHpjH7uCP+kODoE1JH0=
 github.com/koron/iferr v0.0.0-20180615142939-bb332a3b1d91/go.mod h1:C2tFh8w3I6i4lnUJfoBx2Hwku3mgu4wPNTtUNp1i5KI=
 github.com/labstack/echo v3.2.1+incompatible h1:J2M7YArHx4gi8p/3fDw8tX19SXhBCoRpviyAZSN3I88=
@@ -113,6 +115,8 @@ github.com/tcnksm/go-gitconfig v0.1.2 h1:iiDhRitByXAEyjgBqsKi9QU4o2TNtv9kPP3RgPg
 github.com/tcnksm/go-gitconfig v0.1.2/go.mod h1:/8EhP4H7oJZdIPyT+/UIsG87kTzrzM4UsLGSItWYCpE=
 github.com/tcnksm/go-latest v0.0.0-20170313132115-e3007ae9052e h1:IWllFTiDjjLIf2oeKxpIUmtiDV5sn71VgeQgg6vcE7k=
 github.com/tcnksm/go-latest v0.0.0-20170313132115-e3007ae9052e/go.mod h1:d7u6HkTYKSv5m6MCKkOQlHwaShTMl3HjqSGW3XtVhXM=
+github.com/tredoe/osutil v0.0.0-20161130133508-7d3ee1afa71c h1:5q7IHeqvAA4hWR1CfpTOS7RFsTDC36TaSZ8Dvc00bPk=
+github.com/tredoe/osutil v0.0.0-20161130133508-7d3ee1afa71c/go.mod h1:M/I710pXKQToMdqt/D+mJ4QsnW6WDaajyB6DWFmDXBs=
 github.com/tsuyoshiwada/go-gitcmd v0.0.0-20180205145712-5f1f5f9475df h1:Y2l28Jr3vOEeYtxfVbMtVfOdAwuUqWaP9fvNKiBVeXY=
 github.com/tsuyoshiwada/go-gitcmd v0.0.0-20180205145712-5f1f5f9475df/go.mod h1:pnyouUty/nBr/zm3GYwTIt+qFTLWbdjeLjZmJdzJOu8=
 github.com/ugorji/go/codec v0.0.0-20180920200043-2c86ab75771c h1:VKaVTivuPeZPjcuRzM9sF11ZZHIZweq4cbnQHxfeoy8=

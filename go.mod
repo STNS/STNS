@@ -33,6 +33,7 @@ require (
 	github.com/keegancsmith/rpc v1.1.0 // indirect
 	github.com/kisielk/errcheck v1.2.0 // indirect
 	github.com/klauspost/asmfmt v1.2.0 // indirect
+	github.com/kless/osutil v0.0.0-20161130133508-7d3ee1afa71c
 	github.com/koron/iferr v0.0.0-20180615142939-bb332a3b1d91 // indirect
 	github.com/labstack/echo v3.2.1+incompatible
 	github.com/labstack/gommon v0.2.7
@@ -55,6 +56,7 @@ require (
 	github.com/tcnksm/ghr v0.12.0 // indirect
 	github.com/tcnksm/go-gitconfig v0.1.2 // indirect
 	github.com/tcnksm/go-latest v0.0.0-20170313132115-e3007ae9052e // indirect
+	github.com/tredoe/osutil v0.0.0-20161130133508-7d3ee1afa71c
 	github.com/tsuyoshiwada/go-gitcmd v0.0.0-20180205145712-5f1f5f9475df // indirect
 	github.com/ugorji/go/codec v0.0.0-20180920200043-2c86ab75771c // indirect
 	github.com/urfave/cli v1.20.0
@@ -62,7 +64,7 @@ require (
 	github.com/valyala/fasttemplate v0.0.0-20170224212429-dcecefd839c4 // indirect
 	github.com/zmb3/gogetdoc v0.0.0-20190128144419-f7be94e50640 // indirect
 	go.etcd.io/etcd v3.3.9+incompatible
-	golang.org/x/crypto v0.0.0-20180910181607-0e37d006457b // indirect
+	golang.org/x/crypto v0.0.0-20180910181607-0e37d006457b
 	golang.org/x/lint v0.0.0-20181217174547-8f45f776aaf1 // indirect
 	golang.org/x/net v0.0.0-20190213061140-3a22650c66bd
 	golang.org/x/oauth2 v0.0.0-20180821212333-d2e6202438be // indirect
