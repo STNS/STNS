@@ -30,7 +30,7 @@ func TestMain(m *testing.M) {
 	os.Exit(result)
 }
 
-func TestGetUserList(t *testing.T) {
+func TestHTTPGetUserList(t *testing.T) {
 	if !*httpIntegration {
 		t.Skip()
 	}
@@ -75,7 +75,7 @@ func TestGetUserList(t *testing.T) {
 	}
 }
 
-func TestGetUserByName(t *testing.T) {
+func TestHTTPGetUserByName(t *testing.T) {
 	if !*httpIntegration {
 		t.Skip()
 	}
@@ -115,7 +115,7 @@ func TestGetUserByName(t *testing.T) {
 	}
 }
 
-func TestGetUserByID(t *testing.T) {
+func TestHTTPGetUserByID(t *testing.T) {
 	if !*httpIntegration {
 		t.Skip()
 	}
@@ -155,7 +155,7 @@ func TestGetUserByID(t *testing.T) {
 	}
 }
 
-func TestGetGroupList(t *testing.T) {
+func TestHTTPGetGroupList(t *testing.T) {
 	if !*httpIntegration {
 		t.Skip()
 	}
@@ -200,7 +200,7 @@ func TestGetGroupList(t *testing.T) {
 	}
 }
 
-func TestGetGroupByName(t *testing.T) {
+func TestHTTPGetGroupByName(t *testing.T) {
 	if !*httpIntegration {
 		t.Skip()
 	}
@@ -240,7 +240,7 @@ func TestGetGroupByName(t *testing.T) {
 	}
 }
 
-func TestGetGroupByID(t *testing.T) {
+func TestHTTPGetGroupByID(t *testing.T) {
 	if !*httpIntegration {
 		t.Skip()
 	}
@@ -280,7 +280,7 @@ func TestGetGroupByID(t *testing.T) {
 	}
 }
 
-func TestRoot(t *testing.T) {
+func TestHTTPRoot(t *testing.T) {
 	if !*httpIntegration {
 		t.Skip()
 	}
