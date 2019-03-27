@@ -131,6 +131,8 @@ github.com/zmb3/gogetdoc v0.0.0-20190128144419-f7be94e50640 h1:irC1+JJh1ZF+JnAHc
 github.com/zmb3/gogetdoc v0.0.0-20190128144419-f7be94e50640/go.mod h1:ofmGw6LrMypycsiWcyug6516EXpIxSbZ+uI9ppGypfY=
 go.etcd.io/etcd v3.3.9+incompatible h1:yzHYlXnJjDaxeML8LSwbI7oCEJl5enW+UHw7XJQbW0A=
 go.etcd.io/etcd v3.3.9+incompatible/go.mod h1:yaeTdrJi5lOmYerz05bd8+V7KubZs8YSFZfzsF9A6aI=
+go.etcd.io/etcd v3.3.12+incompatible h1:V6PRYRGpU4k5EajJaaj/GL3hqIdzyPnBU8aPUp+35yw=
+go.etcd.io/etcd v3.3.12+incompatible/go.mod h1:yaeTdrJi5lOmYerz05bd8+V7KubZs8YSFZfzsF9A6aI=
 golang.org/x/crypto v0.0.0-20180910181607-0e37d006457b h1:2b9XGzhjiYsYPnKXoEfL7klWZQIt8IfyRCz62gCqqlQ=
 golang.org/x/crypto v0.0.0-20180910181607-0e37d006457b/go.mod h1:6SG95UA2DQfeDnfUPMdvaQW0Q7yPrPDi9nlGo2tz2b4=
 golang.org/x/lint v0.0.0-20180702182130-06c8688daad7 h1:00BeQWmeaGazuOrq8Q5K5d3/cHaGuFrZzpaHBXfrsUA=

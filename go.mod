@@ -63,7 +63,7 @@ require (
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasttemplate v0.0.0-20170224212429-dcecefd839c4 // indirect
 	github.com/zmb3/gogetdoc v0.0.0-20190128144419-f7be94e50640 // indirect
-	go.etcd.io/etcd v3.3.9+incompatible
+	go.etcd.io/etcd v3.3.12+incompatible
 	golang.org/x/crypto v0.0.0-20180910181607-0e37d006457b
 	golang.org/x/lint v0.0.0-20181217174547-8f45f776aaf1 // indirect
 	golang.org/x/net v0.0.0-20190213061140-3a22650c66bd
