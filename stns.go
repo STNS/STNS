@@ -35,6 +35,12 @@ var flags = []cli.Flag{
 		Usage:  "pid file path",
 		EnvVar: "STNS_PID",
 	},
+	cli.StringFlag{
+		Name:   "protocol",
+		Value:  "http",
+		Usage:  "interface protocol",
+		EnvVar: "STNS_PROTOCOL",
+	},
 }
 
 var commands = []cli.Command{
@@ -68,6 +74,10 @@ func appBefore(c *cli.Context) error {
 
 	if c.GlobalString("pidfile") != "" {
 		os.Setenv("STNS_PID", c.GlobalString("pidfile"))
+	}
+
+	if c.GlobalString("protocol") != "" {
+		os.Setenv("STNS_PROTOCOL", c.GlobalString("protocol"))
 	}
 	return nil
 }

@@ -25,8 +25,14 @@ func LaunchServer(c *cli.Context) error {
 	var serv server
 	var err error
 	pidfile.SetPidfilePath(os.Getenv("STNS_PID"))
-	//	serv, err = newHTTPServer(os.Getenv("STNS_CONFIG"))
-	serv, err = newLDAPServer(os.Getenv("STNS_CONFIG"))
+
+	switch os.Getenv("STNS_PROTOCOL") {
+	case "ldap":
+		serv, err = newLDAPServer(os.Getenv("STNS_CONFIG"))
+	default:
+		serv, err = newHTTPServer(os.Getenv("STNS_CONFIG"))
+	}
+
 	if err != nil {
 		return errors.New("server init:" + err.Error())
 	}
