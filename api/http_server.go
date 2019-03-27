@@ -179,7 +179,7 @@ func (s *httpServer) Run() error {
 		}
 
 		if err := e.StartServer(customServer); err != nil {
-			e.Logger.Fatal("shutting down the server")
+			e.Logger.Fatalf("shutting down the server: %s", err)
 		}
 	}()
 
