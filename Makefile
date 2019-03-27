@@ -24,6 +24,7 @@ UNAME_S := $(shell uname -s)
 REVISION=$(shell git describe --always)
 GOVERSION=$(shell go version)
 BUILDDATE=$(shell date '+%Y/%m/%d %H:%M:%S %Z')
+STNS_PROTOCOL ?= "http"
 
 ME=$(shell whoami)
 default: build
@@ -42,10 +43,11 @@ ifeq ($(UNAME_S),Darwin)
 endif
 
 depsdev: ## Installing dependencies for development
-	$(GO) get github.com/golang/lint/golint
+	$(GO) get -u golang.org/x/lint/golint
 	$(GO) get -u github.com/tcnksm/ghr
 	$(GO) get -u golang.org/x/tools/cmd/goimports
 	$(GO) get -u github.com/git-chglog/git-chglog/cmd/git-chglog
+	$(GO) get -u github.com/ugorji/go/codec@none
 
 changelog:
 	git-chglog -o CHANGELOG.md
@@ -60,13 +62,21 @@ lint: ## Exec golint
 	golint -min_confidence 1.1 -set_exit_status $(TEST)
 
 server: ## Run server
-	$(GO) run github.com/STNS/STNS --pidfile ./stns.pid --config ./stns/integration.toml server
+	$(GO) run github.com/STNS/STNS --pidfile ./stns.pid --config ./stns/integration.toml --protocol $(STNS_PROTOCOL) server
 
-integration: ## Run integration test after Server wakeup
-	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Integration Testing$(RESET)"
-	./misc/server start
-	$(GO) test $(VERBOSE) -integration $(TEST) $(TEST_OPTIONS)
-	./misc/server stop
+integration: integration_http integration_ldap ## Run integration test after Server wakeup
+
+integration_http: ## Run integration test after Server wakeup
+	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Integration HTTP Testing$(RESET)"
+	./misc/server start -http
+	$(GO) test $(VERBOSE) -integration-http $(TEST) $(TEST_OPTIONS)
+	./misc/server stop || true
+
+integration_ldap: ## Run integration test after Server wakeup
+	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Integration LDAP Testing$(RESET)"
+	./misc/server start -ldap
+	$(GO) test $(VERBOSE) -integration-ldap $(TEST) $(TEST_OPTIONS)
+	./misc/server stop || true
 
 build: ## Build server
 	$(GO) build -ldflags "-X main.version=$(VERSION) -X main.revision=$(REVISION) -X \"main.goversion=$(GOVERSION)\" -X \"main.builddate=$(BUILDDATE)\" -X \"main.builduser=$(ME)\"" -o $(BUILD)/stns

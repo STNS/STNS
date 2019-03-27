@@ -1,5 +1,6 @@
 [users.bar]
 id = 99
+group_id = 10001
 password = "test"
 
 [modules.etcd]
@@ -213,401 +214,601 @@ users = [
 
 [users.member0]
 id = 1000
+group_id = 10001
 [users.member1]
 id = 1001
+group_id = 10001
 [users.member2]
 id = 1002
+group_id = 10001
 [users.member3]
 id = 1003
+group_id = 10001
 [users.member4]
 id = 1004
+group_id = 10001
 [users.member5]
 id = 1005
+group_id = 10001
 [users.member6]
 id = 1006
+group_id = 10001
 [users.member7]
 id = 1007
+group_id = 10001
 [users.member8]
 id = 1008
+group_id = 10001
 [users.member9]
 id = 1009
+group_id = 10001
 [users.member10]
 id = 1010
+group_id = 10001
 [users.member11]
 id = 1011
+group_id = 10001
 [users.member12]
 id = 1012
+group_id = 10001
 [users.member13]
 id = 1013
+group_id = 10001
 [users.member14]
 id = 1014
+group_id = 10001
 [users.member15]
 id = 1015
+group_id = 10001
 [users.member16]
 id = 1016
+group_id = 10001
 [users.member17]
 id = 1017
+group_id = 10001
 [users.member18]
 id = 1018
+group_id = 10001
 [users.member19]
 id = 1019
+group_id = 10001
 [users.member20]
 id = 1020
+group_id = 10001
 [users.member21]
 id = 1021
+group_id = 10001
 [users.member22]
 id = 1022
+group_id = 10001
 [users.member23]
 id = 1023
+group_id = 10001
 [users.member24]
 id = 1024
+group_id = 10001
 [users.member25]
 id = 1025
+group_id = 10001
 [users.member26]
 id = 1026
+group_id = 10001
 [users.member27]
 id = 1027
+group_id = 10001
 [users.member28]
 id = 1028
+group_id = 10001
 [users.member29]
 id = 1029
+group_id = 10001
 [users.member30]
 id = 1030
+group_id = 10001
 [users.member31]
 id = 1031
+group_id = 10001
 [users.member32]
 id = 1032
+group_id = 10001
 [users.member33]
 id = 1033
+group_id = 10001
 [users.member34]
 id = 1034
+group_id = 10001
 [users.member35]
 id = 1035
+group_id = 10001
 [users.member36]
 id = 1036
+group_id = 10001
 [users.member37]
 id = 1037
+group_id = 10001
 [users.member38]
 id = 1038
+group_id = 10001
 [users.member39]
 id = 1039
+group_id = 10001
 [users.member40]
 id = 1040
+group_id = 10001
 [users.member41]
 id = 1041
+group_id = 10001
 [users.member42]
 id = 1042
+group_id = 10001
 [users.member43]
 id = 1043
+group_id = 10001
 [users.member44]
 id = 1044
+group_id = 10001
 [users.member45]
 id = 1045
+group_id = 10001
 [users.member46]
 id = 1046
+group_id = 10001
 [users.member47]
 id = 1047
+group_id = 10001
 [users.member48]
 id = 1048
+group_id = 10001
 [users.member49]
 id = 1049
+group_id = 10001
 [users.member50]
 id = 1050
+group_id = 10001
 [users.member51]
 id = 1051
+group_id = 10001
 [users.member52]
 id = 1052
+group_id = 10001
 [users.member53]
 id = 1053
+group_id = 10001
 [users.member54]
 id = 1054
+group_id = 10001
 [users.member55]
 id = 1055
+group_id = 10001
 [users.member56]
 id = 1056
+group_id = 10001
 [users.member57]
 id = 1057
+group_id = 10001
 [users.member58]
 id = 1058
+group_id = 10001
 [users.member59]
 id = 1059
+group_id = 10001
 [users.member60]
 id = 1060
+group_id = 10001
 [users.member61]
 id = 1061
+group_id = 10001
 [users.member62]
 id = 1062
+group_id = 10001
 [users.member63]
 id = 1063
+group_id = 10001
 [users.member64]
 id = 1064
+group_id = 10001
 [users.member65]
 id = 1065
+group_id = 10001
 [users.member66]
 id = 1066
+group_id = 10001
 [users.member67]
 id = 1067
+group_id = 10001
 [users.member68]
 id = 1068
+group_id = 10001
 [users.member69]
 id = 1069
+group_id = 10001
 [users.member70]
 id = 1070
+group_id = 10001
 [users.member71]
 id = 1071
+group_id = 10001
 [users.member72]
 id = 1072
+group_id = 10001
 [users.member73]
 id = 1073
+group_id = 10001
 [users.member74]
 id = 1074
+group_id = 10001
 [users.member75]
 id = 1075
+group_id = 10001
 [users.member76]
 id = 1076
+group_id = 10001
 [users.member77]
 id = 1077
+group_id = 10001
 [users.member78]
 id = 1078
+group_id = 10001
 [users.member79]
 id = 1079
+group_id = 10001
 [users.member80]
 id = 1080
+group_id = 10001
 [users.member81]
 id = 1081
+group_id = 10001
 [users.member82]
 id = 1082
+group_id = 10001
 [users.member83]
 id = 1083
+group_id = 10001
 [users.member84]
 id = 1084
+group_id = 10001
 [users.member85]
 id = 1085
+group_id = 10001
 [users.member86]
 id = 1086
+group_id = 10001
 [users.member87]
 id = 1087
+group_id = 10001
 [users.member88]
 id = 1088
+group_id = 10001
 [users.member89]
 id = 1089
+group_id = 10001
 [users.member90]
 id = 1090
+group_id = 10001
 [users.member91]
 id = 1091
+group_id = 10001
 [users.member92]
 id = 1092
+group_id = 10001
 [users.member93]
 id = 1093
+group_id = 10001
 [users.member94]
 id = 1094
+group_id = 10001
 [users.member95]
 id = 1095
+group_id = 10001
 [users.member96]
 id = 1096
+group_id = 10001
 [users.member97]
 id = 1097
+group_id = 10001
 [users.member98]
 id = 1098
+group_id = 10001
 [users.member99]
 id = 1099
+group_id = 10001
 [users.member100]
 id = 1100
+group_id = 10001
 [users.member101]
 id = 1101
+group_id = 10001
 [users.member102]
 id = 1102
+group_id = 10001
 [users.member103]
 id = 1103
+group_id = 10001
 [users.member104]
 id = 1104
+group_id = 10001
 [users.member105]
 id = 1105
+group_id = 10001
 [users.member106]
 id = 1106
+group_id = 10001
 [users.member107]
 id = 1107
+group_id = 10001
 [users.member108]
 id = 1108
+group_id = 10001
 [users.member109]
 id = 1109
+group_id = 10001
 [users.member110]
 id = 1110
+group_id = 10001
 [users.member111]
 id = 1111
+group_id = 10001
 [users.member112]
 id = 1112
+group_id = 10001
 [users.member113]
 id = 1113
+group_id = 10001
 [users.member114]
 id = 1114
+group_id = 10001
 [users.member115]
 id = 1115
+group_id = 10001
 [users.member116]
 id = 1116
+group_id = 10001
 [users.member117]
 id = 1117
+group_id = 10001
 [users.member118]
 id = 1118
+group_id = 10001
 [users.member119]
 id = 1119
+group_id = 10001
 [users.member120]
 id = 1120
+group_id = 10001
 [users.member121]
 id = 1121
+group_id = 10001
 [users.member122]
 id = 1122
+group_id = 10001
 [users.member123]
 id = 1123
+group_id = 10001
 [users.member124]
 id = 1124
+group_id = 10001
 [users.member125]
 id = 1125
+group_id = 10001
 [users.member126]
 id = 1126
+group_id = 10001
 [users.member127]
 id = 1127
+group_id = 10001
 [users.member128]
 id = 1128
+group_id = 10001
 [users.member129]
 id = 1129
+group_id = 10001
 [users.member130]
 id = 1130
+group_id = 10001
 [users.member131]
 id = 1131
+group_id = 10001
 [users.member132]
 id = 1132
+group_id = 10001
 [users.member133]
 id = 1133
+group_id = 10001
 [users.member134]
 id = 1134
+group_id = 10001
 [users.member135]
 id = 1135
+group_id = 10001
 [users.member136]
 id = 1136
+group_id = 10001
 [users.member137]
 id = 1137
+group_id = 10001
 [users.member138]
 id = 1138
+group_id = 10001
 [users.member139]
 id = 1139
+group_id = 10001
 [users.member140]
 id = 1140
+group_id = 10001
 [users.member141]
 id = 1141
+group_id = 10001
 [users.member142]
 id = 1142
+group_id = 10001
 [users.member143]
 id = 1143
+group_id = 10001
 [users.member144]
 id = 1144
+group_id = 10001
 [users.member145]
 id = 1145
+group_id = 10001
 [users.member146]
 id = 1146
+group_id = 10001
 [users.member147]
 id = 1147
+group_id = 10001
 [users.member148]
 id = 1148
+group_id = 10001
 [users.member149]
 id = 1149
+group_id = 10001
 [users.member150]
 id = 1150
+group_id = 10001
 [users.member151]
 id = 1151
+group_id = 10001
 [users.member152]
 id = 1152
+group_id = 10001
 [users.member153]
 id = 1153
+group_id = 10001
 [users.member154]
 id = 1154
+group_id = 10001
 [users.member155]
 id = 1155
+group_id = 10001
 [users.member156]
 id = 1156
+group_id = 10001
 [users.member157]
 id = 1157
+group_id = 10001
 [users.member158]
 id = 1158
+group_id = 10001
 [users.member159]
 id = 1159
+group_id = 10001
 [users.member160]
 id = 1160
+group_id = 10001
 [users.member161]
 id = 1161
+group_id = 10001
 [users.member162]
 id = 1162
+group_id = 10001
 [users.member163]
 id = 1163
+group_id = 10001
 [users.member164]
 id = 1164
+group_id = 10001
 [users.member165]
 id = 1165
+group_id = 10001
 [users.member166]
 id = 1166
+group_id = 10001
 [users.member167]
 id = 1167
+group_id = 10001
 [users.member168]
 id = 1168
+group_id = 10001
 [users.member169]
 id = 1169
+group_id = 10001
 [users.member170]
 id = 1170
+group_id = 10001
 [users.member171]
 id = 1171
+group_id = 10001
 [users.member172]
 id = 1172
+group_id = 10001
 [users.member173]
 id = 1173
+group_id = 10001
 [users.member174]
 id = 1174
+group_id = 10001
 [users.member175]
 id = 1175
+group_id = 10001
 [users.member176]
 id = 1176
+group_id = 10001
 [users.member177]
 id = 1177
+group_id = 10001
 [users.member178]
 id = 1178
+group_id = 10001
 [users.member179]
 id = 1179
+group_id = 10001
 [users.member180]
 id = 1180
+group_id = 10001
 [users.member181]
 id = 1181
+group_id = 10001
 [users.member182]
 id = 1182
+group_id = 10001
 [users.member183]
 id = 1183
+group_id = 10001
 [users.member184]
 id = 1184
+group_id = 10001
 [users.member185]
 id = 1185
+group_id = 10001
 [users.member186]
 id = 1186
+group_id = 10001
 [users.member187]
 id = 1187
+group_id = 10001
 [users.member188]
 id = 1188
+group_id = 10001
 [users.member189]
 id = 1189
+group_id = 10001
 [users.member190]
 id = 1190
+group_id = 10001
 [users.member191]
 id = 1191
+group_id = 10001
 [users.member192]
 id = 1192
+group_id = 10001
 [users.member193]
 id = 1193
+group_id = 10001
 [users.member194]
 id = 1194
+group_id = 10001
 [users.member195]
 id = 1195
+group_id = 10001
 [users.member196]
 id = 1196
+group_id = 10001
 [users.member197]
 id = 1197
+group_id = 10001
 [users.member198]
 id = 1198
+group_id = 10001
 [users.member199]
 id = 1199
+group_id = 10001

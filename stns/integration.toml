@@ -1,12 +1,13 @@
 include = "include.toml"
-
 [users.test]
 id = 10001
-password = "test"
+group_id = 10001
+password = "$6$baslHey25/SqFuZc$L.DAhnPB9AWZbwa.C12UL81oAQX2G7eUiBUAVuW9ljrsEegoqiinCrpdDqmjJGxZogbdNJ2PWmXtUkmZvsItM0"
 keys = ["key1", "key2"]
 
 [users.foo]
 id = 10002
+group_id = 10002
 password = "test"
 
 [groups.test]

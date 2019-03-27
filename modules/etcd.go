@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"time"
 
+	etcd "github.com/etcd-io/etcd/client"
 	"github.com/STNS/STNS/model"
 	"github.com/STNS/STNS/stns"
-	etcd "go.etcd.io/etcd/client"
 	"golang.org/x/net/context"
 )
 

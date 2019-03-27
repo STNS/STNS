@@ -7,7 +7,6 @@ import (
 	"github.com/STNS/STNS/api"
 	"github.com/urfave/cli"
 )
-
 var (
 	version   string
 	revision  string
@@ -34,6 +33,12 @@ var flags = []cli.Flag{
 		Value:  "/var/run/stns.pid",
 		Usage:  "pid file path",
 		EnvVar: "STNS_PID",
+	},
+	cli.StringFlag{
+		Name:   "protocol",
+		Value:  "http",
+		Usage:  "interface protocol",
+		EnvVar: "STNS_PROTOCOL",
 	},
 }
 
@@ -68,6 +73,10 @@ func appBefore(c *cli.Context) error {
 
 	if c.GlobalString("pidfile") != "" {
 		os.Setenv("STNS_PID", c.GlobalString("pidfile"))
+	}
+
+	if c.GlobalString("protocol") != "" {
+		os.Setenv("STNS_PROTOCOL", c.GlobalString("protocol"))
 	}
 	return nil
 }
