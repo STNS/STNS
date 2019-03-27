@@ -3,7 +3,7 @@
 start_server() {
   export CI=1
   make server &
-  while ! nc -w 1 127.0.0.1 1104 > /dev/null 2>&1; do sleep 1; echo 'sleeping'; done;
+  while ! nc -z -w 1 127.0.0.1 1104 > /dev/null 2>&1; do sleep 1; echo 'sleeping'; done;
 }
 
 stop_server() {
@@ -24,7 +24,11 @@ stop_server() {
 
 case "$1" in
   start)
+    if [ $2 = "-ldap" ];then
+      export STNS_PROTOCOL=ldap
+    fi
     start_server
+    unset STNS_PROTOCOL
     ;;
   stop*)
     stop_server

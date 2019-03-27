@@ -7,7 +7,6 @@ import (
 	"github.com/STNS/STNS/api"
 	"github.com/urfave/cli"
 )
-
 var (
 	version   string
 	revision  string
