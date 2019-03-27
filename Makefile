@@ -42,7 +42,7 @@ ifeq ($(UNAME_S),Darwin)
 endif
 
 depsdev: ## Installing dependencies for development
-	$(GO) get github.com/golang/lint/golint
+	$(GO) get -u golang.org/x/lint
 	$(GO) get -u github.com/tcnksm/ghr
 	$(GO) get -u golang.org/x/tools/cmd/goimports
 	$(GO) get -u github.com/git-chglog/git-chglog/cmd/git-chglog
