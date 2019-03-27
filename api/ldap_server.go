@@ -39,6 +39,9 @@ import (
 	"github.com/lestrrat/go-server-starter/listener"
 	"github.com/nmcclain/ldap"
 	"github.com/tredoe/osutil/user/crypt"
+	_ "github.com/tredoe/osutil/user/crypt/md5_crypt"
+	_ "github.com/tredoe/osutil/user/crypt/sha256_crypt"
+	_ "github.com/tredoe/osutil/user/crypt/sha512_crypt"
 )
 
 type ldapServer struct {
@@ -54,12 +57,13 @@ type ldapHandler struct {
 
 func (h ldapHandler) Bind(bindDN, rawPassword string, conn net.Conn) (ldap.LDAPResultCode, error) {
 	bindDN = strings.ToLower(bindDN)
-	baseDN := strings.ToLower(h.config.LDAP.BaseDN)
+	baseDN := strings.ToLower("," + h.config.LDAP.BaseDN)
 
 	if !strings.HasSuffix(bindDN, baseDN) {
-		h.logger.Warn(fmt.Sprintf("Bind Error: BindDN %s not our BaseDN %s", bindDN, baseDN))
+		h.logger.Warn(fmt.Sprintf("Bind Error: BindDN %s not our BaseDN %s", bindDN, h.config.LDAP.BaseDN))
 		return ldap.LDAPResultInvalidCredentials, nil
 	}
+
 	parts := strings.Split(strings.TrimSuffix(bindDN, baseDN), ",")
 	groupName := ""
 	userName := ""
@@ -78,7 +82,7 @@ func (h ldapHandler) Bind(bindDN, rawPassword string, conn net.Conn) (ldap.LDAPR
 
 	users, err := h.backends.FindUserByName(userName)
 	if err != nil {
-		log.Warn(fmt.Sprintf("Bind Error: User %s not found.", userName))
+		h.logger.Warn(fmt.Sprintf("Bind Error: User %s not found.", userName))
 		return ldap.LDAPResultInvalidCredentials, nil
 	}
 	user = users[userName].(*model.User)
@@ -86,21 +90,21 @@ func (h ldapHandler) Bind(bindDN, rawPassword string, conn net.Conn) (ldap.LDAPR
 	if groupName != "" {
 		groups, err := h.backends.FindGroupByName(groupName)
 		if err != nil {
-			log.Warn(fmt.Sprintf("Bind Error: Group %s not found.", groupName))
+			h.logger.Warn(fmt.Sprintf("Bind Error: Group %s not found.", groupName))
 			return ldap.LDAPResultInvalidCredentials, nil
 		}
 
 		group = groups[groupName].(*model.Group)
 
 		if user.GroupID != group.ID {
-			log.Warn(fmt.Sprintf("Bind Error: User %s primary group is not %s.", userName, groupName))
+			h.logger.Warn(fmt.Sprintf("Bind Error: User %s primary group is not %s.", userName, groupName))
 			return ldap.LDAPResultInvalidCredentials, nil
 		}
 
 	}
 	c := crypt.NewFromHash(user.Password)
 	if c.Verify(user.Password, []byte(rawPassword)) != nil {
-		log.Warn(fmt.Sprintf("Bind Error: invalid credentials as %s from %s", bindDN, conn.RemoteAddr().String()))
+		h.logger.Warn(fmt.Sprintf("Bind Error: invalid credentials as %s from %s", bindDN, conn.RemoteAddr().String()))
 		return ldap.LDAPResultInvalidCredentials, nil
 	}
 	return ldap.LDAPResultSuccess, nil
@@ -109,7 +113,7 @@ func (h ldapHandler) Bind(bindDN, rawPassword string, conn net.Conn) (ldap.LDAPR
 
 func (h ldapHandler) Search(bindDN string, searchReq ldap.SearchRequest, conn net.Conn) (ldap.ServerSearchResult, error) {
 	bindDN = strings.ToLower(bindDN)
-	baseDN := strings.ToLower(h.config.LDAP.BaseDN)
+	baseDN := strings.ToLower("," + h.config.LDAP.BaseDN)
 	searchBaseDN := strings.ToLower(searchReq.BaseDN)
 
 	// validate the user is authenticated and has appropriate access
@@ -117,7 +121,7 @@ func (h ldapHandler) Search(bindDN string, searchReq ldap.SearchRequest, conn ne
 		return ldap.ServerSearchResult{ResultCode: ldap.LDAPResultInsufficientAccessRights}, fmt.Errorf("Search Error: Anonymous BindDN not allowed %s", bindDN)
 	}
 	if !strings.HasSuffix(bindDN, baseDN) {
-		return ldap.ServerSearchResult{ResultCode: ldap.LDAPResultInsufficientAccessRights}, fmt.Errorf("Search Error: BindDN %s not in our BaseDN %s", bindDN, baseDN)
+		return ldap.ServerSearchResult{ResultCode: ldap.LDAPResultInsufficientAccessRights}, fmt.Errorf("Search Error: BindDN %s not in our BaseDN %s", bindDN, h.config.LDAP.BaseDN)
 	}
 	if !strings.HasSuffix(searchBaseDN, baseDN) {
 		return ldap.ServerSearchResult{ResultCode: ldap.LDAPResultInsufficientAccessRights}, fmt.Errorf("Search Error: search BaseDN %s is not in our BaseDN %s", searchBaseDN, baseDN)
@@ -131,61 +135,54 @@ func (h ldapHandler) Search(bindDN string, searchReq ldap.SearchRequest, conn ne
 		}, fmt.Errorf("Search Error: error parsing filter: %s", searchReq.Filter)
 	}
 
+	groups, err := h.backends.Groups()
+	if err != nil {
+		return ldap.ServerSearchResult{
+			ResultCode: ldap.LDAPResultOperationsError,
+		}, fmt.Errorf("Search Error: can't fetch groups: %s [%s]", filterEntity, searchReq.Filter)
+	}
+
+	users, err := h.backends.Users()
+	if err != nil {
+		return ldap.ServerSearchResult{
+			ResultCode: ldap.LDAPResultOperationsError,
+		}, fmt.Errorf("Search Error: can't fetch users: %s [%s]", filterEntity, searchReq.Filter)
+	}
+
 	switch filterEntity {
 	default:
 		return ldap.ServerSearchResult{
 			ResultCode: ldap.LDAPResultOperationsError,
 		}, fmt.Errorf("Search Error: unhandled filter type: %s [%s]", filterEntity, searchReq.Filter)
 	case "posixgroup":
-		groups, err := h.backends.Groups()
-		if err != nil {
-			return ldap.ServerSearchResult{
-				ResultCode: ldap.LDAPResultOperationsError,
-			}, fmt.Errorf("Search Error: can't fetch groups: %s [%s]", filterEntity, searchReq.Filter)
-		}
-
-		users, err := h.backends.Users()
-		if err != nil {
-			return ldap.ServerSearchResult{
-				ResultCode: ldap.LDAPResultOperationsError,
-			}, fmt.Errorf("Search Error: can't fetch users: %s [%s]", filterEntity, searchReq.Filter)
-		}
-
 		for _, g := range groups {
 			attrs := []*ldap.EntryAttribute{}
 			attrs = append(attrs, &ldap.EntryAttribute{"cn", []string{g.GetName()}})
 			attrs = append(attrs, &ldap.EntryAttribute{"description", []string{fmt.Sprintf("%s via LDAP", g.GetName())}})
 			attrs = append(attrs, &ldap.EntryAttribute{"gidNumber", []string{fmt.Sprintf("%d", g.GetID())}})
 			attrs = append(attrs, &ldap.EntryAttribute{"objectClass", []string{"posixGroup"}})
-			attrs = append(attrs, &ldap.EntryAttribute{"memberUid", h.getGroupMemberNames(g.(*model.Group), users, baseDN)})
-			dn := fmt.Sprintf("cn=%s,ou=groups,%s", g.GetName(), baseDN)
+			attrs = append(attrs, &ldap.EntryAttribute{"memberUid", h.getGroupMemberNames(g.(*model.Group), users, h.config.LDAP.BaseDN)})
+			dn := fmt.Sprintf("cn=%s,ou=groups,%s", g.GetName(), h.config.LDAP.BaseDN)
 
 			entries = append(entries, &ldap.Entry{dn, attrs})
 		}
 	case "posixaccount", "":
-		users, err := h.backends.Users()
-		if err != nil {
-			return ldap.ServerSearchResult{
-				ResultCode: ldap.LDAPResultOperationsError,
-			}, fmt.Errorf("Search Error: can't fetch users: %s [%s]", filterEntity, searchReq.Filter)
-		}
-		groups, err := h.backends.Groups()
-		if err != nil {
-			return ldap.ServerSearchResult{
-				ResultCode: ldap.LDAPResultOperationsError,
-			}, fmt.Errorf("Search Error: can't fetch group: %s [%s]", filterEntity, searchReq.Filter)
-		}
-
 		for _, u := range users {
+			userGroup, err := h.backends.FindGroupByID(u.(*model.User).GroupID)
+			if err != nil {
+				return ldap.ServerSearchResult{
+					ResultCode: ldap.LDAPResultOperationsError,
+				}, fmt.Errorf("Search Error: can't fetch primary group : %s [%s]", filterEntity, searchReq.Filter)
+
+			}
+
 			var group *model.Group
+			for _, g := range userGroup {
+				group = g.(*model.Group)
+			}
+
 			memberOf := []int{}
-
 			for _, g := range groups {
-				// find primary group which the user belongs
-				if g.GetID() == u.(*model.User).GroupID {
-					group = g.(*model.Group)
-				}
-
 				// find other group which the user belongs
 				for _, gm := range g.(*model.Group).Users {
 					if gm == u.GetName() {
@@ -193,13 +190,8 @@ func (h ldapHandler) Search(bindDN string, searchReq ldap.SearchRequest, conn ne
 					}
 				}
 			}
-
-			if group == nil {
-				return ldap.ServerSearchResult{
-					ResultCode: ldap.LDAPResultOperationsError,
-				}, fmt.Errorf("Search Error: primary group id is required : %s [%s]", filterEntity, searchReq.Filter)
-			}
 			memberOf = append(memberOf, u.(*model.User).GroupID)
+
 			attrs := []*ldap.EntryAttribute{}
 			attrs = append(attrs, &ldap.EntryAttribute{"cn", []string{u.GetName()}})
 			attrs = append(attrs, &ldap.EntryAttribute{"uid", []string{u.GetName()}})
@@ -213,9 +205,9 @@ func (h ldapHandler) Search(bindDN string, searchReq ldap.SearchRequest, conn ne
 			attrs = append(attrs, &ldap.EntryAttribute{"description", []string{fmt.Sprintf("%s via LDAP", u.GetName())}})
 			attrs = append(attrs, &ldap.EntryAttribute{"gecos", []string{u.(*model.User).Gecos}})
 			attrs = append(attrs, &ldap.EntryAttribute{"gidNumber", []string{strconv.Itoa(u.(*model.User).GroupID)}})
-			attrs = append(attrs, &ldap.EntryAttribute{"memberOf", h.getGroupDNs(memberOf, groups, baseDN)})
+			attrs = append(attrs, &ldap.EntryAttribute{"memberOf", h.getGroupDNs(memberOf, groups, h.config.LDAP.BaseDN)})
 			attrs = append(attrs, &ldap.EntryAttribute{"sshPublicKey", u.(*model.User).Keys})
-			dn := fmt.Sprintf("cn=%s,ou=%s,%s", u.GetName(), group.Name, baseDN)
+			dn := fmt.Sprintf("cn=%s,ou=%s,%s", u.GetName(), group.Name, h.config.LDAP.BaseDN)
 			entries = append(entries, &ldap.Entry{dn, attrs})
 		}
 	}
@@ -263,7 +255,7 @@ func (s *ldapServer) Run() error {
 	}
 	defer func() {
 		if err := os.Remove(pidfile.GetPidfilePath()); err != nil {
-			log.Fatalf("Error removing %s: %s", pidfile.GetPidfilePath(), err)
+			s.logger.Fatalf("Error removing %s: %s", pidfile.GetPidfilePath(), err)
 		}
 	}()
 
@@ -277,7 +269,7 @@ func (s *ldapServer) Run() error {
 		lnstr = listeners[0].Addr().String()
 	}
 
-	log.Info("start ldap server")
+	s.logger.Info("start ldap server")
 	if err := ld.ListenAndServe(lnstr); err != nil {
 		return err
 	}
