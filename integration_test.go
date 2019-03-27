@@ -12,7 +12,7 @@ import (
 )
 
 var (
-	integration = flag.Bool("integration", false, "run integration tests")
+	httpIntegration = flag.Bool("integration-http", false, "run http integration tests")
 )
 
 // testHost is host url for test
@@ -31,7 +31,7 @@ func TestMain(m *testing.M) {
 }
 
 func TestGetUserList(t *testing.T) {
-	if !*integration {
+	if !*httpIntegration {
 		t.Skip()
 	}
 
@@ -76,7 +76,7 @@ func TestGetUserList(t *testing.T) {
 }
 
 func TestGetUserByName(t *testing.T) {
-	if !*integration {
+	if !*httpIntegration {
 		t.Skip()
 	}
 
@@ -116,7 +116,7 @@ func TestGetUserByName(t *testing.T) {
 }
 
 func TestGetUserByID(t *testing.T) {
-	if !*integration {
+	if !*httpIntegration {
 		t.Skip()
 	}
 
@@ -156,7 +156,7 @@ func TestGetUserByID(t *testing.T) {
 }
 
 func TestGetGroupList(t *testing.T) {
-	if !*integration {
+	if !*httpIntegration {
 		t.Skip()
 	}
 
@@ -201,7 +201,7 @@ func TestGetGroupList(t *testing.T) {
 }
 
 func TestGetGroupByName(t *testing.T) {
-	if !*integration {
+	if !*httpIntegration {
 		t.Skip()
 	}
 
@@ -241,7 +241,7 @@ func TestGetGroupByName(t *testing.T) {
 }
 
 func TestGetGroupByID(t *testing.T) {
-	if !*integration {
+	if !*httpIntegration {
 		t.Skip()
 	}
 
@@ -281,7 +281,7 @@ func TestGetGroupByID(t *testing.T) {
 }
 
 func TestRoot(t *testing.T) {
-	if !*integration {
+	if !*httpIntegration {
 		t.Skip()
 	}
 

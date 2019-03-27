@@ -65,7 +65,7 @@ server: ## Run server
 integration: ## Run integration test after Server wakeup
 	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Integration Testing$(RESET)"
 	./misc/server start
-	$(GO) test $(VERBOSE) -integration $(TEST) $(TEST_OPTIONS)
+	$(GO) test $(VERBOSE) -integration-http $(TEST) $(TEST_OPTIONS)
 	./misc/server stop
 
 build: ## Build server
