@@ -77,11 +77,11 @@ func (s *server) loadModules(logger echo.Logger, backends *model.Backends) error
 func (s *server) Run() error {
 	var backends model.Backends
 	e := echo.New()
-	if os.Getenv("STNS_LOG") != "" {
-		f, err := os.OpenFile(os.Getenv("STNS_LOG"), os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
-		if err != nil {
-			return errors.New("error opening file :" + err.Error())
-		}
+	f, err := switchLogOutput()
+	if err != nil {
+		return errors.New("error opening file :" + err.Error())
+	}
+	if f != os.Stdout {
 		e.Logger.SetOutput(f)
 	} else {
 		e.Logger.SetLevel(log.DEBUG)
@@ -111,6 +111,7 @@ func (s *server) Run() error {
 	e.Use(emiddleware.LoggerWithConfig(emiddleware.LoggerConfig{
 		Format: `{"time":"${time_rfc3339_nano}","remote_ip":"${remote_ip}","host":"${host}",` +
 			`"method":"${method}","uri":"${uri}","status":${status}}` + "\n",
+		Output: f,
 	}))
 
 	if s.config.BasicAuth != nil {
@@ -224,6 +225,14 @@ func (s *server) Run() error {
 		return err
 	}
 	return nil
+}
+
+func switchLogOutput() (*os.File, error) {
+	if os.Getenv("STNS_LOG") != "" {
+		f, err := os.OpenFile(os.Getenv("STNS_LOG"), os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
+		return f, err
+	}
+	return os.Stdout, nil
 }
 
 func removePidFile(e *echo.Echo) {
