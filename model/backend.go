@@ -25,10 +25,10 @@ type Backend interface {
 	// Setter
 	CreateUser(UserGroup) error
 	DeleteUser(int) error
-	UpdateUser(int, UserGroup) error
+	UpdateUser(UserGroup) error
 	CreateGroup(UserGroup) error
 	DeleteGroup(int) error
-	UpdateGroup(int, UserGroup) error
+	UpdateGroup(UserGroup) error
 }
 
 func mergeUserGroup(m1, m2 map[string]UserGroup) map[string]UserGroup {
@@ -44,6 +44,7 @@ func mergeUserGroup(m1, m2 map[string]UserGroup) map[string]UserGroup {
 }
 
 func SyncConfig(resourceName string, b Backend, configResources, backendResources map[string]UserGroup) error {
+	var backendResource UserGroup
 	if configResources != nil {
 		for _, cu := range configResources {
 			found := false
@@ -51,13 +52,27 @@ func SyncConfig(resourceName string, b Backend, configResources, backendResource
 			if backendResources != nil {
 				for _, eu := range backendResources {
 					if cu.GetID() == eu.GetID() {
+						backendResource = eu
 						found = true
 						break
 					}
 				}
 			}
 
-			if !found {
+			if found {
+				if resourceName == "users" {
+					// not overwrite password
+					cu.(*User).Password = backendResource.(*User).Password
+
+					if err := b.UpdateUser(cu); err != nil {
+						return err
+					}
+				} else {
+					if err := b.UpdateGroup(cu); err != nil {
+						return err
+					}
+				}
+			} else {
 				if resourceName == "users" {
 					if err := b.CreateUser(cu); err != nil {
 						return err

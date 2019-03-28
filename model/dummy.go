@@ -105,11 +105,11 @@ func (b BackendDummy) delete(path string) error {
 	return nil
 }
 
-func (b BackendDummy) UpdateUser(id int, v UserGroup) error {
+func (b BackendDummy) UpdateUser(v UserGroup) error {
 	return nil
 }
 
-func (b BackendDummy) UpdateGroup(id int, v UserGroup) error {
+func (b BackendDummy) UpdateGroup(v UserGroup) error {
 	return nil
 }
 
