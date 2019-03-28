@@ -8,6 +8,10 @@ import (
 	"github.com/STNS/STNS/middleware"
 	"github.com/STNS/STNS/model"
 	"github.com/labstack/echo"
+	"github.com/tredoe/osutil/user/crypt"
+	_ "github.com/tredoe/osutil/user/crypt/md5_crypt"
+	_ "github.com/tredoe/osutil/user/crypt/sha256_crypt"
+	_ "github.com/tredoe/osutil/user/crypt/sha512_crypt"
 )
 
 func getUsers(c echo.Context) error {
@@ -47,44 +51,58 @@ func getUsers(c echo.Context) error {
 }
 
 type PasswordChangeParams struct {
-	CurrentPassword string
-	NewPassword     string
+	CurrentPassword string `json:"current_password"`
+	NewPassword     string `json:"new_password"`
 }
 
-func updateUserPassword(c echo.Context) error {
+func updateUserPassword(c echo.Context) (ret error) {
 	backend := c.Get(middleware.BackendKey).(model.Backends)
-	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
+	name := c.Param("name")
+
+	params := PasswordChangeParams{}
+	if err := c.Bind(&params); err != nil {
 		return c.JSON(http.StatusBadRequest, err)
 	}
 
-	u := PasswordChangeParams{}
-	if err := c.Bind(&u); err != nil {
-		return c.JSON(http.StatusBadRequest, err)
-	}
-
-	r, err := backend.FindUserByID(id)
+	r, err := backend.FindUserByName(name)
 	if err != nil {
 		return errorResponse(c, err)
 	}
 
 	for _, us := range r {
 		user := us.(*model.User)
-		if user.Password == u.CurrentPassword {
-			user.Password = u.CurrentPassword
 
-			err := backend.UpdateUser(user.ID, user)
+		defer func() {
+			err := recover()
 			if err != nil {
-				return errorResponse(c, err)
+				ret = c.JSON(http.StatusBadRequest, "can't support password hash")
+				return
 			}
-			return c.JSON(http.StatusNoContent, user)
+		}()
+
+		cr := crypt.NewFromHash(user.Password)
+		if cr.Verify(user.Password, []byte(params.CurrentPassword)) != nil {
+			return c.JSON(http.StatusBadRequest, fmt.Errorf("user name :%s unmatch password", name))
 		}
-		return c.JSON(http.StatusBadRequest, fmt.Errorf("user id:%d unmatch password", id))
+
+		v, err := cr.Generate([]byte(params.NewPassword), []byte{})
+		if err != nil {
+			return errorResponse(c, err)
+		}
+
+		user.Password = string(v)
+
+		err = backend.UpdateUser(user.ID, user)
+		if err != nil {
+			return errorResponse(c, err)
+		}
+		return c.JSON(http.StatusNoContent, user)
+
 	}
 	return c.JSON(http.StatusBadRequest, "user notfound")
 }
 
 func UserEndpoints(g *echo.Group) {
 	g.GET("/users", getUsers)
-	g.PUT("/users/password/:id", updateUserPassword)
+	g.PUT("/users/password/:name", updateUserPassword)
 }

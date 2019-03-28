@@ -5,7 +5,7 @@ services:
       context: .
       dockerfile: dockerfiles/Dockerfile.centos-7
       args:
-        GO_VERSION: 1.11
+        GO_VERSION: 1.12.1
     volumes:
       - .:/go/src/github.com/STNS/STNS
     environment:
@@ -16,7 +16,7 @@ services:
       context: .
       dockerfile: dockerfiles/Dockerfile.centos-6
       args:
-        GO_VERSION: 1.11
+        GO_VERSION: 1.12.1
     volumes:
       - .:/go/src/github.com/STNS/STNS
     environment:
@@ -28,7 +28,7 @@ services:
       context: .
       dockerfile: dockerfiles/Dockerfile.ubuntu-16
       args:
-        GO_VERSION: 1.11
+        GO_VERSION: 1.12.1
     volumes:
       - .:/go/src/github.com/STNS/STNS
     environment:

@@ -111,14 +111,14 @@ func Test_getUsers(t *testing.T) {
 func Test_updateUserPassword(t *testing.T) {
 	tests := []struct {
 		name       string
-		id         int
+		uname      string
 		wantErr    bool
 		wantStatus int
 		params     PasswordChangeParams
 	}{
 		{
 			name:    "ok",
-			id:      1,
+			uname:   "test",
 			wantErr: false,
 			params: PasswordChangeParams{
 				CurrentPassword: "foo",
@@ -127,14 +127,14 @@ func Test_updateUserPassword(t *testing.T) {
 			wantStatus: http.StatusNoContent,
 		},
 		{
-			name:       "id notfound",
-			id:         2,
+			name:       "userr  notfound",
+			uname:      "notofound",
 			wantErr:    false,
 			wantStatus: http.StatusNotFound,
 		},
 		{
-			name: "bad password",
-			id:   1,
+			name:  "bad password",
+			uname: "test",
 			params: PasswordChangeParams{
 				CurrentPassword: "bar",
 				NewPassword:     "bar",
@@ -145,8 +145,8 @@ func Test_updateUserPassword(t *testing.T) {
 	}
 	for _, tt := range tests {
 		ctx, rec := dummyContext(t, "PUT", "/users/password/:", tt.params)
-		ctx.SetParamNames("id")
-		ctx.SetParamValues(fmt.Sprint(tt.id))
+		ctx.SetParamNames("name")
+		ctx.SetParamValues(fmt.Sprint(tt.uname))
 
 		t.Run(tt.name, func(t *testing.T) {
 			if err := updateUserPassword(ctx); (err != nil) != tt.wantErr {
