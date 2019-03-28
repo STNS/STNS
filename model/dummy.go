@@ -15,7 +15,7 @@ func (b BackendDummy) FindUserByID(id int) (map[string]UserGroup, error) {
 						ID:   1,
 						Name: "test",
 					},
-					Password: "foo",
+					Password: "$6$/C5VdIWEaQVD4Y9D$CQz5Qc99yKucuwvVWIrc2cgnLCOgTbq/QXvKGCXa3f3gYx3xc0/EOhyHAUehS92J9iy8IUqhpnGXpaKYVMoZK1",
 				},
 			},
 			nil
