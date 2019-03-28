@@ -91,7 +91,7 @@ func updateUserPassword(c echo.Context) (ret error) {
 
 	user.Password = string(v)
 
-	err = backend.UpdateUser(user.ID, user)
+	err = backend.UpdateUser(user)
 	if err != nil {
 		return errorResponse(c, err)
 	}

@@ -250,11 +250,11 @@ func (gb Backends) DeleteGroup(v int) error {
 
 	return nil
 }
-func (gb Backends) UpdateUser(v int, vv UserGroup) error {
+func (gb Backends) UpdateUser(v UserGroup) error {
 	eg := errgroup.Group{}
 	for _, b := range gb {
 		eg.Go(func() error {
-			err := b.UpdateUser(v, vv)
+			err := b.UpdateUser(v)
 			if err != nil {
 				return err
 			}
@@ -267,11 +267,11 @@ func (gb Backends) UpdateUser(v int, vv UserGroup) error {
 
 	return nil
 }
-func (gb Backends) UpdateGroup(v int, vv UserGroup) error {
+func (gb Backends) UpdateGroup(v UserGroup) error {
 	eg := errgroup.Group{}
 	for _, b := range gb {
 		eg.Go(func() error {
-			err := b.UpdateGroup(v, vv)
+			err := b.UpdateGroup(v)
 			if err != nil {
 				return err
 			}

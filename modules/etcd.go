@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"time"
 
-	etcd "github.com/etcd-io/etcd/client"
 	"github.com/STNS/STNS/model"
 	"github.com/STNS/STNS/stns"
+	etcd "github.com/etcd-io/etcd/client"
 	"golang.org/x/net/context"
 )
 
@@ -94,7 +94,7 @@ func (b BackendEtcd) syncConfig() error {
 	return nil
 }
 
-func (b BackendEtcd) FindUserByID(id int) (map[string]model.UserGroup, error) {
+func (b BackendEtcd) FindUserByName(name string) (map[string]model.UserGroup, error) {
 	users, err := b.Users()
 	r := map[string]model.UserGroup{}
 
@@ -104,7 +104,7 @@ func (b BackendEtcd) FindUserByID(id int) (map[string]model.UserGroup, error) {
 
 	if users != nil {
 		for _, u := range users {
-			if u.GetID() == id {
+			if u.GetName() == name {
 				r[u.GetName()] = u
 				return r, nil
 			}
@@ -113,11 +113,11 @@ func (b BackendEtcd) FindUserByID(id int) (map[string]model.UserGroup, error) {
 	return nil, model.NewNotFoundError("user", nil)
 }
 
-func (b BackendEtcd) FindUserByName(name string) (map[string]model.UserGroup, error) {
-	r, err := b.api.Get(context.Background(), fmt.Sprintf("/users/name/%s", name), nil)
+func (b BackendEtcd) FindUserByID(id int) (map[string]model.UserGroup, error) {
+	r, err := b.api.Get(context.Background(), fmt.Sprintf("/users/id/%d", id), nil)
 	if err != nil {
 		if etcd.IsKeyNotFound(err) {
-			return nil, model.NewNotFoundError("user", name)
+			return nil, model.NewNotFoundError("user", id)
 		}
 		return nil, err
 	}
@@ -132,7 +132,7 @@ func (b BackendEtcd) FindUserByName(name string) (map[string]model.UserGroup, er
 }
 
 func (b BackendEtcd) Users() (map[string]model.UserGroup, error) {
-	r, err := b.api.Get(context.Background(), "/users/name", nil)
+	r, err := b.api.Get(context.Background(), "/users/id", nil)
 	if err != nil {
 		if etcd.IsKeyNotFound(err) {
 			return nil, model.NewNotFoundError("user", nil)
@@ -154,7 +154,7 @@ func (b BackendEtcd) Users() (map[string]model.UserGroup, error) {
 	return users.ToUserGroup(), nil
 }
 
-func (b BackendEtcd) FindGroupByID(id int) (map[string]model.UserGroup, error) {
+func (b BackendEtcd) FindGroupByName(name string) (map[string]model.UserGroup, error) {
 	groups, err := b.Groups()
 	r := map[string]model.UserGroup{}
 
@@ -164,7 +164,7 @@ func (b BackendEtcd) FindGroupByID(id int) (map[string]model.UserGroup, error) {
 
 	if groups != nil {
 		for _, g := range groups {
-			if g.GetID() == id {
+			if g.GetName() == name {
 				r[g.GetName()] = g
 				return r, nil
 			}
@@ -173,11 +173,11 @@ func (b BackendEtcd) FindGroupByID(id int) (map[string]model.UserGroup, error) {
 	return nil, model.NewNotFoundError("group", nil)
 }
 
-func (b BackendEtcd) FindGroupByName(name string) (map[string]model.UserGroup, error) {
-	r, err := b.api.Get(context.Background(), fmt.Sprintf("/groups/name/%s", name), nil)
+func (b BackendEtcd) FindGroupByID(id int) (map[string]model.UserGroup, error) {
+	r, err := b.api.Get(context.Background(), fmt.Sprintf("/groups/id/%d", id), nil)
 	if err != nil {
 		if etcd.IsKeyNotFound(err) {
-			return nil, model.NewNotFoundError("group", name)
+			return nil, model.NewNotFoundError("group", id)
 		}
 		return nil, err
 	}
@@ -193,7 +193,7 @@ func (b BackendEtcd) FindGroupByName(name string) (map[string]model.UserGroup, e
 }
 
 func (b BackendEtcd) Groups() (map[string]model.UserGroup, error) {
-	r, err := b.api.Get(context.Background(), "/groups/name", nil)
+	r, err := b.api.Get(context.Background(), "/groups/id", nil)
 	if err != nil {
 		if etcd.IsKeyNotFound(err) {
 			return nil, model.NewNotFoundError("user", nil)
@@ -218,7 +218,7 @@ func (b BackendEtcd) Groups() (map[string]model.UserGroup, error) {
 
 func (b BackendEtcd) highlowUserID(high bool) int {
 	ret := 0
-	r, err := b.api.Get(context.Background(), "/users/name", nil)
+	r, err := b.api.Get(context.Background(), "/users/id", nil)
 	if err != nil {
 		if etcd.IsKeyNotFound(err) {
 			return ret
@@ -248,7 +248,7 @@ func (b BackendEtcd) LowestUserID() int {
 
 func (b BackendEtcd) highlowGroupID(high bool) int {
 	ret := 0
-	r, err := b.api.Get(context.Background(), "/groups/name", nil)
+	r, err := b.api.Get(context.Background(), "/groups/id", nil)
 	if err != nil {
 		if etcd.IsKeyNotFound(err) {
 			return ret
@@ -277,11 +277,11 @@ func (b BackendEtcd) LowestGroupID() int {
 }
 
 func (b BackendEtcd) CreateUser(v model.UserGroup) error {
-	return b.create(fmt.Sprintf("/users/name/%s", v.GetName()), v)
+	return b.create(fmt.Sprintf("/users/id/%d", v.GetID()), v)
 }
 
 func (b BackendEtcd) CreateGroup(v model.UserGroup) error {
-	return b.create(fmt.Sprintf("/groups/name/%s", v.GetName()), v)
+	return b.create(fmt.Sprintf("/groups/id/%d", v.GetID()), v)
 }
 
 func (b BackendEtcd) create(path string, v model.UserGroup) error {
@@ -296,27 +296,11 @@ func (b BackendEtcd) create(path string, v model.UserGroup) error {
 }
 
 func (b BackendEtcd) DeleteUser(id int) error {
-	us, err := b.FindUserByID(id)
-	if err != nil {
-		return nil
-	}
-
-	for _, v := range us {
-		return b.delete(fmt.Sprintf("/users/name/%s", v.GetName()))
-	}
-	return nil
+	return b.delete(fmt.Sprintf("/users/id/%d", id))
 }
 
 func (b BackendEtcd) DeleteGroup(id int) error {
-	us, err := b.FindGroupByID(id)
-	if err != nil {
-		return nil
-	}
-
-	for _, v := range us {
-		return b.delete(fmt.Sprintf("/groups/name/%s", v.GetName()))
-	}
-	return nil
+	return b.delete(fmt.Sprintf("/groups/id/%d", id))
 }
 
 func (b BackendEtcd) delete(path string) error {
@@ -326,28 +310,12 @@ func (b BackendEtcd) delete(path string) error {
 	return nil
 }
 
-func (b BackendEtcd) UpdateUser(id int, v model.UserGroup) error {
-	us, err := b.FindUserByID(id)
-	if err != nil {
-		return nil
-	}
-
-	for _, v := range us {
-		return b.update(fmt.Sprintf("/users/name/%s", v.GetName()), v)
-	}
-	return nil
+func (b BackendEtcd) UpdateUser(v model.UserGroup) error {
+	return b.update(fmt.Sprintf("/users/id/%d", v.GetID()), v)
 }
 
-func (b BackendEtcd) UpdateGroup(id int, v model.UserGroup) error {
-	us, err := b.FindGroupByID(id)
-	if err != nil {
-		return nil
-	}
-
-	for _, v := range us {
-		return b.update(fmt.Sprintf("/groups/name/%s", v.GetName()), v)
-	}
-	return nil
+func (b BackendEtcd) UpdateGroup(v model.UserGroup) error {
+	return b.update(fmt.Sprintf("/groups/id/%d", v.GetID()), v)
 }
 
 func (b BackendEtcd) update(path string, v model.UserGroup) error {
