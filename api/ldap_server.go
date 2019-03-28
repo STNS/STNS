@@ -270,10 +270,16 @@ func (s *ldapServer) Run() error {
 	}
 
 	s.logger.Info("start ldap server")
-	if err := ld.ListenAndServe(lnstr); err != nil {
-		return err
-	}
 
+	if s.config.TLS != nil && s.config.TLS.Cert != "" && s.config.TLS.Key != "" {
+		if err := ld.ListenAndServeTLS(lnstr, s.config.TLS.Cert, s.config.TLS.Key); err != nil {
+			return err
+		}
+	} else {
+		if err := ld.ListenAndServe(lnstr); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
