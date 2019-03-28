@@ -69,37 +69,33 @@ func updateUserPassword(c echo.Context) (ret error) {
 		return errorResponse(c, err)
 	}
 
-	for _, us := range r {
-		user := us.(*model.User)
+	user := r[name].(*model.User)
 
-		defer func() {
-			err := recover()
-			if err != nil {
-				ret = c.JSON(http.StatusBadRequest, "can't support password hash")
-				return
-			}
-		}()
-
-		cr := crypt.NewFromHash(user.Password)
-		if cr.Verify(user.Password, []byte(params.CurrentPassword)) != nil {
-			return c.JSON(http.StatusBadRequest, fmt.Errorf("user name :%s unmatch password", name))
-		}
-
-		v, err := cr.Generate([]byte(params.NewPassword), []byte{})
+	defer func() {
+		err := recover()
 		if err != nil {
-			return errorResponse(c, err)
+			ret = c.JSON(http.StatusBadRequest, "can't support password hash")
+			return
 		}
+	}()
 
-		user.Password = string(v)
-
-		err = backend.UpdateUser(user.ID, user)
-		if err != nil {
-			return errorResponse(c, err)
-		}
-		return c.JSON(http.StatusNoContent, user)
-
+	cr := crypt.NewFromHash(user.Password)
+	if cr.Verify(user.Password, []byte(params.CurrentPassword)) != nil {
+		return c.JSON(http.StatusBadRequest, fmt.Errorf("user name :%s unmatch password", name))
 	}
-	return c.JSON(http.StatusBadRequest, "user notfound")
+
+	v, err := cr.Generate([]byte(params.NewPassword), []byte{})
+	if err != nil {
+		return errorResponse(c, err)
+	}
+
+	user.Password = string(v)
+
+	err = backend.UpdateUser(user.ID, user)
+	if err != nil {
+		return errorResponse(c, err)
+	}
+	return c.JSON(http.StatusNoContent, user)
 }
 
 func UserEndpoints(g *echo.Group) {
