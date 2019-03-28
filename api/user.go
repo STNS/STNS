@@ -51,8 +51,8 @@ func getUsers(c echo.Context) error {
 }
 
 type PasswordChangeParams struct {
-	CurrentPassword string
-	NewPassword     string
+	CurrentPassword string `json:"current_password"`
+	NewPassword     string `json:"new_password"`
 }
 
 func updateUserPassword(c echo.Context) (ret error) {
