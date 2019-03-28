@@ -57,17 +57,14 @@ type PasswordChangeParams struct {
 
 func updateUserPassword(c echo.Context) (ret error) {
 	backend := c.Get(middleware.BackendKey).(model.Backends)
-	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, err)
-	}
+	name := c.Param("name")
 
 	params := PasswordChangeParams{}
 	if err := c.Bind(&params); err != nil {
 		return c.JSON(http.StatusBadRequest, err)
 	}
 
-	r, err := backend.FindUserByID(id)
+	r, err := backend.FindUserByName(name)
 	if err != nil {
 		return errorResponse(c, err)
 	}
@@ -85,7 +82,7 @@ func updateUserPassword(c echo.Context) (ret error) {
 
 		cr := crypt.NewFromHash(user.Password)
 		if cr.Verify(user.Password, []byte(params.CurrentPassword)) != nil {
-			return c.JSON(http.StatusBadRequest, fmt.Errorf("user id:%d unmatch password", id))
+			return c.JSON(http.StatusBadRequest, fmt.Errorf("user name :%s unmatch password", name))
 		}
 
 		v, err := cr.Generate([]byte(params.NewPassword), []byte{})
@@ -107,5 +104,5 @@ func updateUserPassword(c echo.Context) (ret error) {
 
 func UserEndpoints(g *echo.Group) {
 	g.GET("/users", getUsers)
-	g.PUT("/users/password/:id", updateUserPassword)
+	g.PUT("/users/password/:name", updateUserPassword)
 }

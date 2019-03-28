@@ -25,7 +25,20 @@ func (b BackendDummy) FindUserByID(id int) (map[string]UserGroup, error) {
 }
 
 func (b BackendDummy) FindUserByName(name string) (map[string]UserGroup, error) {
-	return nil, nil
+	if name == "test" {
+		return map[string]UserGroup{
+				"test": &User{
+					Base: Base{
+						ID:   1,
+						Name: "test",
+					},
+					Password: "$6$/C5VdIWEaQVD4Y9D$CQz5Qc99yKucuwvVWIrc2cgnLCOgTbq/QXvKGCXa3f3gYx3xc0/EOhyHAUehS92J9iy8IUqhpnGXpaKYVMoZK1",
+				},
+			},
+			nil
+	}
+
+	return nil, NewNotFoundError("user", "dummy")
 }
 
 func (b BackendDummy) Users() (map[string]UserGroup, error) {
