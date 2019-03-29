@@ -79,6 +79,9 @@ type baseServer struct {
 }
 
 func loadBackendModule(logger *log.Logger, conf *stns.Config) (model.Backend, error) {
+	if conf.LoadModule == "" {
+		return nil, nil
+	}
 	p, err := plugin.Open(filepath.Join(conf.ModulePath, conf.LoadModule))
 	if err != nil {
 		return nil, err
