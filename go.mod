@@ -8,6 +8,7 @@ require (
 	github.com/Songmu/retry v0.1.0 // indirect
 	github.com/StackExchange/wmi v0.0.0-20181212234831-e0a55b97c705 // indirect
 	github.com/armon/consul-api v0.0.0-20180202201655-eb2c6b5be1b6 // indirect
+	github.com/aws/aws-sdk-go v1.19.4
 	github.com/coreos/etcd v3.3.12+incompatible // indirect
 	github.com/coreos/go-etcd v2.0.0+incompatible // indirect
 	github.com/coreos/go-semver v0.2.0 // indirect

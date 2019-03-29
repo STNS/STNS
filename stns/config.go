@@ -1,13 +1,18 @@
 package stns
 
 import (
+	"errors"
 	"fmt"
 	"io/ioutil"
+	"net/url"
+	"os"
 	"path/filepath"
 	"strings"
 
 	"github.com/BurntSushi/toml"
 	"github.com/STNS/STNS/model"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/go-yaml/yaml"
 )
 
@@ -45,8 +50,45 @@ func decode(path string, conf *Config) error {
 
 func NewConfig(confPath string) (Config, error) {
 	var conf Config
-	conf.dir = filepath.Dir(confPath)
 
+	if strings.HasPrefix(confPath, "s3:") {
+		u, err := url.Parse(confPath)
+		if err != nil {
+			return conf, err
+		}
+
+		if u.Host == "" || u.Path == "" {
+			return conf, errors.New("Bucket name and path are required to use S3")
+		}
+
+		client := s3.New(session.New(), nil)
+		res, err := client.GetObject(&s3.GetObjectInput{
+			Bucket: &u.Host,
+			Key:    &u.Path,
+		})
+		defer res.Body.Close()
+		if err != nil {
+			return conf, err
+		}
+
+		body, err := ioutil.ReadAll(res.Body)
+		if err != nil {
+			return conf, err
+		}
+
+		tmpFile, err := ioutil.TempFile(os.TempDir(), "stns-")
+		if err != nil {
+			return conf, err
+		}
+		defer os.Remove(tmpFile.Name())
+
+		if _, err = tmpFile.Write(body); err != nil {
+			return conf, err
+		}
+		confPath = tmpFile.Name()
+	} else {
+		conf.dir = filepath.Dir(confPath)
+	}
 	defaultConfig(&conf)
 
 	if err := decode(confPath, &conf); err != nil {
@@ -59,7 +101,7 @@ func NewConfig(confPath string) (Config, error) {
 		}
 	}
 
-	if !strings.HasPrefix(conf.ModulePath, "/") {
+	if conf.dir != "" && !strings.HasPrefix(conf.ModulePath, "/") {
 		conf.ModulePath = filepath.Join(conf.dir, conf.ModulePath)
 	}
 
