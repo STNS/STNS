@@ -122,9 +122,9 @@ type Config struct {
 	UseServerStarter bool
 	Users            *model.Users
 	Groups           *model.Groups
-	Include          string   `toml:"include"`
-	ModulePath       string   `toml:"module_path" yaml:"module_path"`
-	LoadModules      []string `toml:"load_modules" yaml:"load_modules"`
+	Include          string `toml:"include"`
+	ModulePath       string `toml:"module_path" yaml:"module_path"`
+	LoadModule       string `toml:"load_module" yaml:"load_module"`
 	Modules          map[string]interface{}
 	TLS              *TLS
 	LDAP             *LDAP

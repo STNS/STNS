@@ -8,7 +8,7 @@ import (
 	"github.com/labstack/echo"
 )
 
-func AddHeader(backend model.Backends) echo.MiddlewareFunc {
+func AddHeader(backend model.Backend) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return echo.HandlerFunc(func(c echo.Context) error {
 			if strings.Index(c.Path(), "/users") > 0 {
