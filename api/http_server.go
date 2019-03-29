@@ -60,7 +60,7 @@ func (s *httpServer) Run() error {
 	if err != nil {
 		return errors.New("error opening file :" + err.Error())
 	}
-	if f != os.Stdout {
+	if os.Getenv("STNS_LOG") != "" {
 		e.Logger.SetOutput(f)
 	} else {
 		e.Logger.SetLevel(log.DEBUG)
