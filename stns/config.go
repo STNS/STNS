@@ -1,13 +1,20 @@
 package stns
 
 import (
+	"errors"
 	"fmt"
 	"io/ioutil"
+	"net/url"
+	"os"
 	"path/filepath"
 	"strings"
 
 	"github.com/BurntSushi/toml"
 	"github.com/STNS/STNS/model"
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/s3"
+	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 	"github.com/go-yaml/yaml"
 )
 
@@ -43,23 +50,63 @@ func decode(path string, conf *Config) error {
 	return d.decode(path, conf)
 }
 
+func downloadFromS3(path, key string) (*os.File, error) {
+	u, err := url.Parse(path)
+	if err != nil {
+		return nil, err
+	}
+
+	if u.Host == "" || u.Path == "" {
+		return nil, errors.New("Bucket name and path are required to use S3")
+	}
+	tmpDir := os.TempDir()
+	tmpFile, err := ioutil.TempFile(tmpDir, "stns-")
+	if err != nil {
+		return nil, err
+	}
+
+	if key == "" {
+		key = u.Path
+	}
+	sess := session.Must(session.NewSession())
+	downloader := s3manager.NewDownloader(sess)
+	_, err = downloader.Download(tmpFile, &s3.GetObjectInput{
+		Bucket: aws.String(u.Host),
+		Key:    aws.String(key),
+	})
+	if err != nil {
+		return nil, err
+	}
+	return tmpFile, nil
+}
+
 func NewConfig(confPath string) (Config, error) {
 	var conf Config
-	conf.dir = filepath.Dir(confPath)
+	loadPath := confPath
 
+	if strings.HasPrefix(confPath, "s3:") {
+		f, err := downloadFromS3(confPath, "")
+		if err != nil {
+			return conf, err
+		}
+		defer os.Remove(f.Name())
+
+		loadPath = f.Name()
+	}
+	conf.dir = filepath.Dir(loadPath)
 	defaultConfig(&conf)
 
-	if err := decode(confPath, &conf); err != nil {
+	if err := decode(loadPath, &conf); err != nil {
 		return conf, err
 	}
 
 	if conf.Include != "" {
-		if err := includeConfigFile(&conf, conf.Include); err != nil {
+		if err := includeConfigFile(&conf, confPath, conf.Include); err != nil {
 			return Config{}, err
 		}
 	}
 
-	if !strings.HasPrefix(conf.ModulePath, "/") {
+	if conf.dir != "" && !strings.HasPrefix(conf.ModulePath, "/") {
 		conf.ModulePath = filepath.Join(conf.dir, conf.ModulePath)
 	}
 
@@ -107,19 +154,35 @@ func defaultConfig(c *Config) {
 	}
 }
 
-func includeConfigFile(config *Config, include string) error {
-	if !strings.HasPrefix(include, "/") {
-		include = filepath.Join(config.dir, include)
-	}
+func includeConfigFile(config *Config, confPath, include string) error {
 
-	files, err := filepath.Glob(include)
-	if err != nil {
-		return err
-	}
+	if strings.HasPrefix(confPath, "s3:") {
+		if strings.HasPrefix(include, "/") {
+			return errors.New("Absolute path can not be used when using S3")
+		}
 
-	for _, file := range files {
-		if err := decode(file, config); err != nil {
-			return fmt.Errorf("while loading included config file %s: %s", file, err)
+		f, err := downloadFromS3(confPath, include)
+		if err != nil {
+			return err
+		}
+		defer os.Remove(f.Name())
+		if err := decode(f.Name(), config); err != nil {
+			return fmt.Errorf("while loading included config file %s: %s", f.Name(), err)
+		}
+	} else {
+		if !strings.HasPrefix(include, "/") {
+			include = filepath.Join(config.dir, include)
+		}
+
+		files, err := filepath.Glob(include)
+		if err != nil {
+			return err
+		}
+
+		for _, file := range files {
+			if err := decode(file, config); err != nil {
+				return fmt.Errorf("while loading included config file %s: %s", file, err)
+			}
 		}
 	}
 	return nil

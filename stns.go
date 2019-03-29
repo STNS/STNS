@@ -7,6 +7,7 @@ import (
 	"github.com/STNS/STNS/api"
 	"github.com/urfave/cli"
 )
+
 var (
 	version   string
 	revision  string
@@ -63,6 +64,7 @@ func printVersion(c *cli.Context) {
 }
 
 func appBefore(c *cli.Context) error {
+	// I want to quit this implementation
 	if c.GlobalString("logfile") != "" {
 		os.Setenv("STNS_LOG", c.GlobalString("logfile"))
 	}
