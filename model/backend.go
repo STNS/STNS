@@ -8,7 +8,6 @@ type UserGroup interface {
 	setLinkValues([]string)
 	value() []string
 }
-type Backends []Backend
 type Backend interface {
 	// Getter
 	FindUserByID(int) (map[string]UserGroup, error)
@@ -29,18 +28,6 @@ type Backend interface {
 	CreateGroup(UserGroup) error
 	DeleteGroup(int) error
 	UpdateGroup(UserGroup) error
-}
-
-func mergeUserGroup(m1, m2 map[string]UserGroup) map[string]UserGroup {
-	ans := map[string]UserGroup{}
-
-	for k, v := range m1 {
-		ans[k] = v
-	}
-	for k, v := range m2 {
-		ans[k] = v
-	}
-	return (ans)
 }
 
 func SyncConfig(resourceName string, b Backend, configResources, backendResources map[string]UserGroup) error {

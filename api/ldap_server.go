@@ -46,13 +46,12 @@ import (
 
 type ldapServer struct {
 	baseServer
-	logger *log.Logger
 }
 
 type ldapHandler struct {
-	backends model.Backends
-	logger   *log.Logger
-	config   *stns.Config
+	backend model.Backend
+	logger  *log.Logger
+	config  *stns.Config
 }
 
 func (h ldapHandler) Bind(bindDN, rawPassword string, conn net.Conn) (ldap.LDAPResultCode, error) {
@@ -80,7 +79,7 @@ func (h ldapHandler) Bind(bindDN, rawPassword string, conn net.Conn) (ldap.LDAPR
 	var user *model.User
 	var group *model.Group
 
-	users, err := h.backends.FindUserByName(userName)
+	users, err := h.backend.FindUserByName(userName)
 	if err != nil {
 		h.logger.Warn(fmt.Sprintf("Bind Error: User %s not found.", userName))
 		return ldap.LDAPResultInvalidCredentials, nil
@@ -88,7 +87,7 @@ func (h ldapHandler) Bind(bindDN, rawPassword string, conn net.Conn) (ldap.LDAPR
 	user = users[userName].(*model.User)
 
 	if groupName != "" {
-		groups, err := h.backends.FindGroupByName(groupName)
+		groups, err := h.backend.FindGroupByName(groupName)
 		if err != nil {
 			h.logger.Warn(fmt.Sprintf("Bind Error: Group %s not found.", groupName))
 			return ldap.LDAPResultInvalidCredentials, nil
@@ -135,14 +134,14 @@ func (h ldapHandler) Search(bindDN string, searchReq ldap.SearchRequest, conn ne
 		}, fmt.Errorf("Search Error: error parsing filter: %s", searchReq.Filter)
 	}
 
-	groups, err := h.backends.Groups()
+	groups, err := h.backend.Groups()
 	if err != nil {
 		return ldap.ServerSearchResult{
 			ResultCode: ldap.LDAPResultOperationsError,
 		}, fmt.Errorf("Search Error: can't fetch groups: %s [%s]", filterEntity, searchReq.Filter)
 	}
 
-	users, err := h.backends.Users()
+	users, err := h.backend.Users()
 	if err != nil {
 		return ldap.ServerSearchResult{
 			ResultCode: ldap.LDAPResultOperationsError,
@@ -168,7 +167,7 @@ func (h ldapHandler) Search(bindDN string, searchReq ldap.SearchRequest, conn ne
 		}
 	case "posixaccount", "":
 		for _, u := range users {
-			userGroup, err := h.backends.FindGroupByID(u.(*model.User).GroupID)
+			userGroup, err := h.backend.FindGroupByID(u.(*model.User).GroupID)
 			if err != nil {
 				return ldap.ServerSearchResult{
 					ResultCode: ldap.LDAPResultOperationsError,
@@ -215,37 +214,23 @@ func (h ldapHandler) Search(bindDN string, searchReq ldap.SearchRequest, conn ne
 	return ldap.ServerSearchResult{entries, []string{}, []ldap.Control{}, ldap.LDAPResultSuccess}, nil
 }
 
-func newLDAPServer(confPath string) (*ldapServer, error) {
-	conf, err := stns.NewConfig(confPath)
-	if err != nil {
-		return nil, err
-	}
-
+func newLDAPServer(conf *stns.Config, backend model.Backend, logger *log.Logger) (*ldapServer, error) {
 	s := &ldapServer{
-		baseServer: baseServer{config: &conf},
-		logger:     log.New("stns-ldap"),
+		baseServer{
+			config:  conf,
+			backend: backend,
+			logger:  logger,
+		},
 	}
 	return s, nil
 }
 
 func (s *ldapServer) Run() error {
-	var backends model.Backends
-	b, err := model.NewBackendTomlFile(s.config.Users, s.config.Groups)
-	if err != nil {
-		return err
-	}
-	backends = append(backends, b)
-
-	err = s.loadModules(s.logger, &backends)
-	if err != nil {
-		return err
-	}
-
 	ld := ldap.NewServer()
 	ld.EnforceLDAP = true
 	h := ldapHandler{
-		backends: backends,
-		config:   s.config,
+		backend: s.backend,
+		config:  s.config,
 	}
 	ld.BindFunc("", h)
 	ld.SearchFunc("", h)

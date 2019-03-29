@@ -15,7 +15,7 @@ import (
 )
 
 func getUsers(c echo.Context) error {
-	backend := c.Get(middleware.BackendKey).(model.Backends)
+	backend := c.Get(middleware.BackendKey).(model.Backend)
 
 	var r map[string]model.UserGroup
 	var err error
@@ -56,7 +56,7 @@ type PasswordChangeParams struct {
 }
 
 func updateUserPassword(c echo.Context) (ret error) {
-	backend := c.Get(middleware.BackendKey).(model.Backends)
+	backend := c.Get(middleware.BackendKey).(model.Backend)
 	name := c.Param("name")
 
 	params := PasswordChangeParams{}

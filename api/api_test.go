@@ -30,10 +30,8 @@ func tomlContext(path string, queryParams map[string]string, config *stns.Config
 	e := echo.New()
 	ctx := e.NewContext(req, rec)
 
-	var backends model.Backends
 	b, _ := model.NewBackendTomlFile(config.Users, config.Groups)
-	backends = append(backends, b)
-	ctx.Set(middleware.BackendKey, backends)
+	ctx.Set(middleware.BackendKey, b)
 	ctx.SetPath(path)
 
 	return ctx, rec
@@ -57,11 +55,8 @@ func dummyContext(t *testing.T, reqType, reqPath string, args interface{}) (echo
 	e := echo.New()
 	ctx := e.NewContext(req, rec)
 
-	var backends model.Backends
 	b, _ := model.NewBackendDummy()
-	backends = append(backends, b)
-
-	ctx.Set(middleware.BackendKey, backends)
+	ctx.Set(middleware.BackendKey, b)
 	return ctx, rec
 }
 

@@ -4,7 +4,6 @@ import (
 	"context"
 	"crypto/tls"
 	"crypto/x509"
-	"errors"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -28,43 +27,21 @@ type httpServer struct {
 	baseServer
 }
 
-func newHTTPServer(confPath string) (*httpServer, error) {
-	conf, err := stns.NewConfig(confPath)
-	if err != nil {
-		return nil, err
-	}
-
+func newHTTPServer(conf *stns.Config, backend model.Backend, logger *log.Logger) (*httpServer, error) {
 	s := &httpServer{
-		baseServer{config: &conf},
+		baseServer{
+			config:  conf,
+			backend: backend,
+			logger:  logger,
+		},
 	}
 	return s, nil
 }
 
-func status(c echo.Context) error {
-	return c.String(http.StatusOK, "OK")
-}
-
-func switchLogOutput() (*os.File, error) {
-	if os.Getenv("STNS_LOG") != "" {
-		f, err := os.OpenFile(os.Getenv("STNS_LOG"), os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
-		return f, err
-	}
-	return os.Stdout, nil
-}
-
 // Run サーバの起動
 func (s *httpServer) Run() error {
-	var backends model.Backends
 	e := echo.New()
-	f, err := switchLogOutput()
-	if err != nil {
-		return errors.New("error opening file :" + err.Error())
-	}
-	if os.Getenv("STNS_LOG") != "" {
-		e.Logger.SetOutput(f)
-	} else {
-		e.Logger.SetLevel(log.DEBUG)
-	}
+	e.Logger = s.logger
 	e.GET("/status", status)
 
 	if err := pidfile.Write(); err != nil {
@@ -77,25 +54,14 @@ func (s *httpServer) Run() error {
 		}
 	}()
 
-	b, err := model.NewBackendTomlFile(s.config.Users, s.config.Groups)
-	if err != nil {
-		return err
-	}
-	backends = append(backends, b)
-
-	err = s.loadModules(e.Logger.(*log.Logger), &backends)
-	if err != nil {
-		return err
-	}
-
-	e.Use(middleware.Backends(backends))
-	e.Use(middleware.AddHeader(backends))
+	e.Use(middleware.Backend(s.backend))
+	e.Use(middleware.AddHeader(s.backend))
 
 	e.Use(emiddleware.Recover())
 	e.Use(emiddleware.LoggerWithConfig(emiddleware.LoggerConfig{
 		Format: `{"time":"${time_rfc3339_nano}","remote_ip":"${remote_ip}","host":"${host}",` +
 			`"method":"${method}","uri":"${uri}","status":${status}}` + "\n",
-		Output: f,
+		Output: s.logger.Output(),
 	}))
 
 	if s.config.BasicAuth != nil {
@@ -179,12 +145,12 @@ func (s *httpServer) Run() error {
 			if customServer.TLSConfig == nil {
 				customServer.TLSConfig = new(tls.Config)
 			}
-			customServer.TLSConfig.Certificates = make([]tls.Certificate, 1)
-			customServer.TLSConfig.Certificates[0], err = tls.LoadX509KeyPair(s.config.TLS.Cert, s.config.TLS.Key)
+			cert, err := tls.LoadX509KeyPair(s.config.TLS.Cert, s.config.TLS.Key)
 			if err != nil {
 				e.Logger.Fatal(err)
 			}
-
+			customServer.TLSConfig.Certificates = make([]tls.Certificate, 1)
+			customServer.TLSConfig.Certificates[0] = cert
 		}
 
 		if err := e.StartServer(customServer); err != nil {
@@ -209,4 +175,8 @@ func (s *httpServer) Run() error {
 		return err
 	}
 	return nil
+}
+
+func status(c echo.Context) error {
+	return c.String(http.StatusOK, "OK")
 }
