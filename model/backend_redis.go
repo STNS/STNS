@@ -122,10 +122,10 @@ func (b *BackendRedis) DelCache(key string) {
 
 func (b *BackendRedis) FindUserByID(id int) (map[string]UserGroup, error) {
 	v := b.GetCache(fmt.Sprintf(userIDKey, id))
-	if v != "" {
-		d := map[string]UserGroup{}
+	if v != "" && v != "null" {
+		d := make(Users)
 		if json.Unmarshal([]byte(v), d) == nil {
-			return d, nil
+			return d.ToUserGroup(), nil
 		}
 	}
 	u, err := b.backend.FindUserByID(id)
@@ -138,10 +138,10 @@ func (b *BackendRedis) FindUserByID(id int) (map[string]UserGroup, error) {
 
 func (b *BackendRedis) FindUserByName(name string) (map[string]UserGroup, error) {
 	v := b.GetCache(fmt.Sprintf(userNameKey, name))
-	if v != "" {
-		d := map[string]UserGroup{}
+	if v != "" && v != "null" {
+		d := make(Users)
 		if json.Unmarshal([]byte(v), d) == nil {
-			return d, nil
+			return d.ToUserGroup(), nil
 		}
 	}
 	u, err := b.backend.FindUserByName(name)
@@ -154,10 +154,10 @@ func (b *BackendRedis) FindUserByName(name string) (map[string]UserGroup, error)
 
 func (b *BackendRedis) Users() (map[string]UserGroup, error) {
 	v := b.GetCache(usersKey)
-	if v != "" {
-		d := map[string]UserGroup{}
+	if v != "" && v != "null" {
+		d := make(Users)
 		if json.Unmarshal([]byte(v), d) == nil {
-			return d, nil
+			return d.ToUserGroup(), nil
 		}
 	}
 	u, err := b.backend.Users()
@@ -170,10 +170,10 @@ func (b *BackendRedis) Users() (map[string]UserGroup, error) {
 
 func (b *BackendRedis) FindGroupByID(id int) (map[string]UserGroup, error) {
 	v := b.GetCache(fmt.Sprintf(groupIDKey, id))
-	if v != "" {
-		d := map[string]UserGroup{}
+	if v != "" && v != "null" {
+		d := new(Groups)
 		if json.Unmarshal([]byte(v), d) == nil {
-			return d, nil
+			return d.ToUserGroup(), nil
 		}
 	}
 	u, err := b.backend.FindGroupByID(id)
@@ -186,10 +186,10 @@ func (b *BackendRedis) FindGroupByID(id int) (map[string]UserGroup, error) {
 
 func (b *BackendRedis) FindGroupByName(name string) (map[string]UserGroup, error) {
 	v := b.GetCache(fmt.Sprintf(groupNameKey, name))
-	if v != "" {
-		d := map[string]UserGroup{}
+	if v != "" && v != "null" {
+		d := new(Groups)
 		if json.Unmarshal([]byte(v), d) == nil {
-			return d, nil
+			return d.ToUserGroup(), nil
 		}
 	}
 	u, err := b.backend.FindGroupByName(name)
@@ -202,12 +202,10 @@ func (b *BackendRedis) FindGroupByName(name string) (map[string]UserGroup, error
 
 func (b *BackendRedis) Groups() (map[string]UserGroup, error) {
 	v := b.GetCache(groupsKey)
-	if v != "" {
-		if v != "" {
-			d := map[string]UserGroup{}
-			if json.Unmarshal([]byte(v), d) == nil {
-				return d, nil
-			}
+	if v != "" && v != "null" {
+		d := new(Groups)
+		if json.Unmarshal([]byte(v), d) == nil {
+			return d.ToUserGroup(), nil
 		}
 	}
 	u, err := b.backend.Groups()
@@ -220,12 +218,10 @@ func (b *BackendRedis) Groups() (map[string]UserGroup, error) {
 
 func (b *BackendRedis) HighestUserID() int {
 	v := b.GetCache(userHighestIDKey)
-	if v != "" {
-		if v != "" {
-			var d int
-			if json.Unmarshal([]byte(v), d) == nil {
-				return d
-			}
+	if v != "" && v != "null" {
+		var d int
+		if json.Unmarshal([]byte(v), d) == nil {
+			return d
 		}
 	}
 	i := b.backend.HighestUserID()
@@ -235,7 +231,7 @@ func (b *BackendRedis) HighestUserID() int {
 
 func (b *BackendRedis) LowestUserID() int {
 	v := b.GetCache(userLowestIDKey)
-	if v != "" {
+	if v != "" && v != "null" {
 		d := 0
 		if json.Unmarshal([]byte(v), d) == nil {
 			return d
@@ -248,7 +244,7 @@ func (b *BackendRedis) LowestUserID() int {
 
 func (b *BackendRedis) HighestGroupID() int {
 	v := b.GetCache(groupHighestIDKey)
-	if v != "" {
+	if v != "" && v != "null" {
 		d := 0
 		if json.Unmarshal([]byte(v), d) == nil {
 			return d
@@ -261,7 +257,7 @@ func (b *BackendRedis) HighestGroupID() int {
 
 func (b *BackendRedis) LowestGroupID() int {
 	v := b.GetCache(groupLowestIDKey)
-	if v != "" {
+	if v != "" && v != "null" {
 		d := 0
 		if json.Unmarshal([]byte(v), d) == nil {
 			return d
