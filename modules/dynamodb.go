@@ -225,7 +225,6 @@ func (b BackendDynamoDB) Groups() (map[string]model.UserGroup, error) {
 
 	us := map[string]model.UserGroup{}
 	for _, item := range items {
-
 		if _, err := b.unmarshalUserGroup(new(model.Group), us, item); err != nil {
 			return nil, err
 		}
