@@ -9,22 +9,21 @@ import (
 	"github.com/STNS/STNS/stns"
 )
 
-var em sync.Mutex
+var dm sync.Mutex
 
-func etcdTestConfig() *stns.Config {
+func dynamodbTestConfig() *stns.Config {
 	return &stns.Config{
 		Modules: map[string]interface{}{
-			"etcd": map[string]interface{}{
-				"endpoints": []interface{}{"http://127.0.0.1:2379"},
-				"sync":      true,
+			"dynamodb": map[string]interface{}{
+				"sync": true,
 			},
 		},
 	}
 }
 
-func TestBackendEtcd_FindUserByID(t *testing.T) {
-	em.Lock()
-	defer em.Unlock()
+func TestBackendDynamodb_FindUserByID(t *testing.T) {
+	dm.Lock()
+	defer dm.Unlock()
 	type fields struct {
 		config *stns.Config
 	}
@@ -42,7 +41,7 @@ func TestBackendEtcd_FindUserByID(t *testing.T) {
 		{
 			name: "ok",
 			fields: fields{
-				config: etcdTestConfig(),
+				config: dynamodbTestConfig(),
 			},
 			args: args{
 				id: 1,
@@ -65,7 +64,7 @@ func TestBackendEtcd_FindUserByID(t *testing.T) {
 		{
 			name: "notfound",
 			fields: fields{
-				config: etcdTestConfig(),
+				config: dynamodbTestConfig(),
 			},
 			args: args{
 				id: 99999,
@@ -75,7 +74,7 @@ func TestBackendEtcd_FindUserByID(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			b, err := NewBackendEtcd(tt.fields.config)
+			b, err := NewBackendDynamodb(tt.fields.config)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -86,19 +85,19 @@ func TestBackendEtcd_FindUserByID(t *testing.T) {
 			}
 			got, err := b.FindUserByID(tt.args.id)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("BackendEtcd.FindUserByID() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("BackendDynamodb.FindUserByID() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("BackendEtcd.FindUserByID() = %v, want %v", got, tt.want)
+				t.Errorf("BackendDynamodb.FindUserByID() = %v, want %v", got, tt.want)
 			}
 		})
 	}
 }
 
-func TestBackendEtcd_FindUserByName(t *testing.T) {
-	em.Lock()
-	defer em.Unlock()
+func TestBackendDynamodb_FindUserByName(t *testing.T) {
+	dm.Lock()
+	defer dm.Unlock()
 	type fields struct {
 		config *stns.Config
 	}
@@ -116,7 +115,7 @@ func TestBackendEtcd_FindUserByName(t *testing.T) {
 		{
 			name: "ok",
 			fields: fields{
-				config: etcdTestConfig(),
+				config: dynamodbTestConfig(),
 			},
 			args: args{
 				name: "user1",
@@ -139,7 +138,7 @@ func TestBackendEtcd_FindUserByName(t *testing.T) {
 		{
 			name: "notfound",
 			fields: fields{
-				config: etcdTestConfig(),
+				config: dynamodbTestConfig(),
 			},
 			args: args{
 				name: "notfound",
@@ -149,7 +148,7 @@ func TestBackendEtcd_FindUserByName(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			b, err := NewBackendEtcd(tt.fields.config)
+			b, err := NewBackendDynamodb(tt.fields.config)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -160,19 +159,19 @@ func TestBackendEtcd_FindUserByName(t *testing.T) {
 			}
 			got, err := b.FindUserByName(tt.args.name)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("BackendEtcd.FindUserByName() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("BackendDynamodb.FindUserByName() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("BackendEtcd.FindUserByName() = %v, want %v", got, tt.want)
+				t.Errorf("BackendDynamodb.FindUserByName() = %v, want %v", got, tt.want)
 			}
 		})
 	}
 }
 
-func TestBackendEtcd_Users(t *testing.T) {
-	em.Lock()
-	defer em.Unlock()
+func TestBackendDynamodb_Users(t *testing.T) {
+	dm.Lock()
+	defer dm.Unlock()
 	type fields struct {
 		config *stns.Config
 	}
@@ -186,7 +185,7 @@ func TestBackendEtcd_Users(t *testing.T) {
 		{
 			name: "ok",
 			fields: fields{
-				config: etcdTestConfig(),
+				config: dynamodbTestConfig(),
 			},
 			params: model.Users{
 				"user1": &model.User{
@@ -220,7 +219,7 @@ func TestBackendEtcd_Users(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			b, err := NewBackendEtcd(tt.fields.config)
+			b, err := NewBackendDynamodb(tt.fields.config)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -231,19 +230,19 @@ func TestBackendEtcd_Users(t *testing.T) {
 			}
 			got, err := b.Users()
 			if (err != nil) != tt.wantErr {
-				t.Errorf("BackendEtcd.Users() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("BackendDynamodb.Users() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("BackendEtcd.Users() = %v, want %v", got, tt.want)
+				t.Errorf("BackendDynamodb.Users() = %v, want %v", got, tt.want)
 			}
 		})
 	}
 }
 
-func TestBackendEtcd_FindGroupByID(t *testing.T) {
-	em.Lock()
-	defer em.Unlock()
+func TestBackendDynamodb_FindGroupByID(t *testing.T) {
+	dm.Lock()
+	defer dm.Unlock()
 	type fields struct {
 		config *stns.Config
 	}
@@ -261,7 +260,7 @@ func TestBackendEtcd_FindGroupByID(t *testing.T) {
 		{
 			name: "ok",
 			fields: fields{
-				config: etcdTestConfig(),
+				config: dynamodbTestConfig(),
 			},
 			args: args{
 				id: 1,
@@ -284,7 +283,7 @@ func TestBackendEtcd_FindGroupByID(t *testing.T) {
 		{
 			name: "notfound",
 			fields: fields{
-				config: etcdTestConfig(),
+				config: dynamodbTestConfig(),
 			},
 			args: args{
 				id: 99999,
@@ -294,7 +293,7 @@ func TestBackendEtcd_FindGroupByID(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			b, err := NewBackendEtcd(tt.fields.config)
+			b, err := NewBackendDynamodb(tt.fields.config)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -305,19 +304,19 @@ func TestBackendEtcd_FindGroupByID(t *testing.T) {
 			}
 			got, err := b.FindGroupByID(tt.args.id)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("BackendEtcd.FindGroupByID() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("BackendDynamodb.FindGroupByID() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("BackendEtcd.FindGroupByID() = %v, want %v", got, tt.want)
+				t.Errorf("BackendDynamodb.FindGroupByID() = %v, want %v", got, tt.want)
 			}
 		})
 	}
 }
 
-func TestBackendEtcd_FindGroupByName(t *testing.T) {
-	em.Lock()
-	defer em.Unlock()
+func TestBackendDynamodb_FindGroupByName(t *testing.T) {
+	dm.Lock()
+	defer dm.Unlock()
 	type fields struct {
 		config *stns.Config
 	}
@@ -335,7 +334,7 @@ func TestBackendEtcd_FindGroupByName(t *testing.T) {
 		{
 			name: "ok",
 			fields: fields{
-				config: etcdTestConfig(),
+				config: dynamodbTestConfig(),
 			},
 			args: args{
 				name: "group1",
@@ -358,7 +357,7 @@ func TestBackendEtcd_FindGroupByName(t *testing.T) {
 		{
 			name: "notfound",
 			fields: fields{
-				config: etcdTestConfig(),
+				config: dynamodbTestConfig(),
 			},
 			args: args{
 				name: "notfound",
@@ -368,7 +367,7 @@ func TestBackendEtcd_FindGroupByName(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			b, err := NewBackendEtcd(tt.fields.config)
+			b, err := NewBackendDynamodb(tt.fields.config)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -379,19 +378,19 @@ func TestBackendEtcd_FindGroupByName(t *testing.T) {
 			}
 			got, err := b.FindGroupByName(tt.args.name)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("BackendEtcd.FindGroupByName() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("BackendDynamodb.FindGroupByName() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("BackendEtcd.FindGroupByName() = %v, want %v", got, tt.want)
+				t.Errorf("BackendDynamodb.FindGroupByName() = %v, want %v", got, tt.want)
 			}
 		})
 	}
 }
 
-func TestBackendEtcd_Groups(t *testing.T) {
-	em.Lock()
-	defer em.Unlock()
+func TestBackendDynamodb_Groups(t *testing.T) {
+	dm.Lock()
+	defer dm.Unlock()
 	type fields struct {
 		config *stns.Config
 	}
@@ -405,7 +404,7 @@ func TestBackendEtcd_Groups(t *testing.T) {
 		{
 			name: "ok",
 			fields: fields{
-				config: etcdTestConfig(),
+				config: dynamodbTestConfig(),
 			},
 			params: model.Groups{
 				"group1": &model.Group{
@@ -439,7 +438,7 @@ func TestBackendEtcd_Groups(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			b, err := NewBackendEtcd(tt.fields.config)
+			b, err := NewBackendDynamodb(tt.fields.config)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -451,19 +450,19 @@ func TestBackendEtcd_Groups(t *testing.T) {
 
 			got, err := b.Groups()
 			if (err != nil) != tt.wantErr {
-				t.Errorf("BackendEtcd.Groups() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("BackendDynamodb.Groups() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("BackendEtcd.Groups() = %v, want %v", got, tt.want)
+				t.Errorf("BackendDynamodb.Groups() = %v, want %v", got, tt.want)
 			}
 		})
 	}
 }
 
-func TestBackendEtcd_highlowUserID(t *testing.T) {
-	em.Lock()
-	defer em.Unlock()
+func TestBackendDynamodb_highlowUserID(t *testing.T) {
+	dm.Lock()
+	defer dm.Unlock()
 	type fields struct {
 		config *stns.Config
 	}
@@ -478,7 +477,7 @@ func TestBackendEtcd_highlowUserID(t *testing.T) {
 		{
 			name: "high",
 			fields: fields{
-				config: etcdTestConfig(),
+				config: dynamodbTestConfig(),
 			},
 			params: model.Users{
 				"user1": &model.User{
@@ -500,7 +499,7 @@ func TestBackendEtcd_highlowUserID(t *testing.T) {
 		{
 			name: "low",
 			fields: fields{
-				config: etcdTestConfig(),
+				config: dynamodbTestConfig(),
 			},
 			params: model.Users{
 				"user1": &model.User{
@@ -522,11 +521,11 @@ func TestBackendEtcd_highlowUserID(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			_b, err := NewBackendEtcd(tt.fields.config)
+			_b, err := NewBackendDynamodb(tt.fields.config)
 			if err != nil {
 				t.Fatal(err)
 			}
-			b := _b.(BackendEtcd)
+			b := _b.(BackendDynamoDB)
 
 			for _, v := range tt.params {
 				if err := b.CreateUser(v); err != nil {
@@ -541,19 +540,19 @@ func TestBackendEtcd_highlowUserID(t *testing.T) {
 				got = b.LowestUserID()
 			}
 			if (err != nil) != tt.wantErr {
-				t.Errorf("BackendEtcd.highlowUserID() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("BackendDynamodb.highlowUserID() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("BackendEtcd.highlowUserID() = %v, want %v", got, tt.want)
+				t.Errorf("BackendDynamodb.highlowUserID() = %v, want %v", got, tt.want)
 			}
 		})
 	}
 }
 
-func TestBackendEtcd_highlowGroupID(t *testing.T) {
-	em.Lock()
-	defer em.Unlock()
+func TestBackendDynamodb_highlowGroupID(t *testing.T) {
+	dm.Lock()
+	defer dm.Unlock()
 	type fields struct {
 		config *stns.Config
 	}
@@ -568,7 +567,7 @@ func TestBackendEtcd_highlowGroupID(t *testing.T) {
 		{
 			name: "high",
 			fields: fields{
-				config: etcdTestConfig(),
+				config: dynamodbTestConfig(),
 			},
 			params: model.Groups{
 				"group1": &model.Group{
@@ -590,7 +589,7 @@ func TestBackendEtcd_highlowGroupID(t *testing.T) {
 		{
 			name: "low",
 			fields: fields{
-				config: etcdTestConfig(),
+				config: dynamodbTestConfig(),
 			},
 			params: model.Groups{
 				"group1": &model.Group{
@@ -612,11 +611,11 @@ func TestBackendEtcd_highlowGroupID(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			_b, err := NewBackendEtcd(tt.fields.config)
+			_b, err := NewBackendDynamodb(tt.fields.config)
 			if err != nil {
 				t.Fatal(err)
 			}
-			b := _b.(BackendEtcd)
+			b := _b.(BackendDynamoDB)
 
 			for _, v := range tt.params {
 				if err := b.CreateGroup(v); err != nil {
@@ -631,19 +630,19 @@ func TestBackendEtcd_highlowGroupID(t *testing.T) {
 				got = b.LowestGroupID()
 			}
 			if (err != nil) != tt.wantErr {
-				t.Errorf("BackendEtcd.highlowGroupID() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("BackendDynamodb.highlowGroupID() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("BackendEtcd.highlowGroupID() = %v, want %v", got, tt.want)
+				t.Errorf("BackendDynamodb.highlowGroupID() = %v, want %v", got, tt.want)
 			}
 		})
 	}
 }
 
-func TestBackendEtcd_syncConfig(t *testing.T) {
-	em.Lock()
-	defer em.Unlock()
+func TestBackendDynamodb_syncConfig(t *testing.T) {
+	dm.Lock()
+	defer dm.Unlock()
 	type fields struct {
 		config *stns.Config
 	}
@@ -659,9 +658,8 @@ func TestBackendEtcd_syncConfig(t *testing.T) {
 			fields: fields{
 				config: &stns.Config{
 					Modules: map[string]interface{}{
-						"etcd": map[string]interface{}{
-							"endpoints": []interface{}{"http://127.0.0.1:2379"},
-							"sync":      true,
+						"dynamodb": map[string]interface{}{
+							"sync": true,
 						},
 					},
 					Users: &model.Users{
@@ -714,31 +712,31 @@ func TestBackendEtcd_syncConfig(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			b, err := NewBackendEtcd(tt.fields.config)
+			b, err := NewBackendDynamodb(tt.fields.config)
 			if err != nil {
 				t.Fatal(err)
 			}
-			back := b.(BackendEtcd)
+			back := b.(BackendDynamoDB)
 			if err := syncConfig(back, tt.fields.config); (err != nil) != tt.wantErr {
-				t.Errorf("BackendEtcd.syncConfig() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("BackendDynamodb.syncConfig() error = %v, wantErr %v", err, tt.wantErr)
 			}
 
 			got, err := back.Users()
 			if (err != nil) != tt.wantErr {
-				t.Errorf("BackendEtcd.Users() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("BackendDynamodb.Users() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !reflect.DeepEqual(got, tt.wantUser) {
-				t.Errorf("BackendEtcd.Users() = %v, want %v", got, tt.wantUser)
+				t.Errorf("BackendDynamodb.Users() = %v, want %v", got, tt.wantUser)
 			}
 
 			got, err = back.Groups()
 			if (err != nil) != tt.wantErr {
-				t.Errorf("BackendEtcd.Groups() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("BackendDynamodb.Groups() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !reflect.DeepEqual(got, tt.wantGroup) {
-				t.Errorf("BackendEtcd.Groups() = %v, want %v", got, tt.wantGroup)
+				t.Errorf("BackendDynamodb.Groups() = %v, want %v", got, tt.wantGroup)
 			}
 		})
 	}
