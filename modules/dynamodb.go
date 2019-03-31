@@ -159,20 +159,21 @@ func (b BackendDynamoDB) findByID(table, resource, id string) (map[string]*dynam
 	return result.Item, nil
 }
 
+func (b BackendDynamoDB) unmarshalUserGroup(userGroup model.UserGroup, userGroups map[string]model.UserGroup, item map[string]*dynamodb.AttributeValue) (map[string]model.UserGroup, error) {
+	if err := dynamodbattribute.UnmarshalMap(item, userGroup); err != nil {
+		return nil, err
+	}
+	userGroups[userGroup.GetName()] = userGroup
+	return userGroups, nil
+}
+
 func (b BackendDynamoDB) FindUserByName(name string) (map[string]model.UserGroup, error) {
 	item, err := b.findByName(b.userTable, "user", name)
 	if err != nil {
 		return nil, err
 	}
 
-	users := model.Users{}
-	user := new(model.User)
-
-	if err := dynamodbattribute.UnmarshalMap(item, user); err != nil {
-		return nil, err
-	}
-	users[user.GetName()] = user
-	return users.ToUserGroup(), nil
+	return b.unmarshalUserGroup(new(model.User), map[string]model.UserGroup{}, item)
 }
 
 func (b BackendDynamoDB) FindUserByID(id int) (map[string]model.UserGroup, error) {
@@ -180,14 +181,7 @@ func (b BackendDynamoDB) FindUserByID(id int) (map[string]model.UserGroup, error
 	if err != nil {
 		return nil, err
 	}
-
-	users := model.Users{}
-	user := new(model.User)
-	if err := dynamodbattribute.UnmarshalMap(item, user); err != nil {
-		return nil, err
-	}
-	users[user.GetName()] = user
-	return users.ToUserGroup(), nil
+	return b.unmarshalUserGroup(new(model.User), map[string]model.UserGroup{}, item)
 }
 
 func (b BackendDynamoDB) Users() (map[string]model.UserGroup, error) {
@@ -196,15 +190,13 @@ func (b BackendDynamoDB) Users() (map[string]model.UserGroup, error) {
 		return nil, err
 	}
 
-	users := model.Users{}
-	user := new(model.User)
+	us := map[string]model.UserGroup{}
 	for _, item := range items {
-		if err := dynamodbattribute.UnmarshalMap(item, user); err != nil {
+		if _, err := b.unmarshalUserGroup(new(model.User), us, item); err != nil {
 			return nil, err
 		}
-		users[user.GetName()] = user
 	}
-	return users.ToUserGroup(), nil
+	return us, nil
 }
 
 func (b BackendDynamoDB) FindGroupByName(name string) (map[string]model.UserGroup, error) {
@@ -213,14 +205,7 @@ func (b BackendDynamoDB) FindGroupByName(name string) (map[string]model.UserGrou
 		return nil, err
 	}
 
-	groups := model.Groups{}
-	group := new(model.Group)
-
-	if err := dynamodbattribute.UnmarshalMap(item, group); err != nil {
-		return nil, err
-	}
-	groups[group.GetName()] = group
-	return groups.ToUserGroup(), nil
+	return b.unmarshalUserGroup(new(model.Group), map[string]model.UserGroup{}, item)
 }
 
 func (b BackendDynamoDB) FindGroupByID(id int) (map[string]model.UserGroup, error) {
@@ -229,13 +214,7 @@ func (b BackendDynamoDB) FindGroupByID(id int) (map[string]model.UserGroup, erro
 		return nil, err
 	}
 
-	groups := model.Groups{}
-	group := new(model.Group)
-	if err := dynamodbattribute.UnmarshalMap(item, group); err != nil {
-		return nil, err
-	}
-	groups[group.GetName()] = group
-	return groups.ToUserGroup(), nil
+	return b.unmarshalUserGroup(new(model.Group), map[string]model.UserGroup{}, item)
 }
 
 func (b BackendDynamoDB) Groups() (map[string]model.UserGroup, error) {
@@ -244,15 +223,14 @@ func (b BackendDynamoDB) Groups() (map[string]model.UserGroup, error) {
 		return nil, err
 	}
 
-	groups := model.Groups{}
-	group := new(model.Group)
+	us := map[string]model.UserGroup{}
 	for _, item := range items {
-		if err := dynamodbattribute.UnmarshalMap(item, group); err != nil {
+
+		if _, err := b.unmarshalUserGroup(new(model.Group), us, item); err != nil {
 			return nil, err
 		}
-		groups[group.GetName()] = group
 	}
-	return groups.ToUserGroup(), nil
+	return us, nil
 
 }
 
