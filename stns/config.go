@@ -105,11 +105,6 @@ func NewConfig(confPath string) (Config, error) {
 			return Config{}, err
 		}
 	}
-
-	if conf.dir != "" && !strings.HasPrefix(conf.ModulePath, "/") {
-		conf.ModulePath = filepath.Join(conf.dir, conf.ModulePath)
-	}
-
 	return conf, nil
 }
 

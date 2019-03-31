@@ -5,10 +5,12 @@ import (
 	"os"
 	"path/filepath"
 	"plugin"
+	"strings"
 
 	"github.com/STNS/STNS/model"
 	"github.com/STNS/STNS/stns"
 	"github.com/facebookgo/pidfile"
+	"github.com/iancoleman/strcase"
 
 	"github.com/labstack/gommon/log"
 	_ "github.com/tredoe/osutil/user/crypt/md5_crypt"
@@ -87,11 +89,9 @@ func loadBackendModule(logger *log.Logger, conf *stns.Config) (model.Backend, er
 		return nil, err
 	}
 
-	n, err := p.Lookup("ModuleName")
-	if err != nil {
-		return nil, err
-	}
-	name := *(n.(*string))
+	name := conf.LoadModule
+	name = strings.Replace(name, ".so", "", 1)
+	name = strcase.ToCamel(strings.Replace(name, "mod_stns_", "", 1))
 	b, err := p.Lookup("NewBackend" + name)
 	if err != nil {
 		return nil, err

@@ -43,6 +43,7 @@ require (
 	github.com/google/go-github v17.0.0+incompatible // indirect
 	github.com/google/go-querystring v1.0.0 // indirect
 	github.com/hashicorp/go-version v1.1.0 // indirect
+	github.com/iancoleman/strcase v0.0.0-20180726023541-3605ed457bf7
 	github.com/imdario/mergo v0.3.7 // indirect
 	github.com/k0kubun/pp v3.0.0+incompatible
 	github.com/kisielk/errcheck v1.2.0 // indirect
@@ -86,11 +87,11 @@ require (
 	github.com/xordataexchange/crypt v0.0.3-0.20170626215501-b2862e3d0a77 // indirect
 	golang.org/x/crypto v0.0.0-20190325154230-a5d413f7728c // indirect
 	golang.org/x/lint v0.0.0-20190313153728-d0100b6bd8b3 // indirect
-	golang.org/x/net v0.0.0-20190327214358-63eda1eb0650
+	golang.org/x/net v0.0.0-20190328230028-74de082e2cca
 	golang.org/x/oauth2 v0.0.0-20190319182350-c85d3e98c914 // indirect
 	golang.org/x/sync v0.0.0-20190227155943-e225da77a7e6
-	golang.org/x/sys v0.0.0-20190322080309-f49334f85ddc // indirect
-	golang.org/x/tools v0.0.0-20190328030505-8f05a32dce9f // indirect
+	golang.org/x/sys v0.0.0-20190329044733-9eb1bfa1ce65 // indirect
+	golang.org/x/tools v0.0.0-20190329225845-a96101f168f4 // indirect
 	gopkg.in/AlecAivazis/survey.v1 v1.8.2 // indirect
 	gopkg.in/go-playground/validator.v9 v9.27.0
 	gopkg.in/kyokomi/emoji.v1 v1.5.1 // indirect
