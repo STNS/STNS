@@ -51,7 +51,7 @@ func LaunchServer(c *cli.Context) error {
 		backend = b
 	}
 
-	if conf.Redis.Host != "" {
+	if conf.Redis != nil && conf.Redis.Host != "" {
 		r, err := model.NewBackendRedis(backend, logger, conf.Redis.Host, conf.Redis.Port, conf.Redis.Password, conf.Redis.TTL, conf.Redis.DB)
 		if err != nil {
 			return err

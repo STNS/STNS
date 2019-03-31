@@ -92,7 +92,7 @@ require (
 	golang.org/x/oauth2 v0.0.0-20190319182350-c85d3e98c914 // indirect
 	golang.org/x/sync v0.0.0-20190227155943-e225da77a7e6
 	golang.org/x/sys v0.0.0-20190329044733-9eb1bfa1ce65 // indirect
-	golang.org/x/tools v0.0.0-20190329225845-a96101f168f4 // indirect
+	golang.org/x/tools v0.0.0-20190330180304-aef51cc3777c // indirect
 	gopkg.in/AlecAivazis/survey.v1 v1.8.2 // indirect
 	gopkg.in/go-playground/validator.v9 v9.27.0
 	gopkg.in/kyokomi/emoji.v1 v1.5.1 // indirect

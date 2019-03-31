@@ -350,6 +350,8 @@ golang.org/x/tools v0.0.0-20190328030505-8f05a32dce9f h1:MC9ePo9/ITLPbt6QsoTD78P
 golang.org/x/tools v0.0.0-20190328030505-8f05a32dce9f/go.mod h1:LCzVGOaR6xXOjkQ3onu1FJEFr0SW1gC7cKk1uF8kGRs=
 golang.org/x/tools v0.0.0-20190329225845-a96101f168f4 h1:R1hk20unthSMga7DyJPjt6xRxkP0RWgyJVaMwY3G0to=
 golang.org/x/tools v0.0.0-20190329225845-a96101f168f4/go.mod h1:LCzVGOaR6xXOjkQ3onu1FJEFr0SW1gC7cKk1uF8kGRs=
+golang.org/x/tools v0.0.0-20190330180304-aef51cc3777c h1:hbqcUGBwEHdDbhy8EluQIkbwTIbOvaYedVBif4f2mFQ=
+golang.org/x/tools v0.0.0-20190330180304-aef51cc3777c/go.mod h1:LCzVGOaR6xXOjkQ3onu1FJEFr0SW1gC7cKk1uF8kGRs=
 google.golang.org/appengine v1.4.0/go.mod h1:xpcJRLb0r/rnEns0DIKYYv+WjYCduHsrkT7/EB5XEv4=
 gopkg.in/AlecAivazis/survey.v1 v1.8.2 h1:168gU32e10Xm6NzttCL75XlCQF+nNh0VWuRU80u1GIw=
 gopkg.in/AlecAivazis/survey.v1 v1.8.2/go.mod h1:iBNOmqKz/NUbZx3bA+4hAGLRC7fSK7tgtVDT4tB22XA=
