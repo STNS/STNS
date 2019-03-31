@@ -80,7 +80,8 @@ integration_ldap: ## Run integration test after Server wakeup
 
 build: ## Build server
 	$(GO) build -ldflags "-X main.version=$(VERSION) -X main.revision=$(REVISION) -X \"main.goversion=$(GOVERSION)\" -X \"main.builddate=$(BUILDDATE)\" -X \"main.builduser=$(ME)\"" -o $(BUILD)/stns
-	$(GO) build -buildmode=plugin -o $(BUILD)/mod_stns_etcd.so modules/etcd.go
+	$(GO) build -buildmode=plugin -o $(BUILD)/mod_stns_etcd.so modules/etcd.go modules/module.go
+	$(GO) build -buildmode=plugin -o $(BUILD)/mod_stns_dynamodb.so modules/dynamodb.go modules/module.go
 
 install: build ## Install
 	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Installing as Server$(RESET)"

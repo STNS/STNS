@@ -1,7 +1,6 @@
 package main
 
 import (
-	"crypto/cipher"
 	"encoding/json"
 	"fmt"
 	"time"
@@ -17,7 +16,6 @@ var ModuleName = "Etcd"
 type BackendEtcd struct {
 	config *stns.Config
 	api    etcd.KeysAPI
-	block  cipher.Block
 }
 
 func NewBackendEtcd(c *stns.Config) (model.Backend, error) {
@@ -55,43 +53,12 @@ func NewBackendEtcd(c *stns.Config) (model.Backend, error) {
 		config: c,
 	}
 	if c.Modules["etcd"].(map[string]interface{})["sync"] != nil && c.Modules["etcd"].(map[string]interface{})["sync"].(bool) {
-		err := b.syncConfig()
+		err := syncConfig(b, c)
 		if err != nil {
 			return nil, err
 		}
 	}
 	return b, nil
-}
-
-func (b BackendEtcd) syncConfig() error {
-	users, err := b.Users()
-	if err != nil {
-		switch err.(type) {
-		case model.NotFoundError:
-			users = map[string]model.UserGroup{}
-		default:
-			return err
-		}
-	}
-
-	if err := model.SyncConfig("users", b, b.config.Users.ToUserGroup(), users); err != nil {
-		return err
-	}
-
-	groups, err := b.Groups()
-	if err != nil {
-		switch err.(type) {
-		case model.NotFoundError:
-			groups = map[string]model.UserGroup{}
-		default:
-			return err
-		}
-	}
-
-	if err := model.SyncConfig("groups", b, b.config.Groups.ToUserGroup(), groups); err != nil {
-		return err
-	}
-	return nil
 }
 
 func (b BackendEtcd) FindUserByName(name string) (map[string]model.UserGroup, error) {

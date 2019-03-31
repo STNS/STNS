@@ -1,4 +1,6 @@
 include = "include.toml"
+module_path = "/Users/pyama/Nextcloud/src/github.com/STNS/STNS/tmp/bin"
+load_module = "mod_stns_dynamodb.so"
 [users.test]
 id = 10001
 group_id = 10001
@@ -17,3 +19,6 @@ users = ["test"]
 [groups.bar]
 id = 10002
 users = ["foo"]
+
+[modules.dynamodb]
+sync = false

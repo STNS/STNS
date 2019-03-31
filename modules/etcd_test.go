@@ -709,7 +709,7 @@ func TestBackendEtcd_syncConfig(t *testing.T) {
 				t.Fatal(err)
 			}
 			back := b.(BackendEtcd)
-			if err := back.syncConfig(); (err != nil) != tt.wantErr {
+			if err := syncConfig(back, tt.fields.config); (err != nil) != tt.wantErr {
 				t.Errorf("BackendEtcd.syncConfig() error = %v, wantErr %v", err, tt.wantErr)
 			}
 
