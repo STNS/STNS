@@ -1,6 +1,7 @@
 package main
 
 import (
+	"os"
 	"reflect"
 	"sync"
 	"testing"
@@ -22,6 +23,9 @@ func dynamodbTestConfig() *stns.Config {
 }
 
 func TestBackendDynamodb_FindUserByID(t *testing.T) {
+	if os.Getenv("STNS_DYNAMODB_TEST") == "" {
+		return
+	}
 	dm.Lock()
 	defer dm.Unlock()
 	type fields struct {
@@ -96,6 +100,9 @@ func TestBackendDynamodb_FindUserByID(t *testing.T) {
 }
 
 func TestBackendDynamodb_FindUserByName(t *testing.T) {
+	if os.Getenv("STNS_DYNAMODB_TEST") == "" {
+		return
+	}
 	dm.Lock()
 	defer dm.Unlock()
 	type fields struct {
@@ -170,6 +177,9 @@ func TestBackendDynamodb_FindUserByName(t *testing.T) {
 }
 
 func TestBackendDynamodb_Users(t *testing.T) {
+	if os.Getenv("STNS_DYNAMODB_TEST") == "" {
+		return
+	}
 	dm.Lock()
 	defer dm.Unlock()
 	type fields struct {
@@ -241,6 +251,9 @@ func TestBackendDynamodb_Users(t *testing.T) {
 }
 
 func TestBackendDynamodb_FindGroupByID(t *testing.T) {
+	if os.Getenv("STNS_DYNAMODB_TEST") == "" {
+		return
+	}
 	dm.Lock()
 	defer dm.Unlock()
 	type fields struct {
@@ -315,6 +328,9 @@ func TestBackendDynamodb_FindGroupByID(t *testing.T) {
 }
 
 func TestBackendDynamodb_FindGroupByName(t *testing.T) {
+	if os.Getenv("STNS_DYNAMODB_TEST") == "" {
+		return
+	}
 	dm.Lock()
 	defer dm.Unlock()
 	type fields struct {
@@ -389,6 +405,9 @@ func TestBackendDynamodb_FindGroupByName(t *testing.T) {
 }
 
 func TestBackendDynamodb_Groups(t *testing.T) {
+	if os.Getenv("STNS_DYNAMODB_TEST") == "" {
+		return
+	}
 	dm.Lock()
 	defer dm.Unlock()
 	type fields struct {
@@ -461,6 +480,9 @@ func TestBackendDynamodb_Groups(t *testing.T) {
 }
 
 func TestBackendDynamodb_highlowUserID(t *testing.T) {
+	if os.Getenv("STNS_DYNAMODB_TEST") == "" {
+		return
+	}
 	dm.Lock()
 	defer dm.Unlock()
 	type fields struct {
@@ -551,6 +573,9 @@ func TestBackendDynamodb_highlowUserID(t *testing.T) {
 }
 
 func TestBackendDynamodb_highlowGroupID(t *testing.T) {
+	if os.Getenv("STNS_DYNAMODB_TEST") == "" {
+		return
+	}
 	dm.Lock()
 	defer dm.Unlock()
 	type fields struct {
@@ -641,6 +666,9 @@ func TestBackendDynamodb_highlowGroupID(t *testing.T) {
 }
 
 func TestBackendDynamodb_syncConfig(t *testing.T) {
+	if os.Getenv("STNS_DYNAMODB_TEST") == "" {
+		return
+	}
 	dm.Lock()
 	defer dm.Unlock()
 	type fields struct {
