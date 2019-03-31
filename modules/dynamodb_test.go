@@ -717,6 +717,19 @@ func TestBackendDynamodb_syncConfig(t *testing.T) {
 				t.Fatal(err)
 			}
 			back := b.(BackendDynamoDB)
+
+			// check modify result
+			if err := b.CreateUser(
+				&model.User{
+					Base: model.Base{
+						ID:   2,
+						Name: "before modify",
+					},
+				},
+			); err != nil {
+				t.Fatal(err)
+			}
+
 			if err := syncConfig(back, tt.fields.config); (err != nil) != tt.wantErr {
 				t.Errorf("BackendDynamodb.syncConfig() error = %v, wantErr %v", err, tt.wantErr)
 			}
