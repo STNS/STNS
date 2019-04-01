@@ -1,6 +1,6 @@
 Summary: SimpleTomlNameService is Linux User,Group Name Service
 Name:             stns-v2
-Version:          2.1.1
+Version:          2.2.0
 Release:          1
 License:          GPLv3
 URL:              https://github.com/STNS/STNS
@@ -68,6 +68,7 @@ install -m 644 package/stns-v2.logrotate %{buildroot}%{_sysconfdir}/logrotate.d/
 /usr/sbin/stns
 %config(noreplace) /etc/stns/server/stns.conf
 /usr/local/stns/modules.d/mod_stns_etcd.so
+/usr/local/stns/modules.d/mod_stns_dynamodb.so
 /etc/logrotate.d/stns
 
 %if 0%{?rhel} < 7
@@ -77,6 +78,16 @@ install -m 644 package/stns-v2.logrotate %{buildroot}%{_sysconfdir}/logrotate.d/
 %endif
 
 %changelog
+* Mon Apr 1 2019 pyama86 <www.kazu.com@gmail.com> - 2.2.0-1
+- #92 Support LDAP Interface
+- #93 Update password
+- #95 HTTP(S) request log も stns.logへ出力する
+- #96 Fix the problem of password update
+- #97 support ldaps
+- #98 support read config from s3
+- #99 Allow only a single backend
+- #100 support dynamodb
+- #101 add redis backend
 * Wed Feb 27 2019 pyama86 <www.kazu.com@gmail.com> - 2.1.1-1
 - #89 typo
 * Thu Feb 21 2019 pyama86 <www.kazu.com@gmail.com> - 2.1.0-1
@@ -91,7 +102,7 @@ install -m 644 package/stns-v2.logrotate %{buildroot}%{_sysconfdir}/logrotate.d/
 - #75 Support etcd Backend
 * Thu Sep 20 2018 pyama86 <www.kazu.com@gmail.com> - 1.0.0-3
 - #74 forget } at the end.
-* Mon Sep 11 2018 pyama86 <www.kazu.com@gmail.com> - 1.0.0-2
+* Thu Sep 11 2018 pyama86 <www.kazu.com@gmail.com> - 1.0.0-2
 - #70 Logger aggregates into gommon
 * Mon Sep 3 2018 pyama86 <www.kazu.com@gmail.com> - 1.0.0-1
 - Release

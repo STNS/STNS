@@ -8,6 +8,7 @@ services:
         GO_VERSION: 1.12.1
     volumes:
       - .:/go/src/github.com/STNS/STNS
+      - ~/pkg:/go/pkg
     environment:
       DIST: el7
     command: make rpm
@@ -19,7 +20,7 @@ services:
         GO_VERSION: 1.12.1
     volumes:
       - .:/go/src/github.com/STNS/STNS
-    environment:
+      - ~/pkg:/go/pkg
     environment:
       DIST: el6
     command: make rpm
@@ -31,6 +32,7 @@ services:
         GO_VERSION: 1.12.1
     volumes:
       - .:/go/src/github.com/STNS/STNS
+      - ~/pkg:/go/pkg
     environment:
       DIST: xenial
     command: make deb

@@ -126,9 +126,9 @@ rpm: source_for_rpm ## Packaging for RPM
 
 pkg: ## Create some distribution packages
 	rm -rf builds && mkdir builds
-	docker-compose run --rm centos6
-	docker-compose run --rm centos7
-	docker-compose run --rm ubuntu16
+	docker-compose run -v `pwd`:/go/src/github.com/STNS/STNS -v ~/pkg:/go/pkg --rm centos6
+	docker-compose run -v `pwd`:/go/src/github.com/STNS/STNS -v ~/pkg:/go/pkg --rm centos7
+	docker-compose run -v `pwd`:/go/src/github.com/STNS/STNS -v ~/pkg:/go/pkg --rm ubuntu16
 
 source_for_deb: ## Create source for DEB
 	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Distributing$(RESET)"

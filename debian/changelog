@@ -1,3 +1,15 @@
+stns-v2 (2.2.0-1) xenial; urgency=medium
+
+  * #92 Support LDAP Interface
+  * #93 Update password
+  * #95 HTTP(S) request log も stns.logへ出力する
+  * #96 Fix the problem of password update
+  * #97 support ldaps
+  * #98 support read config from s3
+  * #99 Allow only a single backend
+  * #100 support dynamodb
+  * #101 add redis backend
+ -- pyama86 <www.kazu.com@gmail.com>  Mon, 1 Apr 2019 22:00:00 +0900
 stns-v2 (2.1.1-1) xenial; urgency=medium
 
   * #89 typo
