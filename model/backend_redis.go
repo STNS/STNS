@@ -8,7 +8,7 @@ import (
 
 	"github.com/labstack/gommon/log"
 
-	"gopkg.in/redis.v5"
+	redis "gopkg.in/redis.v5"
 )
 
 type BackendRedis struct {
@@ -93,9 +93,14 @@ func (b *BackendRedis) SetCache(key string, src interface{}) {
 		return
 	}
 
-	j, err := json.Marshal(src)
-	if err == nil {
-		mjson = j
+	switch value := src.(type) {
+	case string:
+		mjson = []byte(value)
+	default:
+		j, err := json.Marshal(value)
+		if err == nil {
+			mjson = j
+		}
 	}
 
 	if len(mjson) == 0 {
@@ -103,7 +108,7 @@ func (b *BackendRedis) SetCache(key string, src interface{}) {
 		return
 	}
 
-	err = b.Set(key, mjson, time.Duration(b.ttl)*time.Second).Err()
+	err := b.Set(key, mjson, time.Duration(b.ttl)*time.Second).Err()
 	if err != nil {
 		b.logger.Warn(fmt.Printf("Cannot set redis value: %s err: %s", key, err))
 	}
@@ -124,7 +129,10 @@ func (b *BackendRedis) FindUserByID(id int) (map[string]UserGroup, error) {
 	v := b.GetCache(fmt.Sprintf(userIDKey, id))
 	if v != "" && v != "null" {
 		d := make(Users)
-		if json.Unmarshal([]byte(v), d) == nil {
+		if err := json.Unmarshal([]byte(v), d); err != nil {
+			fmt.Println(err)
+		}
+		if json.Unmarshal([]byte(v), &d) == nil {
 			return d.ToUserGroup(), nil
 		}
 	}
@@ -140,7 +148,7 @@ func (b *BackendRedis) FindUserByName(name string) (map[string]UserGroup, error)
 	v := b.GetCache(fmt.Sprintf(userNameKey, name))
 	if v != "" && v != "null" {
 		d := make(Users)
-		if json.Unmarshal([]byte(v), d) == nil {
+		if json.Unmarshal([]byte(v), &d) == nil {
 			return d.ToUserGroup(), nil
 		}
 	}
@@ -155,8 +163,8 @@ func (b *BackendRedis) FindUserByName(name string) (map[string]UserGroup, error)
 func (b *BackendRedis) Users() (map[string]UserGroup, error) {
 	v := b.GetCache(usersKey)
 	if v != "" && v != "null" {
-		d := make(Users)
-		if json.Unmarshal([]byte(v), d) == nil {
+		d := new(Users)
+		if json.Unmarshal([]byte(v), &d) == nil {
 			return d.ToUserGroup(), nil
 		}
 	}
@@ -172,7 +180,7 @@ func (b *BackendRedis) FindGroupByID(id int) (map[string]UserGroup, error) {
 	v := b.GetCache(fmt.Sprintf(groupIDKey, id))
 	if v != "" && v != "null" {
 		d := new(Groups)
-		if json.Unmarshal([]byte(v), d) == nil {
+		if json.Unmarshal([]byte(v), &d) == nil {
 			return d.ToUserGroup(), nil
 		}
 	}
@@ -188,7 +196,7 @@ func (b *BackendRedis) FindGroupByName(name string) (map[string]UserGroup, error
 	v := b.GetCache(fmt.Sprintf(groupNameKey, name))
 	if v != "" && v != "null" {
 		d := new(Groups)
-		if json.Unmarshal([]byte(v), d) == nil {
+		if json.Unmarshal([]byte(v), &d) == nil {
 			return d.ToUserGroup(), nil
 		}
 	}
@@ -204,7 +212,7 @@ func (b *BackendRedis) Groups() (map[string]UserGroup, error) {
 	v := b.GetCache(groupsKey)
 	if v != "" && v != "null" {
 		d := new(Groups)
-		if json.Unmarshal([]byte(v), d) == nil {
+		if json.Unmarshal([]byte(v), &d) == nil {
 			return d.ToUserGroup(), nil
 		}
 	}
@@ -219,9 +227,9 @@ func (b *BackendRedis) Groups() (map[string]UserGroup, error) {
 func (b *BackendRedis) HighestUserID() int {
 	v := b.GetCache(userHighestIDKey)
 	if v != "" && v != "null" {
-		var d int
-		if json.Unmarshal([]byte(v), d) == nil {
-			return d
+		vv, err := strconv.Atoi(v)
+		if err == nil {
+			return vv
 		}
 	}
 	i := b.backend.HighestUserID()
@@ -233,7 +241,7 @@ func (b *BackendRedis) LowestUserID() int {
 	v := b.GetCache(userLowestIDKey)
 	if v != "" && v != "null" {
 		d := 0
-		if json.Unmarshal([]byte(v), d) == nil {
+		if json.Unmarshal([]byte(v), &d) == nil {
 			return d
 		}
 	}
@@ -246,7 +254,7 @@ func (b *BackendRedis) HighestGroupID() int {
 	v := b.GetCache(groupHighestIDKey)
 	if v != "" && v != "null" {
 		d := 0
-		if json.Unmarshal([]byte(v), d) == nil {
+		if json.Unmarshal([]byte(v), &d) == nil {
 			return d
 		}
 	}
@@ -259,7 +267,7 @@ func (b *BackendRedis) LowestGroupID() int {
 	v := b.GetCache(groupLowestIDKey)
 	if v != "" && v != "null" {
 		d := 0
-		if json.Unmarshal([]byte(v), d) == nil {
+		if json.Unmarshal([]byte(v), &d) == nil {
 			return d
 		}
 	}
@@ -268,7 +276,7 @@ func (b *BackendRedis) LowestGroupID() int {
 	return i
 }
 func (b *BackendRedis) CreateUser(u UserGroup) error {
-	if err := b.CreateUser(u); err != nil {
+	if err := b.backend.CreateUser(u); err != nil {
 		return err
 	}
 	b.DelCache(usersKey)

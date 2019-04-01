@@ -97,28 +97,20 @@ func (b BackendDummy) Groups() (map[string]UserGroup, error) {
 		nil
 }
 
-func (b BackendDummy) highlowUserID(high bool) int {
-	return 0
-}
-
 func (b BackendDummy) HighestUserID() int {
-	return 0
+	return 10
 }
 
 func (b BackendDummy) LowestUserID() int {
-	return 0
-}
-
-func (b BackendDummy) highlowGroupID(high bool) int {
-	return 0
+	return 1
 }
 
 func (b BackendDummy) HighestGroupID() int {
-	return 0
+	return 20
 }
 
 func (b BackendDummy) LowestGroupID() int {
-	return 0
+	return 2
 }
 
 func (b BackendDummy) CreateUser(v UserGroup) error {
