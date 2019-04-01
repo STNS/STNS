@@ -50,6 +50,15 @@ func LaunchServer(c *cli.Context) error {
 	if b != nil {
 		backend = b
 	}
+
+	if conf.Redis != nil && conf.Redis.Host != "" {
+		r, err := model.NewBackendRedis(backend, logger, conf.Redis.Host, conf.Redis.Port, conf.Redis.Password, conf.Redis.TTL, conf.Redis.DB)
+		if err != nil {
+			return err
+		}
+		backend = r
+	}
+
 	// set log output
 	if os.Getenv("STNS_LOG") != "" {
 		f, err := os.OpenFile(os.Getenv("STNS_LOG"), os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)

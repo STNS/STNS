@@ -18,6 +18,7 @@ MODDIR ?= $(PREFIX)/local/stns/modules.d
 SOURCES=Makefile go.mod go.sum version model api middleware modules stns stns.go package/
 DISTS=centos7 centos6 ubuntu16
 ETCD_VER=3.3.10
+REDIS_VER=5.0.4
 BUILD=tmp/bin
 UNAME_S := $(shell uname -s)
 
@@ -42,6 +43,18 @@ ifeq ($(UNAME_S),Darwin)
 	brew services start etcd
 endif
 
+redis:
+	echo $(UNAME_S)
+ifeq ($(UNAME_S),Linux)
+	test -e ./redis-$(REDIS_VER).tar.gz || curl -L  http://download.redis.io/releases/redis-$(REDIS_VER).tar.gz -o redis-$(REDIS_VER).tar.gz
+	test -d ./redis-$(REDIS_VER) || tar xzf redis-$(REDIS_VER).tar.gz
+	test -e ./redis-$(REDIS_VER)/src/redis-server || (cd ./redis-$(REDIS_VER) && make)
+	ps -aux |grep redis |grep -q -v grep || ./redis-$(REDIS_VER)/src/redis-server &
+endif
+ifeq ($(UNAME_S),Darwin)
+	brew services start redis
+endif
+
 depsdev: ## Installing dependencies for development
 	$(GO) get -u golang.org/x/lint/golint
 	$(GO) get -u github.com/tcnksm/ghr
@@ -53,7 +66,7 @@ changelog:
 	git-chglog -o CHANGELOG.md
 
 test: ## Run test
-	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Testing$(RESET)"
+	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Testing$(RESET) (require: etcd,redis)"
 	$(GO) test -v $(TEST) -timeout=30s -parallel=4
 	$(GO) test -race $(TEST)
 

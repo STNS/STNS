@@ -123,10 +123,19 @@ type Config struct {
 	Modules          map[string]interface{}
 	TLS              *TLS
 	LDAP             *LDAP
+	Redis            *redis `toml:"redis"`
 }
 
 type LDAP struct {
 	BaseDN string
+}
+
+type redis struct {
+	Host     string
+	Port     int
+	Password string
+	TTL      int
+	DB       int
 }
 type TLS struct {
 	CA   string

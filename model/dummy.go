@@ -42,43 +42,75 @@ func (b BackendDummy) FindUserByName(name string) (map[string]UserGroup, error) 
 }
 
 func (b BackendDummy) Users() (map[string]UserGroup, error) {
-	return nil, nil
+	return map[string]UserGroup{
+			"test": &User{
+				Base: Base{
+					ID:   1,
+					Name: "test",
+				},
+				Password: "$6$/C5VdIWEaQVD4Y9D$CQz5Qc99yKucuwvVWIrc2cgnLCOgTbq/QXvKGCXa3f3gYx3xc0/EOhyHAUehS92J9iy8IUqhpnGXpaKYVMoZK1",
+			},
+		},
+		nil
 }
 
 func (b BackendDummy) FindGroupByID(id int) (map[string]UserGroup, error) {
-	return nil, nil
+	if id == 1 {
+		return map[string]UserGroup{
+				"test": &Group{
+					Base: Base{
+						ID:   1,
+						Name: "test",
+					},
+				},
+			},
+			nil
+	}
+	return nil, NewNotFoundError("group", "dummy")
+
 }
 
 func (b BackendDummy) FindGroupByName(name string) (map[string]UserGroup, error) {
-	return nil, nil
+	if name == "test" {
+		return map[string]UserGroup{
+				"test": &Group{
+					Base: Base{
+						ID:   1,
+						Name: "test",
+					},
+				},
+			},
+			nil
+	}
+	return nil, NewNotFoundError("group", "dummy")
 }
 
 func (b BackendDummy) Groups() (map[string]UserGroup, error) {
-	return nil, nil
-}
-
-func (b BackendDummy) highlowUserID(high bool) int {
-	return 0
+	return map[string]UserGroup{
+			"test": &Group{
+				Base: Base{
+					ID:   1,
+					Name: "test",
+				},
+			},
+		},
+		nil
 }
 
 func (b BackendDummy) HighestUserID() int {
-	return 0
+	return 10
 }
 
 func (b BackendDummy) LowestUserID() int {
-	return 0
-}
-
-func (b BackendDummy) highlowGroupID(high bool) int {
-	return 0
+	return 1
 }
 
 func (b BackendDummy) HighestGroupID() int {
-	return 0
+	return 20
 }
 
 func (b BackendDummy) LowestGroupID() int {
-	return 0
+	return 2
 }
 
 func (b BackendDummy) CreateUser(v UserGroup) error {

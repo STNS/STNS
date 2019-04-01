@@ -17,3 +17,4 @@ repo/*
 etcd*
 default.etcd
 .vagrant
+redis*
