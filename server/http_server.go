@@ -1,4 +1,4 @@
-package api
+package server
 
 import (
 	"context"
@@ -11,6 +11,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/STNS/STNS/api"
 	"github.com/STNS/STNS/middleware"
 	"github.com/STNS/STNS/model"
 	"github.com/STNS/STNS/stns"
@@ -159,8 +160,8 @@ func (s *httpServer) Run() error {
 	}()
 
 	v1 := e.Group("/v1")
-	UserEndpoints(v1)
-	GroupEndpoints(v1)
+	api.UserEndpoints(v1)
+	api.GroupEndpoints(v1)
 
 	e.GET("/", func(c echo.Context) error {
 		return c.String(http.StatusOK, "Hello! STNS!!1")

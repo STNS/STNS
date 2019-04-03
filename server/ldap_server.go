@@ -1,4 +1,4 @@
-package api
+package server
 
 // refs: https://github.com/glauth/glauth/blob/master/configbackend.go
 /*
