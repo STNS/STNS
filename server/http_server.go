@@ -116,9 +116,13 @@ func (s *httpServer) Run() error {
 		customServer := &http.Server{
 			WriteTimeout: 1 * time.Minute,
 		}
+
 		if e.Listener == nil {
 			p := strconv.Itoa(s.config.Port)
 			customServer.Addr = ":" + p
+			if os.Getenv("STNS_LISTEN") != "" {
+				customServer.Addr = os.Getenv("STNS_LISTEN")
+			}
 		}
 
 		// tls client authentication

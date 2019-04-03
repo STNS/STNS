@@ -43,6 +43,12 @@ var flags = []cli.Flag{
 		Usage:  "interface protocol",
 		EnvVar: "STNS_PROTOCOL",
 	},
+	cli.StringFlag{
+		Name:   "listen",
+		Value:  "",
+		Usage:  "listern addrand port(xxx.xxx.xxx.xxx:yyy)",
+		EnvVar: "STNS_LISTEN",
+	},
 }
 
 var commands = []cli.Command{
@@ -81,6 +87,10 @@ func appBefore(c *cli.Context) error {
 
 	if c.GlobalString("protocol") != "" {
 		os.Setenv("STNS_PROTOCOL", c.GlobalString("protocol"))
+	}
+
+	if c.GlobalString("listen") != "" {
+		os.Setenv("STNS_LISTEN", c.GlobalString("listen"))
 	}
 	return nil
 }

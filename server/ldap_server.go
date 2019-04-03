@@ -245,7 +245,11 @@ func (s *ldapServer) Run() error {
 	}()
 
 	p := strconv.Itoa(s.config.Port)
+
 	lnstr := ":" + p
+	if os.Getenv("STNS_LISTEN") != "" {
+		lnstr = os.Getenv("STNS_LISTEN")
+	}
 	if s.config.UseServerStarter {
 		listeners, err := listener.ListenAll()
 		if listeners == nil || err != nil {
