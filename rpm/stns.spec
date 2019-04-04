@@ -78,6 +78,8 @@ install -m 644 package/stns-v2.logrotate %{buildroot}%{_sysconfdir}/logrotate.d/
 %endif
 
 %changelog
+* Thu Apr 4 2019 pyama86 <www.kazu.com@gmail.com> - 2.2.3-1
+- #105 check diff before update
 * Thu Apr 4 2019 pyama86 <www.kazu.com@gmail.com> - 2.2.2-1
 - #104 Add password envs
 * Thu Apr 4 2019 pyama86 <www.kazu.com@gmail.com> - 2.2.1-1

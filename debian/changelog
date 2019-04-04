@@ -1,3 +1,5 @@
+stns-v2 (2.2.3-1) xenial; urgency=medium
+  * #105 check diff before update
 stns-v2 (2.2.2-1) xenial; urgency=medium
   * #104 Add password Envs
 stns-v2 (2.2.1-1) xenial; urgency=medium
