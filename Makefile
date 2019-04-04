@@ -75,7 +75,7 @@ lint: ## Exec golint
 	golint -min_confidence 1.1 -set_exit_status $(TEST)
 
 server: ## Run server
-	$(GO) run github.com/STNS/STNS --pidfile ./stns.pid --config ./stns/integration.toml --protocol $(STNS_PROTOCOL) server
+	$(GO) run github.com/STNS/STNS --listen 127.0.0.1:1104 --pidfile ./stns.pid --config ./stns/integration.toml --protocol $(STNS_PROTOCOL) server
 
 integration: integration_http integration_ldap ## Run integration test after Server wakeup
 
@@ -160,4 +160,4 @@ generate:
 	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Generate From ERB$(RESET)"
 	ruby model/make_backends.rb
 
-.PHONY: default test docker rpm source_for_rpm pkg source_for_deb deb
+.PHONY: default test docker rpm source_for_rpm pkg source_for_deb deb server
