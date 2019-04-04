@@ -129,9 +129,6 @@ func (b *BackendRedis) FindUserByID(id int) (map[string]UserGroup, error) {
 	v := b.GetCache(fmt.Sprintf(userIDKey, id))
 	if v != "" && v != "null" {
 		d := make(Users)
-		if err := json.Unmarshal([]byte(v), d); err != nil {
-			fmt.Println(err)
-		}
 		if json.Unmarshal([]byte(v), &d) == nil {
 			return d.ToUserGroup(), nil
 		}
