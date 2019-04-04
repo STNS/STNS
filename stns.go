@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/STNS/STNS/api"
+	"github.com/STNS/STNS/model"
+	"github.com/STNS/STNS/server"
+	"github.com/STNS/STNS/stns"
 	"github.com/urfave/cli"
 )
 
@@ -41,6 +43,12 @@ var flags = []cli.Flag{
 		Usage:  "interface protocol",
 		EnvVar: "STNS_PROTOCOL",
 	},
+	cli.StringFlag{
+		Name:   "listen",
+		Value:  "",
+		Usage:  "listern addrand port(xxx.xxx.xxx.xxx:yyy)",
+		EnvVar: "STNS_LISTEN",
+	},
 }
 
 var commands = []cli.Command{
@@ -48,13 +56,13 @@ var commands = []cli.Command{
 		Name:    "server",
 		Aliases: []string{"s"},
 		Usage:   "Launch core api server",
-		Action:  api.LaunchServer,
+		Action:  server.LaunchServer,
 	},
 	{
 		Name:    "checkconf",
 		Aliases: []string{"c"},
 		Usage:   "Check Config",
-		Action:  api.CheckConfig,
+		Action:  checkConfig,
 	},
 }
 
@@ -80,6 +88,10 @@ func appBefore(c *cli.Context) error {
 	if c.GlobalString("protocol") != "" {
 		os.Setenv("STNS_PROTOCOL", c.GlobalString("protocol"))
 	}
+
+	if c.GlobalString("listen") != "" {
+		os.Setenv("STNS_LISTEN", c.GlobalString("listen"))
+	}
 	return nil
 }
 
@@ -92,7 +104,7 @@ func main() {
 	app.Flags = flags
 
 	if len(os.Args) <= 1 {
-		app.Action = api.LaunchServer
+		app.Action = server.LaunchServer
 	} else {
 		app.Commands = commands
 	}
@@ -102,4 +114,16 @@ func main() {
 	if err := app.Run(os.Args); err != nil {
 		panic(err)
 	}
+}
+
+func checkConfig(c *cli.Context) error {
+	conf, err := stns.NewConfig(os.Getenv("STNS_CONFIG"))
+	if err != nil {
+		return err
+	}
+	_, err = model.NewBackendTomlFile(conf.Users, conf.Groups)
+	if err == nil {
+		fmt.Println("config is good!!1")
+	}
+	return err
 }
