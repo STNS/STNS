@@ -160,7 +160,10 @@ func defaultConfig(c *Config) {
 }
 
 func overwrideConfig(c *Config) {
-	if c.BasicAuth != nil {
+	if os.Getenv("STNS_BASIC_AUTH_USER") != "" || os.Getenv("STNS_BASIC_AUTH_PASSWORD") != "" {
+		if c.BasicAuth == nil {
+			c.BasicAuth = &BasicAuth{}
+		}
 		if os.Getenv("STNS_BASIC_AUTH_USER") != "" {
 			c.BasicAuth.User = os.Getenv("STNS_BASIC_AUTH_USER")
 		}
@@ -175,7 +178,10 @@ func overwrideConfig(c *Config) {
 			c.Redis.Password = os.Getenv("STNS_REDIS_PASSWORD")
 		}
 	}
-	if c.TokenAuth != nil {
+	if os.Getenv("STNS_AUTH_TOKEN") != "" {
+		if c.TokenAuth == nil {
+			c.TokenAuth = &TokenAuth{}
+		}
 		if os.Getenv("STNS_AUTH_TOKEN") != "" {
 			c.TokenAuth.Tokens = strings.Split(os.Getenv("STNS_AUTH_TOKEN"), ",")
 		}
