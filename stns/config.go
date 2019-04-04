@@ -105,6 +105,7 @@ func NewConfig(confPath string) (Config, error) {
 			return Config{}, err
 		}
 	}
+	overwrideConfig(&conf)
 	return conf, nil
 }
 
@@ -155,6 +156,33 @@ func defaultConfig(c *Config) {
 	c.ModulePath = "/usr/local/stns/modules.d"
 	c.LDAP = &LDAP{
 		BaseDN: "dc=stns,dc=local",
+	}
+}
+
+func overwrideConfig(c *Config) {
+	if c.BasicAuth != nil {
+		if os.Getenv("STNS_BASIC_AUTH_USER") != "" {
+			c.BasicAuth.User = os.Getenv("STNS_BASIC_AUTH_USER")
+		}
+
+		if os.Getenv("STNS_BASIC_AUTH_PASSWORD") != "" {
+			c.BasicAuth.Password = os.Getenv("STNS_BASIC_AUTH_PASSWORD")
+		}
+	}
+
+	if c.Redis != nil {
+		if os.Getenv("STNS_REDIS_PASSWORD") != "" {
+			c.Redis.Password = os.Getenv("STNS_REDIS_PASSWORD")
+		}
+	}
+	if c.TokenAuth != nil {
+		if os.Getenv("STNS_AUTH_TOKEN") != "" {
+			c.TokenAuth.Tokens = strings.Split(os.Getenv("STNS_AUTH_TOKEN"), ",")
+		}
+	}
+
+	if os.Getenv("STNS_ETCD_PASSWORD") != "" && c.Modules["etcd"] != nil {
+		c.Modules["etcd"].(map[string]interface{})["password"] = os.Getenv("STNS_ETCD_PASSWORD")
 	}
 }
 
