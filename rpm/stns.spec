@@ -78,6 +78,8 @@ install -m 644 package/stns-v2.logrotate %{buildroot}%{_sysconfdir}/logrotate.d/
 %endif
 
 %changelog
+* Thu Apr 4 2019 pyama86 <www.kazu.com@gmail.com> - 2.2.1-1
+- #103 Listen port
 * Mon Apr 1 2019 pyama86 <www.kazu.com@gmail.com> - 2.2.0-1
 - #92 Support LDAP Interface
 - #93 Update password
