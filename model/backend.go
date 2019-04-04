@@ -1,5 +1,7 @@
 package model
 
+import "reflect"
+
 type UserGroup interface {
 	GetID() int
 	GetName() string
@@ -51,12 +53,16 @@ func SyncConfig(resourceName string, b Backend, configResources, backendResource
 					// not overwrite password
 					cu.(*User).Password = backendResource.(*User).Password
 
-					if err := b.UpdateUser(cu); err != nil {
-						return err
+					if !reflect.DeepEqual(cu.(*User), backendResource.(*User)) {
+						if err := b.UpdateUser(cu); err != nil {
+							return err
+						}
 					}
 				} else {
-					if err := b.UpdateGroup(cu); err != nil {
-						return err
+					if !reflect.DeepEqual(cu.(*Group), backendResource.(*Group)) {
+						if err := b.UpdateGroup(cu); err != nil {
+							return err
+						}
 					}
 				}
 			} else {
