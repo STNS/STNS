@@ -1,6 +1,6 @@
 Summary: SimpleTomlNameService is Linux User,Group Name Service
 Name:             stns-v2
-Version:          2.2.1
+Version:          2.2.2
 Release:          1
 License:          GPLv3
 URL:              https://github.com/STNS/STNS
@@ -78,6 +78,8 @@ install -m 644 package/stns-v2.logrotate %{buildroot}%{_sysconfdir}/logrotate.d/
 %endif
 
 %changelog
+* Thu Apr 4 2019 pyama86 <www.kazu.com@gmail.com> - 2.2.2-1
+- #104 Add password envs
 * Thu Apr 4 2019 pyama86 <www.kazu.com@gmail.com> - 2.2.1-1
 - #103 Listen port
 * Mon Apr 1 2019 pyama86 <www.kazu.com@gmail.com> - 2.2.0-1

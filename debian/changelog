@@ -1,3 +1,5 @@
+stns-v2 (2.2.2-1) xenial; urgency=medium
+  * #104 Add password Envs
 stns-v2 (2.2.1-1) xenial; urgency=medium
   * #103 Listen port
  -- pyama86 <www.kazu.com@gmail.com>  Thu, 4 Apr 2019 10:00:00 +0900
