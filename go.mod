@@ -48,6 +48,7 @@ require (
 	github.com/imdario/mergo v0.3.7 // indirect
 	github.com/k0kubun/pp v3.0.0+incompatible
 	github.com/kisielk/errcheck v1.2.0 // indirect
+	github.com/kless/osutil v0.0.0-20161130133508-7d3ee1afa71c
 	github.com/konsorten/go-windows-terminal-sequences v1.0.2 // indirect
 	github.com/kr/pty v1.1.4 // indirect
 	github.com/labstack/echo v3.3.10+incompatible
