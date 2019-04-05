@@ -101,10 +101,12 @@ func (h ldapHandler) Bind(bindDN, rawPassword string, conn net.Conn) (ldap.LDAPR
 		}
 
 	}
-	c := crypt.NewFromHash(user.Password)
-	if c.Verify(user.Password, []byte(rawPassword)) != nil {
-		h.logger.Warn(fmt.Sprintf("Bind Error: invalid credentials as %s from %s", bindDN, conn.RemoteAddr().String()))
-		return ldap.LDAPResultInvalidCredentials, nil
+	if user.Password != "" {
+		c := crypt.NewFromHash(user.Password)
+		if c.Verify(user.Password, []byte(rawPassword)) != nil {
+			h.logger.Warn(fmt.Sprintf("Bind Error: invalid credentials as %s from %s", bindDN, conn.RemoteAddr().String()))
+			return ldap.LDAPResultInvalidCredentials, nil
+		}
 	}
 	return ldap.LDAPResultSuccess, nil
 

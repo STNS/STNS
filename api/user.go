@@ -7,11 +7,11 @@ import (
 
 	"github.com/STNS/STNS/middleware"
 	"github.com/STNS/STNS/model"
+	"github.com/kless/osutil/user/crypt/sha512_crypt"
 	"github.com/labstack/echo"
 	"github.com/tredoe/osutil/user/crypt"
 	_ "github.com/tredoe/osutil/user/crypt/md5_crypt"
 	_ "github.com/tredoe/osutil/user/crypt/sha256_crypt"
-	_ "github.com/tredoe/osutil/user/crypt/sha512_crypt"
 )
 
 func getUsers(c echo.Context) error {
@@ -79,11 +79,13 @@ func updateUserPassword(c echo.Context) (ret error) {
 		}
 	}()
 
-	cr := crypt.NewFromHash(user.Password)
-	if cr.Verify(user.Password, []byte(params.CurrentPassword)) != nil {
-		return c.JSON(http.StatusBadRequest, fmt.Errorf("user name :%s unmatch password", name))
+	cr := sha512_crypt.New()
+	if user.Password != "" {
+		cr = crypt.NewFromHash(user.Password)
+		if cr.Verify(user.Password, []byte(params.CurrentPassword)) != nil {
+			return c.JSON(http.StatusBadRequest, fmt.Errorf("user name :%s unmatch password", name))
+		}
 	}
-
 	v, err := cr.Generate([]byte(params.NewPassword), []byte{})
 	if err != nil {
 		return errorResponse(c, err)
