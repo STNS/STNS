@@ -10,6 +10,9 @@ $ ssh pyama@example.jp
 $ id pyama
 uid=1001(pyama) gid=1001(pyama) groups=1001(pyama)
 ```
+![gif](https://raw.githubusercontent.com/pyama86/capture/master/docs/stns.gif)
+
+
 
 # diagram
 ![overview](https://raw.githubusercontent.com/STNS/STNS/master/docs/images/diagram.png)
