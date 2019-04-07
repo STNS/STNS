@@ -18,3 +18,8 @@ etcd*
 default.etcd
 .vagrant
 redis*
+misc/*pem
+misc/*crt
+misc/*csr
+misc/*key
+misc/demoCA
