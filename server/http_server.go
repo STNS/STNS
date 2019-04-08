@@ -5,6 +5,7 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"io/ioutil"
+	stdLog "log"
 	"net/http"
 	"os"
 	"os/signal"
@@ -43,6 +44,7 @@ func newHTTPServer(conf *stns.Config, backend model.Backend, logger *log.Logger)
 func (s *httpServer) Run() error {
 	e := echo.New()
 	e.Logger = s.logger
+	e.StdLogger = stdLog.New(s.logger.Output(), "", stdLog.Ldate|stdLog.Ltime|stdLog.Llongfile)
 	e.GET("/status", status)
 
 	if err := pidfile.Write(); err != nil {
