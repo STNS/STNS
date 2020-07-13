@@ -113,6 +113,13 @@ func (s *httpServer) Run() error {
 		}
 		e.Listener = listeners[0]
 	}
+	v1 := e.Group("/v1")
+	api.UserEndpoints(v1)
+	api.GroupEndpoints(v1)
+
+	e.GET("/", func(c echo.Context) error {
+		return c.String(http.StatusOK, "Hello! STNS!!1")
+	})
 
 	go func() {
 		customServer := &http.Server{
@@ -164,14 +171,6 @@ func (s *httpServer) Run() error {
 			e.Logger.Fatalf("shutting down the server: %s", err)
 		}
 	}()
-
-	v1 := e.Group("/v1")
-	api.UserEndpoints(v1)
-	api.GroupEndpoints(v1)
-
-	e.GET("/", func(c echo.Context) error {
-		return c.String(http.StatusOK, "Hello! STNS!!1")
-	})
 
 	quit := make(chan os.Signal)
 	signal.Notify(quit, os.Interrupt)
