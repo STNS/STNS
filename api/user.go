@@ -7,11 +7,11 @@ import (
 
 	"github.com/STNS/STNS/middleware"
 	"github.com/STNS/STNS/model"
-	"github.com/kless/osutil/user/crypt/sha512_crypt"
 	"github.com/labstack/echo"
 	"github.com/tredoe/osutil/user/crypt"
 	_ "github.com/tredoe/osutil/user/crypt/md5_crypt"
 	_ "github.com/tredoe/osutil/user/crypt/sha256_crypt"
+	"github.com/tredoe/osutil/user/crypt/sha512_crypt"
 )
 
 func getUsers(c echo.Context) error {
