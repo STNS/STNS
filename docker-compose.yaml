@@ -5,7 +5,7 @@ services:
       context: .
       dockerfile: dockerfiles/Dockerfile.centos-7
       args:
-        GO_VERSION: 1.12.1
+        GO_VERSION: 1.14.4
     volumes:
       - .:/go/src/github.com/STNS/STNS
       - ~/pkg:/go/pkg
@@ -17,7 +17,7 @@ services:
       context: .
       dockerfile: dockerfiles/Dockerfile.centos-6
       args:
-        GO_VERSION: 1.12.1
+        GO_VERSION: 1.14.4
     volumes:
       - .:/go/src/github.com/STNS/STNS
       - ~/pkg:/go/pkg
@@ -29,10 +29,46 @@ services:
       context: .
       dockerfile: dockerfiles/Dockerfile.ubuntu-16
       args:
-        GO_VERSION: 1.12.1
+        GO_VERSION: 1.14.4
     volumes:
       - .:/go/src/github.com/STNS/STNS
       - ~/pkg:/go/pkg
     environment:
       DIST: xenial
+    command: make deb
+  ubuntu18:
+    build:
+      context: .
+      dockerfile: dockerfiles/Dockerfile.ubuntu-18
+      args:
+        GO_VERSION: 1.14.4
+    volumes:
+      - .:/go/src/github.com/STNS/STNS
+      - ~/pkg:/go/pkg
+    environment:
+      DIST: bionic
+    command: make deb
+  debian8:
+    build:
+      context: .
+      dockerfile: dockerfiles/Dockerfile.debian-8
+      args:
+        GO_VERSION: 1.14.4
+    volumes:
+      - .:/go/src/github.com/STNS/cache-stnsd
+      - ~/pkg:/go/pkg
+    environment:
+      DIST: jessie
+    command: make deb
+  debian9:
+    build:
+      context: .
+      dockerfile: dockerfiles/Dockerfile.debian-9
+      args:
+        GO_VERSION: 1.14.4
+    volumes:
+      - .:/go/src/github.com/STNS/cache-stnsd
+      - ~/pkg:/go/pkg
+    environment:
+      DIST: stretch
     command: make deb
