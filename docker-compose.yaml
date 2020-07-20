@@ -1,5 +1,17 @@
 version: '3'
 services:
+  centos8:
+    build:
+      context: .
+      dockerfile: dockerfiles/Dockerfile.centos-8
+      args:
+        GO_VERSION: 1.14.4
+    volumes:
+      - .:/go/src/github.com/STNS/STNS
+      - ~/pkg:/go/pkg
+    environment:
+      DIST: el8
+    command: make rpm
   centos7:
     build:
       context: .
