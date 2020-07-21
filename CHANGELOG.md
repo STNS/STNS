@@ -2,6 +2,64 @@
 ## [Unreleased]
 
 
+<a name="v2.2.6"></a>
+## [v2.2.6] - 2020-07-14
+### Pull Requests
+- Merge pull request [#111](https://github.com/STNS/STNS/issues/111) from STNS/support-other-os
+- Merge pull request [#110](https://github.com/STNS/STNS/issues/110) from STNS/update-modules
+
+
+<a name="v2.2.5"></a>
+## [v2.2.5] - 2019-04-08
+### Pull Requests
+- Merge pull request [#109](https://github.com/STNS/STNS/issues/109) from STNS/errorlog
+- Merge pull request [#108](https://github.com/STNS/STNS/issues/108) from STNS/uncheck-pass
+
+
+<a name="v2.2.4"></a>
+## [v2.2.4] - 2019-04-04
+### Pull Requests
+- Merge pull request [#106](https://github.com/STNS/STNS/issues/106) from STNS/fix-config-bug
+- Merge pull request [#105](https://github.com/STNS/STNS/issues/105) from STNS/tune-sync
+- Merge pull request [#104](https://github.com/STNS/STNS/issues/104) from STNS/use-env
+- Merge pull request [#103](https://github.com/STNS/STNS/issues/103) from STNS/listen-port
+- Merge pull request [#101](https://github.com/STNS/STNS/issues/101) from STNS/redis
+- Merge pull request [#100](https://github.com/STNS/STNS/issues/100) from STNS/dynamodb
+- Merge pull request [#99](https://github.com/STNS/STNS/issues/99) from STNS/single-backend
+- Merge pull request [#98](https://github.com/STNS/STNS/issues/98) from STNS/support-read-config-from-s3
+- Merge pull request [#97](https://github.com/STNS/STNS/issues/97) from STNS/support-ldaps
+- Merge pull request [#95](https://github.com/STNS/STNS/issues/95) from levkkuro/feature/switchLogOutput
+- Merge pull request [#96](https://github.com/STNS/STNS/issues/96) from STNS/patch-update
+- Merge pull request [#93](https://github.com/STNS/STNS/issues/93) from STNS/update-password
+- Merge pull request [#92](https://github.com/STNS/STNS/issues/92) from STNS/ldap
+- Merge pull request [#89](https://github.com/STNS/STNS/issues/89) from levkkuro/master
+
+
+<a name="v2.1.0"></a>
+## [v2.1.0] - 2019-02-20
+### Pull Requests
+- Merge pull request [#88](https://github.com/STNS/STNS/issues/88) from STNS/tls
+- Merge pull request [#87](https://github.com/STNS/STNS/issues/87) from STNS/sepalate-repo
+- Merge pull request [#86](https://github.com/STNS/STNS/issues/86) from STNS/sepalate-repository
+- Merge pull request [#85](https://github.com/STNS/STNS/issues/85) from STNS/libpam
+
+
+<a name="v2.0.3"></a>
+## [v2.0.3] - 2018-11-29
+### Pull Requests
+- Merge pull request [#84](https://github.com/STNS/STNS/issues/84) from STNS/validate
+- Merge pull request [#82](https://github.com/STNS/STNS/issues/82) from rhykw/fix-rpm-spec
+
+
+<a name="v2.0.2"></a>
+## [v2.0.2] - 2018-11-10
+### Pull Requests
+- Merge pull request [#81](https://github.com/STNS/STNS/issues/81) from STNS/add-check-config
+- Merge pull request [#80](https://github.com/STNS/STNS/issues/80) from STNS/disable-sigpipe
+- Merge pull request [#79](https://github.com/STNS/STNS/issues/79) from STNS/add-sticky-bit
+- Merge pull request [#78](https://github.com/STNS/STNS/issues/78) from STNS/fix-cache-permission
+
+
 <a name="v2.0.1"></a>
 ## [v2.0.1] - 2018-10-03
 ### Pull Requests
@@ -171,7 +229,13 @@
 <a name="0.0.1"></a>
 ## 0.0.1 - 2016-01-03
 
-[Unreleased]: https://github.com/STNS/STNS/compare/v2.0.1...HEAD
+[Unreleased]: https://github.com/STNS/STNS/compare/v2.2.6...HEAD
+[v2.2.6]: https://github.com/STNS/STNS/compare/v2.2.5...v2.2.6
+[v2.2.5]: https://github.com/STNS/STNS/compare/v2.2.4...v2.2.5
+[v2.2.4]: https://github.com/STNS/STNS/compare/v2.1.0...v2.2.4
+[v2.1.0]: https://github.com/STNS/STNS/compare/v2.0.3...v2.1.0
+[v2.0.3]: https://github.com/STNS/STNS/compare/v2.0.2...v2.0.3
+[v2.0.2]: https://github.com/STNS/STNS/compare/v2.0.1...v2.0.2
 [v2.0.1]: https://github.com/STNS/STNS/compare/v2.0.0...v2.0.1
 [v2.0.0]: https://github.com/STNS/STNS/compare/v1.0.0...v2.0.0
 [v1.0.0]: https://github.com/STNS/STNS/compare/v...v1.0.0
