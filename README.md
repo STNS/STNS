@@ -1,6 +1,5 @@
 # Simple Toml Name Service
-[![Build Status](https://travis-ci.org/STNS/STNS.svg?branch=master)](https://travis-ci.org/STNS/STNS)
-
+![Go](https://github.com/STNS/STNS/workflows/Go/badge.svg)
 STNS is used by sshd to access keys and user/group resolver provided
 
 You can see the details of STNS on [stns.jp](http://stns.jp)
