@@ -1,36 +1,14 @@
 package server
 
-// refs: https://github.com/glauth/glauth/blob/master/configbackend.go
-/*
-	MIT License
-
-	Copyright (c) 2018 Ned McClain & Ben Yanke
-
-	Permission is hereby granted, free of charge, to any person obtaining a copy
-	of this software and associated documentation files (the "Software"), to deal
-	in the Software without restriction, including without limitation the rights
-	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-	copies of the Software, and to permit persons to whom the Software is
-	furnished to do so, subject to the following conditions:
-
-	The above copyright notice and this permission notice shall be included in all
-	copies or substantial portions of the Software.
-
-	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-	SOFTWARE.
-*/
 import (
 	"fmt"
 	"net"
 	"os"
+	"os/signal"
 	"sort"
 	"strconv"
 	"strings"
+	"syscall"
 
 	"github.com/STNS/STNS/model"
 	"github.com/STNS/STNS/stns"
@@ -228,7 +206,9 @@ func newLDAPServer(conf *stns.Config, backend model.Backend, logger *log.Logger)
 }
 
 func (s *ldapServer) Run() error {
+	quit := make(chan bool)
 	ld := ldap.NewServer()
+	ld.QuitChannel(quit)
 	ld.EnforceLDAP = true
 	h := ldapHandler{
 		backend: s.backend,
@@ -242,7 +222,7 @@ func (s *ldapServer) Run() error {
 	}
 	defer func() {
 		if err := os.Remove(pidfile.GetPidfilePath()); err != nil {
-			s.logger.Fatalf("Error removing %s: %s", pidfile.GetPidfilePath(), err)
+			s.logger.Errorf("Error removing %s: %s", pidfile.GetPidfilePath(), err)
 		}
 	}()
 
@@ -262,6 +242,12 @@ func (s *ldapServer) Run() error {
 
 	s.logger.Info("start ldap server")
 
+	go func() {
+		sigQuit := make(chan os.Signal)
+		signal.Notify(sigQuit, os.Interrupt, syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGINT)
+		<-sigQuit
+		quit <- true
+	}()
 	if s.config.TLS != nil && s.config.TLS.Cert != "" && s.config.TLS.Key != "" {
 		if err := ld.ListenAndServeTLS(lnstr, s.config.TLS.Cert, s.config.TLS.Key); err != nil {
 			return err

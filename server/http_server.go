@@ -4,12 +4,14 @@ import (
 	"context"
 	"crypto/tls"
 	"crypto/x509"
+	"fmt"
 	"io/ioutil"
 	stdLog "log"
 	"net/http"
 	"os"
 	"os/signal"
 	"strconv"
+	"syscall"
 	"time"
 
 	"github.com/STNS/STNS/api"
@@ -53,7 +55,7 @@ func (s *httpServer) Run() error {
 
 	defer func() {
 		if err := os.Remove(pidfile.GetPidfilePath()); err != nil {
-			e.Logger.Fatalf("Error removing %s: %s", pidfile.GetPidfilePath(), err)
+			e.Logger.Errorf("Error removing %s: %s", pidfile.GetPidfilePath(), err)
 		}
 	}()
 
@@ -121,65 +123,66 @@ func (s *httpServer) Run() error {
 		return c.String(http.StatusOK, "Hello! STNS!!1")
 	})
 
-	go func() {
-		customServer := &http.Server{
-			WriteTimeout: 1 * time.Minute,
-		}
-
-		if e.Listener == nil {
-			p := strconv.Itoa(s.config.Port)
-			customServer.Addr = ":" + p
-			if os.Getenv("STNS_LISTEN") != "" {
-				customServer.Addr = os.Getenv("STNS_LISTEN")
-			}
-		}
-
-		// tls client authentication
-		if s.config.TLS != nil {
-			if _, err := os.Stat(s.config.TLS.CA); err == nil {
-				ca, err := ioutil.ReadFile(s.config.TLS.CA)
-				if err != nil {
-					e.Logger.Fatal(err)
-				}
-				caPool := x509.NewCertPool()
-				caPool.AppendCertsFromPEM(ca)
-
-				tlsConfig := &tls.Config{
-					ClientCAs:              caPool,
-					SessionTicketsDisabled: true,
-					ClientAuth:             tls.RequireAndVerifyClientCert,
-				}
-
-				tlsConfig.BuildNameToCertificate()
-				customServer.TLSConfig = tlsConfig
-			}
-		}
-
-		if s.config.TLS != nil && s.config.TLS.Cert != "" && s.config.TLS.Key != "" {
-			if customServer.TLSConfig == nil {
-				customServer.TLSConfig = new(tls.Config)
-			}
-			cert, err := tls.LoadX509KeyPair(s.config.TLS.Cert, s.config.TLS.Key)
-			if err != nil {
-				e.Logger.Fatal(err)
-			}
-			customServer.TLSConfig.Certificates = make([]tls.Certificate, 1)
-			customServer.TLSConfig.Certificates[0] = cert
-		}
-
-		if err := e.StartServer(customServer); err != nil {
-			e.Logger.Fatalf("shutting down the server: %s", err)
-		}
-	}()
-
-	quit := make(chan os.Signal)
-	signal.Notify(quit, os.Interrupt)
-	<-quit
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-	if err := e.Shutdown(ctx); err != nil {
-		return err
+	customServer := &http.Server{
+		WriteTimeout: 1 * time.Minute,
 	}
+
+	if e.Listener == nil {
+		p := strconv.Itoa(s.config.Port)
+		customServer.Addr = ":" + p
+		if os.Getenv("STNS_LISTEN") != "" {
+			customServer.Addr = os.Getenv("STNS_LISTEN")
+		}
+	}
+
+	go func() {
+		quit := make(chan os.Signal)
+		signal.Notify(quit, os.Interrupt, syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGINT)
+		<-quit
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+		if err := e.Shutdown(ctx); err != nil {
+			return
+		}
+
+	}()
+	// tls client authentication
+	if s.config.TLS != nil {
+		if _, err := os.Stat(s.config.TLS.CA); err == nil {
+			ca, err := ioutil.ReadFile(s.config.TLS.CA)
+			if err != nil {
+				return err
+			}
+			caPool := x509.NewCertPool()
+			caPool.AppendCertsFromPEM(ca)
+
+			tlsConfig := &tls.Config{
+				ClientCAs:              caPool,
+				SessionTicketsDisabled: true,
+				ClientAuth:             tls.RequireAndVerifyClientCert,
+			}
+
+			tlsConfig.BuildNameToCertificate()
+			customServer.TLSConfig = tlsConfig
+		}
+	}
+
+	if s.config.TLS != nil && s.config.TLS.Cert != "" && s.config.TLS.Key != "" {
+		if customServer.TLSConfig == nil {
+			customServer.TLSConfig = new(tls.Config)
+		}
+		cert, err := tls.LoadX509KeyPair(s.config.TLS.Cert, s.config.TLS.Key)
+		if err != nil {
+			return err
+		}
+		customServer.TLSConfig.Certificates = make([]tls.Certificate, 1)
+		customServer.TLSConfig.Certificates[0] = cert
+	}
+
+	if err := e.StartServer(customServer); err != nil {
+		return fmt.Errorf("shutting down the server: %s", err)
+	}
+
 	return nil
 }
 
