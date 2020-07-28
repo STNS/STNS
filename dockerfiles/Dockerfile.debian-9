@@ -17,6 +17,7 @@ RUN set -eux &&\
 	rm $FILE &&\
   mkdir -p "$GOPATH/src" "$GOPATH/bin" && chmod -R 777 "$GOPATH"
 
+RUN ln -s /usr/local/go/bin/go /bin/go
 ENV USER root
 ADD . /go/src/github.com/STNS/STNS
 WORKDIR /go/src/github.com/STNS/STNS
