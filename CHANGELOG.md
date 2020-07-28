@@ -140,7 +140,7 @@
 ### Pull Requests
 - Merge pull request [#40](https://github.com/STNS/STNS/issues/40) from STNS/add-version-tag
 - Merge pull request [#39](https://github.com/STNS/STNS/issues/39) from STNS/fix-lint
-- Merge pull request [#38](https://github.com/STNS/STNS/issues/38) from STNS/v3
+- Merge pull request [#38](https://github.com/STNS/STNS/issues/38) from STNS/v2
 
 
 <a name="v0.2-2"></a>

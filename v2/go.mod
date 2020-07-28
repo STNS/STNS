@@ -1,9 +1,10 @@
-module github.com/STNS/STNS
+module github.com/STNS/STNS/v2
 
 go 1.14
 
 require (
 	github.com/BurntSushi/toml v0.3.1
+	github.com/STNS/STNS v1.0.0 // indirect
 	github.com/aws/aws-sdk-go v1.33.5
 	github.com/coreos/etcd v3.3.22+incompatible // indirect
 	github.com/coreos/go-semver v0.3.0 // indirect

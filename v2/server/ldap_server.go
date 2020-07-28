@@ -10,8 +10,8 @@ import (
 	"strings"
 	"syscall"
 
-	"github.com/STNS/STNS/model"
-	"github.com/STNS/STNS/stns"
+	"github.com/STNS/STNS/v2/model"
+	"github.com/STNS/STNS/v2/stns"
 	"github.com/facebookgo/pidfile"
 	"github.com/labstack/gommon/log"
 	"github.com/lestrrat/go-server-starter/listener"

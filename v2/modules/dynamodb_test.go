@@ -6,8 +6,8 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/STNS/STNS/model"
-	"github.com/STNS/STNS/stns"
+	"github.com/STNS/STNS/v2/model"
+	"github.com/STNS/STNS/v2/stns"
 )
 
 var dm sync.Mutex
