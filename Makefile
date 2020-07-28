@@ -32,9 +32,10 @@ ci: depsdev test lint integration ## Run test and more...
 
 etcd:
 	echo $(UNAME_S)
+	mkdir -p $(MIDDLEWARE)
 ifeq ($(UNAME_S),Linux)
-	test -e $(MIDDLEWARE)/etcd-v$(ETCD_VER)-linux-amd64/etcd || curl -L  https://github.com/coreos/etcd/releases/download/v$(ETCD_VER)/etcd-v$(ETCD_VER)-linux-amd64.tar.gz -o etcd-v$(ETCD_VER)-linux-amd64.tar.gz
-	test -e $(MIDDLEWARE)/etcd-v$(ETCD_VER)-linux-amd64/etcd || tar xzf etcd-v$(ETCD_VER)-linux-amd64.tar.gz
+	test -e $(MIDDLEWARE)/etcd-v$(ETCD_VER)-linux-amd64/etcd || curl -L  https://github.com/coreos/etcd/releases/download/v$(ETCD_VER)/etcd-v$(ETCD_VER)-linux-amd64.tar.gz -o $(MIDDLEWARE)/etcd-v$(ETCD_VER)-linux-amd64.tar.gz
+	test -e $(MIDDLEWARE)/etcd-v$(ETCD_VER)-linux-amd64/etcd || (cd $(MIDDLEWARE) && tar xzf etcd-v$(ETCD_VER)-linux-amd64.tar.gz)
 	ps -aux |grep etcd |grep -q -v grep || $(MIDDLEWARE)/etcd-v$(ETCD_VER)-linux-amd64/etcd &
 endif
 ifeq ($(UNAME_S),Darwin)
@@ -43,9 +44,10 @@ endif
 
 redis:
 	echo $(UNAME_S)
+	mkdir -p $(MIDDLEWARE)
 ifeq ($(UNAME_S),Linux)
-	test -e $(MIDDLEWARE)/redis-$(REDIS_VER).tar.gz || curl -L  http://download.redis.io/releases/redis-$(REDIS_VER).tar.gz -o redis-$(REDIS_VER).tar.gz
-	test -d $(MIDDLEWARE)/redis-$(REDIS_VER) || tar xzf redis-$(REDIS_VER).tar.gz
+	test -e $(MIDDLEWARE)/redis-$(REDIS_VER).tar.gz || curl -L  http://download.redis.io/releases/redis-$(REDIS_VER).tar.gz -o $(MIDDLEWARE)//redis-$(REDIS_VER).tar.gz
+	test -d $(MIDDLEWARE)/redis-$(REDIS_VER) || (cd $(MIDDLEWARE) && tar xzf redis-$(REDIS_VER).tar.gz)
 	test -e $(MIDDLEWARE)/redis-$(REDIS_VER)/src/redis-server || (cd $(MIDDLEWARE)/redis-$(REDIS_VER) && make)
 	ps -aux |grep redis |grep -q -v grep || $(MIDDLEWARE)/redis-$(REDIS_VER)/src/redis-server &
 endif
