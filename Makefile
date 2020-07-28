@@ -1,4 +1,3 @@
-TEST ?= $(shell go list ./... | grep -v -e vendor -e keys -e tmp)
 VERSION = $(shell cat version)
 REVISION = $(shell git describe --always)
 
@@ -67,12 +66,12 @@ changelog:
 
 test: ## Run test
 	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Testing$(RESET) (require: etcd,redis)"
-	cd $(PACKAGE_DIR) && $(GO) test -v $(TEST) -timeout=30s -parallel=4
-	cd $(PACKAGE_DIR) && $(GO) test -race $(TEST)
+	cd $(PACKAGE_DIR) && $(GO) test -v -timeout=30s -parallel=4
+	cd $(PACKAGE_DIR) && $(GO) test -race
 
 lint: ## Exec golint
 	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Linting$(RESET)"
-	cd $(PACKAGE_DIR) && golint -min_confidence 1.1 -set_exit_status $(TEST)
+	cd $(PACKAGE_DIR) && golint -min_confidence 1.1 -set_exit_status
 
 server: ## Run server
 	cd $(PACKAGE_DIR) && $(GO) run github.com/STNS/STNS/v2 --listen 127.0.0.1:1104 --pidfile ./stns.pid --config ./stns/integration.toml --protocol $(STNS_PROTOCOL) server
@@ -82,13 +81,13 @@ integration: integration_http integration_ldap ## Run integration test after Ser
 integration_http: ## Run integration test after Server wakeup
 	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Integration HTTP Testing$(RESET)"
 	./misc/server start -http
-	cd $(PACKAGE_DIR) && $(GO) test $(VERBOSE) -integration-http $(TEST) $(TEST_OPTIONS)
+	cd $(PACKAGE_DIR) && $(GO) test $(VERBOSE) -integration-http $(TEST_OPTIONS)
 	./misc/server stop || true
 
 integration_ldap: ## Run integration test after Server wakeup
 	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Integration LDAP Testing$(RESET)"
 	./misc/server start -ldap
-	cd $(PACKAGE_DIR) && $(GO) test $(VERBOSE) -integration-ldap $(TEST) $(TEST_OPTIONS)
+	cd $(PACKAGE_DIR) && $(GO) test $(VERBOSE) -integration-ldap $(TEST_OPTIONS)
 	./misc/server stop || true
 
 build: ## Build server
