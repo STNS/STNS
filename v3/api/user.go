@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/STNS/STNS/middleware"
-	"github.com/STNS/STNS/model"
+	"github.com/STNS/STNS/v3/middleware"
+	"github.com/STNS/STNS/v3/model"
 	"github.com/labstack/echo"
 	"github.com/tredoe/osutil/user/crypt"
 	_ "github.com/tredoe/osutil/user/crypt/md5_crypt"

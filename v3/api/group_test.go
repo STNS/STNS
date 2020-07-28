@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/STNS/STNS/model"
-	"github.com/STNS/STNS/stns"
+	"github.com/STNS/STNS/v3/model"
+	"github.com/STNS/STNS/v3/stns"
 )
 
 func Test_getGroups(t *testing.T) {

@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"github.com/STNS/STNS/model"
+	"github.com/STNS/STNS/v3/model"
 	"github.com/labstack/echo"
 )
 
