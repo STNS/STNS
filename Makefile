@@ -1,12 +1,7 @@
-TEST ?= $(shell go list ./... | grep -v -e vendor -e keys -e tmp)
 VERSION = $(shell cat version)
 REVISION = $(shell git describe --always)
 
-ifeq ("$(shell uname)","Darwin")
 GO ?= GO111MODULE=on go
-else
-GO ?= GO111MODULE=on /usr/local/go/bin/go
-endif
 INFO_COLOR=\033[1;34m
 RESET=\033[0m
 BOLD=\033[1m
@@ -36,9 +31,10 @@ ci: depsdev test lint integration ## Run test and more...
 
 etcd:
 	echo $(UNAME_S)
+	mkdir -p $(MIDDLEWARE)
 ifeq ($(UNAME_S),Linux)
-	test -e $(MIDDLEWARE)/etcd-v$(ETCD_VER)-linux-amd64/etcd || curl -L  https://github.com/coreos/etcd/releases/download/v$(ETCD_VER)/etcd-v$(ETCD_VER)-linux-amd64.tar.gz -o etcd-v$(ETCD_VER)-linux-amd64.tar.gz
-	test -e $(MIDDLEWARE)/etcd-v$(ETCD_VER)-linux-amd64/etcd || tar xzf etcd-v$(ETCD_VER)-linux-amd64.tar.gz
+	test -e $(MIDDLEWARE)/etcd-v$(ETCD_VER)-linux-amd64/etcd || curl -L  https://github.com/coreos/etcd/releases/download/v$(ETCD_VER)/etcd-v$(ETCD_VER)-linux-amd64.tar.gz -o $(MIDDLEWARE)/etcd-v$(ETCD_VER)-linux-amd64.tar.gz
+	test -e $(MIDDLEWARE)/etcd-v$(ETCD_VER)-linux-amd64/etcd || (cd $(MIDDLEWARE) && tar xzf etcd-v$(ETCD_VER)-linux-amd64.tar.gz)
 	ps -aux |grep etcd |grep -q -v grep || $(MIDDLEWARE)/etcd-v$(ETCD_VER)-linux-amd64/etcd &
 endif
 ifeq ($(UNAME_S),Darwin)
@@ -47,9 +43,10 @@ endif
 
 redis:
 	echo $(UNAME_S)
+	mkdir -p $(MIDDLEWARE)
 ifeq ($(UNAME_S),Linux)
-	test -e $(MIDDLEWARE)/redis-$(REDIS_VER).tar.gz || curl -L  http://download.redis.io/releases/redis-$(REDIS_VER).tar.gz -o redis-$(REDIS_VER).tar.gz
-	test -d $(MIDDLEWARE)/redis-$(REDIS_VER) || tar xzf redis-$(REDIS_VER).tar.gz
+	test -e $(MIDDLEWARE)/redis-$(REDIS_VER).tar.gz || curl -L  http://download.redis.io/releases/redis-$(REDIS_VER).tar.gz -o $(MIDDLEWARE)//redis-$(REDIS_VER).tar.gz
+	test -d $(MIDDLEWARE)/redis-$(REDIS_VER) || (cd $(MIDDLEWARE) && tar xzf redis-$(REDIS_VER).tar.gz)
 	test -e $(MIDDLEWARE)/redis-$(REDIS_VER)/src/redis-server || (cd $(MIDDLEWARE)/redis-$(REDIS_VER) && make)
 	ps -aux |grep redis |grep -q -v grep || $(MIDDLEWARE)/redis-$(REDIS_VER)/src/redis-server &
 endif
@@ -69,12 +66,12 @@ changelog:
 
 test: ## Run test
 	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Testing$(RESET) (require: etcd,redis)"
-	cd $(PACKAGE_DIR) && $(GO) test -v $(TEST) -timeout=30s -parallel=4
-	cd $(PACKAGE_DIR) && $(GO) test -race $(TEST)
+	cd $(PACKAGE_DIR) && $(GO) test -v -timeout=30s -parallel=4
+	cd $(PACKAGE_DIR) && $(GO) test -race
 
 lint: ## Exec golint
 	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Linting$(RESET)"
-	golint -min_confidence 1.1 -set_exit_status $(TEST)
+	cd $(PACKAGE_DIR) && golint -min_confidence 1.1 -set_exit_status
 
 server: ## Run server
 	cd $(PACKAGE_DIR) && $(GO) run github.com/STNS/STNS/v2 --listen 127.0.0.1:1104 --pidfile ./stns.pid --config ./stns/integration.toml --protocol $(STNS_PROTOCOL) server
@@ -84,13 +81,13 @@ integration: integration_http integration_ldap ## Run integration test after Ser
 integration_http: ## Run integration test after Server wakeup
 	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Integration HTTP Testing$(RESET)"
 	./misc/server start -http
-	cd $(PACKAGE_DIR) && $(GO) test $(VERBOSE) -integration-http $(TEST) $(TEST_OPTIONS)
+	cd $(PACKAGE_DIR) && $(GO) test $(VERBOSE) -integration-http $(TEST_OPTIONS)
 	./misc/server stop || true
 
 integration_ldap: ## Run integration test after Server wakeup
 	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Integration LDAP Testing$(RESET)"
 	./misc/server start -ldap
-	cd $(PACKAGE_DIR) && $(GO) test $(VERBOSE) -integration-ldap $(TEST) $(TEST_OPTIONS)
+	cd $(PACKAGE_DIR) && $(GO) test $(VERBOSE) -integration-ldap $(TEST_OPTIONS)
 	./misc/server stop || true
 
 build: ## Build server
