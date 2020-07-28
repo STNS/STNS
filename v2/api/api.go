@@ -3,7 +3,7 @@ package api
 import (
 	"net/http"
 
-	"github.com/STNS/STNS/v3/model"
+	"github.com/STNS/STNS/v2/model"
 	"github.com/labstack/echo"
 )
 

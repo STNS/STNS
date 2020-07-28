@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/STNS/STNS/v3/middleware"
-	"github.com/STNS/STNS/v3/model"
+	"github.com/STNS/STNS/v2/middleware"
+	"github.com/STNS/STNS/v2/model"
 	"github.com/labstack/echo"
 )
 

@@ -7,8 +7,8 @@ import (
 	"plugin"
 	"strings"
 
-	"github.com/STNS/STNS/v3/model"
-	"github.com/STNS/STNS/v3/stns"
+	"github.com/STNS/STNS/v2/model"
+	"github.com/STNS/STNS/v2/stns"
 	"github.com/facebookgo/pidfile"
 	"github.com/iancoleman/strcase"
 
