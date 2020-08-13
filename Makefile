@@ -125,6 +125,13 @@ rpm: source_for_rpm ## Packaging for RPM
 
 pkg: ## Create some distribution packages
 	rm -rf builds && mkdir builds
+	docker-compose build centos6
+	docker-compose build centos7
+	docker-compose build centos8
+	docker-compose build ubuntu16
+	docker-compose build ubuntu18
+	docker-compose build debian8
+	docker-compose build debian9
 	docker-compose run -v `pwd`:/go/src/github.com/STNS/STNS -v ~/pkg:/go/pkg --rm centos6
 	docker-compose run -v `pwd`:/go/src/github.com/STNS/STNS -v ~/pkg:/go/pkg --rm centos7
 	docker-compose run -v `pwd`:/go/src/github.com/STNS/STNS -v ~/pkg:/go/pkg --rm centos8
