@@ -60,6 +60,18 @@ services:
     environment:
       DIST: bionic
     command: make deb
+  ubuntu20:
+    build:
+      context: .
+      dockerfile: dockerfiles/Dockerfile.ubuntu-20
+      args:
+        GO_VERSION: 1.14.4
+    volumes:
+      - .:/go/src/github.com/STNS/STNS
+      - ~/pkg:/go/pkg
+    environment:
+      DIST: focul
+    command: make deb
   debian8:
     build:
       context: .

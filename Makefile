@@ -123,22 +123,13 @@ rpm: source_for_rpm ## Packaging for RPM
 	rpmbuild -ba rpm/stns.spec
 	cp /root/rpmbuild/RPMS/*/*.rpm /go/src/github.com/STNS/STNS/builds
 
+SUPPORTOS=centos6 centos7 cetos8 ubuntu16 ubuntu18 ubuntu20 debian8 debian9
 pkg: ## Create some distribution packages
 	rm -rf builds && mkdir builds
-	docker-compose build centos6
-	docker-compose build centos7
-	docker-compose build centos8
-	docker-compose build ubuntu16
-	docker-compose build ubuntu18
-	docker-compose build debian8
-	docker-compose build debian9
-	docker-compose run -v `pwd`:/go/src/github.com/STNS/STNS -v ~/pkg:/go/pkg --rm centos6
-	docker-compose run -v `pwd`:/go/src/github.com/STNS/STNS -v ~/pkg:/go/pkg --rm centos7
-	docker-compose run -v `pwd`:/go/src/github.com/STNS/STNS -v ~/pkg:/go/pkg --rm centos8
-	docker-compose run -v `pwd`:/go/src/github.com/STNS/STNS -v ~/pkg:/go/pkg --rm ubuntu16
-	docker-compose run -v `pwd`:/go/src/github.com/STNS/STNS -v ~/pkg:/go/pkg --rm ubuntu18
-	docker-compose run -v `pwd`:/go/src/github.com/STNS/STNS -v ~/pkg:/go/pkg --rm debian8
-	docker-compose run -v `pwd`:/go/src/github.com/STNS/STNS -v ~/pkg:/go/pkg --rm debian9
+	for i in $(SUPPORTOS); do\
+	  docker-compose build $$i \
+	  docker-compose run -v `pwd`:/go/src/github.com/STNS/STNS -v ~/pkg:/go/pkg --rm $$i \
+	done
 
 source_for_deb: ## Create source for DEB
 	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Distributing$(RESET)"

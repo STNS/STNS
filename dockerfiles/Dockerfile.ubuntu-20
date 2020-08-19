@@ -1,7 +1,8 @@
-FROM ubuntu:bionic
+FROM ubuntu:focal
 MAINTAINER pyama86 <www.kazu.com@gmail.com>
 
 RUN apt-get -qqy update && \
+    apt-get install -qqy tzdata && \
     apt-get install -qqy gcc make debhelper dh-make clang git curl devscripts
 ARG GO_VERSION
 
