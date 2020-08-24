@@ -70,7 +70,7 @@ services:
       - .:/go/src/github.com/STNS/STNS
       - ~/pkg:/go/pkg
     environment:
-      DIST: focul
+      DIST: focal
     command: make deb
   debian8:
     build:
