@@ -4,7 +4,6 @@ import (
 	"context"
 	"crypto/tls"
 	"crypto/x509"
-	"fmt"
 	"io/ioutil"
 	stdLog "log"
 	"net/http"
@@ -135,17 +134,6 @@ func (s *httpServer) Run() error {
 		}
 	}
 
-	go func() {
-		quit := make(chan os.Signal)
-		signal.Notify(quit, os.Interrupt, syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGINT)
-		<-quit
-		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-		defer cancel()
-		if err := e.Shutdown(ctx); err != nil {
-			return
-		}
-
-	}()
 	// tls client authentication
 	if s.config.TLS != nil {
 		if _, err := os.Stat(s.config.TLS.CA); err == nil {
@@ -179,10 +167,21 @@ func (s *httpServer) Run() error {
 		customServer.TLSConfig.Certificates[0] = cert
 	}
 
-	if err := e.StartServer(customServer); err != nil {
-		return fmt.Errorf("shutting down the server: %s", err)
-	}
+	go func() {
+		if err := e.StartServer(customServer); err != nil {
+			e.Logger.Error("shutting down the server: %s", err)
+			return
+		}
 
+	}()
+	quit := make(chan os.Signal)
+	signal.Notify(quit, os.Interrupt, syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGINT)
+	<-quit
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	if err := e.Shutdown(ctx); err != nil {
+		return err
+	}
 	return nil
 }
 

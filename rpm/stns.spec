@@ -48,7 +48,7 @@ mkdir -p %{buildroot}%{_sysconfdir}/init.d
 install -m 755 package/stns-v2.initd  %{buildroot}%{_sysconfdir}/init.d/stns
 %else
 mkdir -p %{buildroot}%{_sysconfdir}/systemd/system/
-install -m 755 package/stns-v2.systemd %{buildroot}%{_sysconfdir}/systemd/system/stns.service
+install -m 644 package/stns-v2.systemd %{buildroot}%{_sysconfdir}/systemd/system/stns.service
 %endif
 
 mkdir -p %{buildroot}%{_sysconfdir}/logrotate.d
