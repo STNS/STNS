@@ -1,3 +1,6 @@
+stns-v2 (2.2.7-1) xenial; urgency=medium
+  * FIX should shutdown when STNS recived signals
+ -- pyama86 <www.kazu.com@gmail.com>  Tue, 27 Oct 2020 00:00:00 +0900
 stns-v2 (2.2.6-1) xenial; urgency=medium
   * use Go 1.14.4
   * support debian8/9,CentOS8
