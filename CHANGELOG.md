@@ -2,6 +2,19 @@
 ## [Unreleased]
 
 
+<a name="v2.2.8"></a>
+## [v2.2.8] - 2020-10-29
+### Pull Requests
+- Merge pull request [#117](https://github.com/STNS/STNS/issues/117) from STNS/fix-shutdonw
+
+
+<a name="v2.2.7"></a>
+## [v2.2.7] - 2020-07-28
+### Pull Requests
+- Merge pull request [#115](https://github.com/STNS/STNS/issues/115) from STNS/ci
+- Merge pull request [#112](https://github.com/STNS/STNS/issues/112) from STNS/delete-fatal
+
+
 <a name="v2.2.6"></a>
 ## [v2.2.6] - 2020-07-14
 ### Pull Requests
@@ -140,7 +153,7 @@
 ### Pull Requests
 - Merge pull request [#40](https://github.com/STNS/STNS/issues/40) from STNS/add-version-tag
 - Merge pull request [#39](https://github.com/STNS/STNS/issues/39) from STNS/fix-lint
-- Merge pull request [#38](https://github.com/STNS/STNS/issues/38) from STNS/v2
+- Merge pull request [#38](https://github.com/STNS/STNS/issues/38) from STNS/v3
 
 
 <a name="v0.2-2"></a>
@@ -229,7 +242,9 @@
 <a name="0.0.1"></a>
 ## 0.0.1 - 2016-01-03
 
-[Unreleased]: https://github.com/STNS/STNS/compare/v2.2.6...HEAD
+[Unreleased]: https://github.com/STNS/STNS/compare/v2.2.8...HEAD
+[v2.2.8]: https://github.com/STNS/STNS/compare/v2.2.7...v2.2.8
+[v2.2.7]: https://github.com/STNS/STNS/compare/v2.2.6...v2.2.7
 [v2.2.6]: https://github.com/STNS/STNS/compare/v2.2.5...v2.2.6
 [v2.2.5]: https://github.com/STNS/STNS/compare/v2.2.4...v2.2.5
 [v2.2.4]: https://github.com/STNS/STNS/compare/v2.1.0...v2.2.4
