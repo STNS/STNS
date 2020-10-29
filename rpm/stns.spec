@@ -1,6 +1,6 @@
 Summary: SimpleTomlNameService is Linux User,Group Name Service
 Name:             stns-v2
-Version:          2.2.7
+Version:          2.2.8
 Release:          1
 License:          GPLv3
 URL:              https://github.com/STNS/STNS
@@ -78,8 +78,10 @@ install -m 644 package/stns-v2.logrotate %{buildroot}%{_sysconfdir}/logrotate.d/
 %endif
 
 %changelog
-* Tue Oct 27 2020 pyama86 <www.kazu.com@gmail.com> - 2.2.7-1
+* Tue Oct 27 2020 pyama86 <www.kazu.com@gmail.com> - 2.2.8-1
 - FIX should shutdown when STNS recived signals
+* Tue Jul 21 2020 pyama86 <www.kazu.com@gmail.com> - 2.2.7-1
+- delete fatal methods
 * Tue Jul 14 2020 pyama86 <www.kazu.com@gmail.com> - 2.2.6-1
 - use Go 1.14.4
 - support debian8/9,CentOS8
