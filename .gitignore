@@ -14,7 +14,7 @@ builds/*
 tmp*
 keys/*
 repo/*
-etcd*
+etcd-v3.*
 default.etcd
 .vagrant
 redis*
