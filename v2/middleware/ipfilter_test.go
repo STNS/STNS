@@ -28,7 +28,7 @@ func TestIPFilterWithConfig(t *testing.T) {
 				},
 			},
 			path:       "/",
-			remoteAddr: "1.1.1.1",
+			remoteAddr: "1.1.1.1:10000",
 			code:       http.StatusOK,
 		},
 		{
@@ -39,7 +39,7 @@ func TestIPFilterWithConfig(t *testing.T) {
 				},
 			},
 			path:       "/users",
-			remoteAddr: "1.1.1.1",
+			remoteAddr: "1.1.1.1:10000",
 			code:       http.StatusUnauthorized,
 		},
 		{
@@ -50,7 +50,7 @@ func TestIPFilterWithConfig(t *testing.T) {
 				},
 			},
 			path:       "/status",
-			remoteAddr: "1.1.1.1",
+			remoteAddr: "1.1.1.1:10000",
 			code:       http.StatusOK,
 		},
 	}

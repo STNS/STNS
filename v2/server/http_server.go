@@ -110,6 +110,7 @@ func (s *httpServer) Run() error {
 	if s.config.AllowIPs != nil {
 		e.Use(middleware.IPFilterWithConfig(middleware.IPFilterConfig{
 			AllowIPs: s.config.AllowIPs,
+			Logger:   s.logger,
 		}))
 	}
 
