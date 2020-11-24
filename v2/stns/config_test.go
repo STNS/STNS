@@ -38,6 +38,10 @@ func TestNewConfig(t *testing.T) {
 		t.Errorf("config cannot parse tls")
 	}
 
+	if c.AllowIPs[0] != "10.1.1.1/24" {
+		t.Errorf("config cannot parse ip filter")
+	}
+
 	yc, err := NewConfig("test.yaml")
 	if err != nil {
 		t.Fatalf(err.Error())

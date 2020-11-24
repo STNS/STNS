@@ -115,6 +115,7 @@ type Config struct {
 	BasicAuth *BasicAuth `toml:"basic_auth" yaml:"basic_auth"`
 	TokenAuth *TokenAuth `toml:"token_auth" yaml:"token_auth"`
 
+	AllowIPs         []string `toml:"allow_ips" yaml:"allow_ips"`
 	UseServerStarter bool
 	Users            *model.Users
 	Groups           *model.Groups

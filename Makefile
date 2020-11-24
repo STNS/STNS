@@ -1,5 +1,6 @@
 VERSION = $(shell cat version)
 REVISION = $(shell git describe --always)
+TEST_LIST = $(shell cd v2 && go list ./...)
 
 GO ?= GO111MODULE=on go
 INFO_COLOR=\033[1;34m
@@ -66,8 +67,8 @@ changelog:
 
 test: ## Run test
 	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Testing$(RESET) (require: etcd,redis)"
-	cd $(PACKAGE_DIR) && $(GO) test -v -timeout=30s -parallel=4
-	cd $(PACKAGE_DIR) && $(GO) test -race
+	cd $(PACKAGE_DIR) && $(GO) test $(TEST_LIST) -v -timeout=30s -parallel=4
+	cd $(PACKAGE_DIR) && $(GO) test $(TEST_LIST) -race
 
 lint: ## Exec golint
 	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Linting$(RESET)"

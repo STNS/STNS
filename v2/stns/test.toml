@@ -1,4 +1,6 @@
 include = "include.toml"
+allow_ips = ["10.1.1.1/24"]
+
 [tls]
 ca = "example_ca"
 cert = "example_cert"
