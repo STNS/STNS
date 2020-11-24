@@ -28,7 +28,7 @@ STNS_PROTOCOL ?= "http"
 ME=$(shell whoami)
 default: build
 
-ci: redis etcd depsdev test lint integration ## Run test and more...
+ci: depsdev test lint integration ## Run test and more...
 
 etcd:
 	echo $(UNAME_S)
