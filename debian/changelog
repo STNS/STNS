@@ -1,3 +1,6 @@
+stns-v2 (2.2.9-1) xenial; urgency=medium
+  * Add parameter IP Filter
+ -- pyama86 <www.kazu.com@gmail.com>  Tue, 24 Nov 2020 00:00:00 +0900
 stns-v2 (2.2.8-1) xenial; urgency=medium
   * FIX should shutdown when STNS recived signals
  -- pyama86 <www.kazu.com@gmail.com>  Tue, 27 Oct 2020 00:00:00 +0900
