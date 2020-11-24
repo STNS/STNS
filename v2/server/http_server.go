@@ -107,6 +107,12 @@ func (s *httpServer) Run() error {
 		}))
 	}
 
+	if s.config.AllowIPs != nil {
+		e.Use(middleware.IPFilterWithConfig(middleware.IPFilterConfig{
+			AllowIPs: s.config.AllowIPs,
+		}))
+	}
+
 	if s.config.UseServerStarter {
 		listeners, err := listener.ListenAll()
 		if listeners == nil || err != nil {
