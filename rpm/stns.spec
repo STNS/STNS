@@ -78,6 +78,8 @@ install -m 644 package/stns-v2.logrotate %{buildroot}%{_sysconfdir}/logrotate.d/
 %endif
 
 %changelog
+* Fri Dec 18 2020 pyama86 <www.kazu.com@gmail.com> - 2.2.10-1
+- Add healthcheck endpoint to v1
 * Tue Nov 24 2020 pyama86 <www.kazu.com@gmail.com> - 2.2.9-1
 - Add Parameter IP Filter
 * Tue Oct 27 2020 pyama86 <www.kazu.com@gmail.com> - 2.2.8-1
