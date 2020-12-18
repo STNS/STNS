@@ -1,6 +1,6 @@
 Summary: SimpleTomlNameService is Linux User,Group Name Service
 Name:             stns-v2
-Version:          2.2.9
+Version:          2.2.10
 Release:          1
 License:          GPLv3
 URL:              https://github.com/STNS/STNS
