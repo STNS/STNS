@@ -1,6 +1,8 @@
 package middleware
 
 import (
+	"strings"
+
 	"github.com/jpillora/ipfilter"
 	"github.com/labstack/echo"
 	"github.com/labstack/gommon/log"
@@ -16,7 +18,7 @@ type (
 func IPFilterWithConfig(config IPFilterConfig) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
-			if c.Path() == "/" || c.Path() == "/status" {
+			if c.Path() == "/" || strings.HasSuffix(c.Path(), "/status") {
 				return next(c)
 			}
 
