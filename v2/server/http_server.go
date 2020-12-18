@@ -10,6 +10,7 @@ import (
 	"os"
 	"os/signal"
 	"strconv"
+	"strings"
 	"syscall"
 	"time"
 
@@ -78,7 +79,7 @@ func (s *httpServer) Run() error {
 					return false, nil
 				},
 				Skipper: func(c echo.Context) bool {
-					if c.Path() == "/" || c.Path() == "/status" || len(os.Getenv("CI")) > 0 {
+					if c.Path() == "/" || strings.HasSuffix(c.Path(), "/status") || len(os.Getenv("CI")) > 0 {
 						return true
 					}
 					return false
@@ -89,8 +90,7 @@ func (s *httpServer) Run() error {
 	if s.config.TokenAuth != nil {
 		e.Use(middleware.TokenAuthWithConfig(middleware.TokenAuthConfig{
 			Skipper: func(c echo.Context) bool {
-
-				if c.Path() == "/" || c.Path() == "/status" || len(os.Getenv("CI")) > 0 {
+				if c.Path() == "/" || strings.HasSuffix(c.Path(), "/status") || len(os.Getenv("CI")) > 0 {
 					return true
 				}
 
@@ -122,6 +122,7 @@ func (s *httpServer) Run() error {
 		e.Listener = listeners[0]
 	}
 	v1 := e.Group("/v1")
+	v1.GET("/status", status)
 	api.UserEndpoints(v1)
 	api.GroupEndpoints(v1)
 
