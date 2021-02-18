@@ -102,9 +102,11 @@ install: build ## Install
 	mkdir -p $(MODDIR)/
 	cp $(BUILD)/*so $(MODDIR)/
 
-docker:
-	docker build -t stns_develop .
-	docker run --cap-add=SYS_PTRACE --security-opt="seccomp=unconfined" -v $(GOPATH):/go/ -v $(GOPATH)/pkg/mod/cache:/go/pkg/mod/cache -w /go/src/github.com/STNS/STNS -it stns_develop /bin/bash
+docker_release:
+	docker build -t stns/stns:$(VERSION) .
+#	docker push stns/stns:$(VERSION)
+	docker tag stns/stns:$(VERSION) stns/stns:latest
+#	docker push stns/stns:latest
 
 source_for_rpm: ## Create source for RPM
 	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Distributing$(RESET)"
