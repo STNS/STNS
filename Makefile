@@ -102,11 +102,13 @@ install: build ## Install
 	mkdir -p $(MODDIR)/
 	cp $(BUILD)/*so $(MODDIR)/
 
-docker_release:
+build_image:
 	docker build -t stns/stns:$(VERSION) .
-#	docker push stns/stns:$(VERSION)
 	docker tag stns/stns:$(VERSION) stns/stns:latest
-#	docker push stns/stns:latest
+
+release_image:
+	docker push stns/stns:$(VERSION)
+	docker push stns/stns:latest
 
 source_for_rpm: ## Create source for RPM
 	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Distributing$(RESET)"
