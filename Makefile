@@ -106,7 +106,7 @@ build_image:
 	docker build -t stns/stns:$(VERSION) .
 	docker tag stns/stns:$(VERSION) stns/stns:latest
 
-release_image:
+push_image:
 	docker push stns/stns:$(VERSION)
 	docker push stns/stns:latest
 
