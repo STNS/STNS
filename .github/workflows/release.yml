@@ -2,10 +2,11 @@ name: Release Docker Image
 on:
   push:
     branches:
-      - "*"
+      - default
 jobs:
   release:
     runs-on: ubuntu-latest
+    if: "contains(github.ref, 'default')"
     steps:
     - uses: actions/checkout@v2
     - run: make build_image
