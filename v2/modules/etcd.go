@@ -7,7 +7,8 @@ import (
 
 	"github.com/STNS/STNS/v2/model"
 	"github.com/STNS/STNS/v2/stns"
-	etcd "github.com/etcd-io/etcd/client"
+	etcd "go.etcd.io/etcd/client/v2"
+
 	"golang.org/x/net/context"
 )
 

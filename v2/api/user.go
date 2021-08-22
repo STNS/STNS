@@ -8,10 +8,8 @@ import (
 	"github.com/STNS/STNS/v2/middleware"
 	"github.com/STNS/STNS/v2/model"
 	"github.com/labstack/echo"
-	"github.com/tredoe/osutil/user/crypt"
-	_ "github.com/tredoe/osutil/user/crypt/md5_crypt"
-	_ "github.com/tredoe/osutil/user/crypt/sha256_crypt"
-	"github.com/tredoe/osutil/user/crypt/sha512_crypt"
+	"github.com/tredoe/osutil/userutil/crypt"
+	"github.com/tredoe/osutil/userutil/crypt/sha512_crypt"
 )
 
 func getUsers(c echo.Context) error {
