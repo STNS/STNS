@@ -56,11 +56,9 @@ ifeq ($(UNAME_S),Darwin)
 endif
 
 depsdev: ## Installing dependencies for development
-	$(GO) get -u golang.org/x/lint/golint
-	$(GO) get -u github.com/tcnksm/ghr
-	$(GO) get -u golang.org/x/tools/cmd/goimports
-	$(GO) get -u github.com/git-chglog/git-chglog/cmd/git-chglog
-	$(GO) get -u github.com/ugorji/go/codec@none
+	which golint > /dev/null || $(GO) install golang.org/x/lint/golint
+	which ghr > /dev/null || $(GO) install github.com/tcnksm/ghr
+	which git-chglog > /dev/null || $(GO) install github.com/git-chglog/git-chglog/cmd/git-chglog
 	cd $(PACKAGE_DIR) && $(GO) mod tidy
 changelog:
 	git-chglog -o CHANGELOG.md

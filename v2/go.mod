@@ -15,7 +15,7 @@ require (
 	github.com/lib/pq v1.10.2
 	github.com/nmcclain/ldap v0.0.0-20210720162743-7f8d1e44eeba
 	github.com/stretchr/testify v1.7.0
-	github.com/tredoe/osutil v1.3.5
+	github.com/tredoe/osutil/v2 v2.0.0-rc.16
 	github.com/urfave/cli v1.22.5
 	go.etcd.io/etcd/client/v2 v2.305.0
 	golang.org/x/net v0.0.0-20210813160813-60bc85c4be6d
