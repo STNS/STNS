@@ -34,11 +34,11 @@ func NewBackendDynamodb(c *stns.Config) (model.Backend, error) {
 		}
 
 		if c.Modules["dynamodb"].(map[string]interface{})["user_table_name"] != nil {
-			userTable = c.Modules["dynamodb"].(map[string]interface{})["user_table_nane"].(string)
+			userTable = c.Modules["dynamodb"].(map[string]interface{})["user_table_name"].(string)
 		}
 
 		if c.Modules["dynamodb"].(map[string]interface{})["group_table_name"] != nil {
-			groupTable = c.Modules["dynamodb"].(map[string]interface{})["group_table_nane"].(string)
+			groupTable = c.Modules["dynamodb"].(map[string]interface{})["group_table_name"].(string)
 		}
 	}
 
