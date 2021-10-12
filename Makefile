@@ -62,6 +62,7 @@ depsdev: ## Installing dependencies for development
 	$(GO) get -u github.com/git-chglog/git-chglog/cmd/git-chglog
 	$(GO) get -u github.com/ugorji/go/codec@none
 	cd $(PACKAGE_DIR) && $(GO) mod tidy
+
 changelog:
 	git-chglog -o CHANGELOG.md
 
