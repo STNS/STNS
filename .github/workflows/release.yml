@@ -22,6 +22,6 @@ jobs:
       uses: docker/login-action@v1
       with:
         registry: docker.pkg.github.com
-        username: ${{ github.repository_owner }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+        username: pyama86
+        password: ${{ secrets.PTA }}
     - run: make push_image
