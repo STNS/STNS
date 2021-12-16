@@ -104,13 +104,13 @@ install: build ## Install
 	cp $(BUILD)/*so $(MODDIR)/
 
 build_image:
-	docker build -t stns/stns:$(VERSION) -t stns/stns:latest -t ghcr.io/STNS/STNS:$(VERSION) -t ghcr.io/STNS/STNS:latest .
+	docker build -t stns/stns:$(VERSION) -t stns/stns:latest -t ghcr.io/stns/stns:$(VERSION) -t ghcr.io/stns/stns:latest .
 
 push_image:
 	docker push stns/stns:$(VERSION)
 	docker push stns/stns:latest
-	docker push ghcr.io/STNS/STNS:$(VERSION)
-	docker push ghcr.io/STNS/STNS:latest
+	docker push ghcr.io/stns/stns:$(VERSION)
+	docker push ghcr.io/stns/stns:latest
 
 source_for_rpm: ## Create source for RPM
 	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Distributing$(RESET)"
