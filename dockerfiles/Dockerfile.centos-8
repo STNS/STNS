@@ -2,6 +2,7 @@ FROM centos:8
 MAINTAINER pyama86 <www.kazu.com@gmail.com>
 
 ARG GO_VERSION
+RUN sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-Linux-*;
 
 RUN yum install -y epel-release rpmdevtools make clang glibc gcc
 ENV FILE go$GO_VERSION.linux-amd64.tar.gz
