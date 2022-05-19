@@ -70,12 +70,10 @@ func (b BackendEtcd) FindUserByName(name string) (map[string]model.UserGroup, er
 		return nil, err
 	}
 
-	if users != nil {
-		for _, u := range users {
-			if u.GetName() == name {
-				r[u.GetName()] = u
-				return r, nil
-			}
+	for _, u := range users {
+		if u.GetName() == name {
+			r[u.GetName()] = u
+			return r, nil
 		}
 	}
 	return nil, model.NewNotFoundError("user", nil)
@@ -130,12 +128,10 @@ func (b BackendEtcd) FindGroupByName(name string) (map[string]model.UserGroup, e
 		return nil, err
 	}
 
-	if groups != nil {
-		for _, g := range groups {
-			if g.GetName() == name {
-				r[g.GetName()] = g
-				return r, nil
-			}
+	for _, g := range groups {
+		if g.GetName() == name {
+			r[g.GetName()] = g
+			return r, nil
 		}
 	}
 	return nil, model.NewNotFoundError("group", nil)

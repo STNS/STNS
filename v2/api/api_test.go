@@ -41,9 +41,9 @@ func dummyContext(t *testing.T, reqType, reqPath string, args interface{}) (echo
 	var rp []byte
 	var jsonerr error
 	if args != nil {
-		switch args.(type) {
+		switch args := args.(type) {
 		case string:
-			rp = []byte(args.(string))
+			rp = []byte(args)
 		default:
 			rp, jsonerr = json.Marshal(args)
 			assert.NoError(t, jsonerr)

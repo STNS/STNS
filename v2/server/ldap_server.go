@@ -240,7 +240,7 @@ func (s *ldapServer) Run() error {
 	s.logger.Info("start ldap server")
 
 	go func() {
-		sigQuit := make(chan os.Signal)
+		sigQuit := make(chan os.Signal, 1)
 		signal.Notify(sigQuit, os.Interrupt, syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGINT)
 		<-sigQuit
 		quit <- true
@@ -276,7 +276,7 @@ func (h ldapHandler) getGroupMemberNames(group *model.Group, users map[string]mo
 
 	}
 	g := []string{}
-	for k, _ := range groupMemberNames {
+	for k := range groupMemberNames {
 		g = append(g, k)
 	}
 
@@ -296,7 +296,7 @@ func (h ldapHandler) getGroupDNs(gids []int, usergroups map[string]model.UserGro
 	}
 
 	g := []string{}
-	for k, _ := range groups {
+	for k := range groups {
 		g = append(g, k)
 	}
 
