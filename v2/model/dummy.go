@@ -121,10 +121,6 @@ func (b BackendDummy) CreateGroup(v UserGroup) error {
 	return nil
 }
 
-func (b BackendDummy) create(path string, v UserGroup) error {
-	return nil
-}
-
 func (b BackendDummy) DeleteUser(id int) error {
 	return nil
 }
@@ -133,18 +129,10 @@ func (b BackendDummy) DeleteGroup(id int) error {
 	return nil
 }
 
-func (b BackendDummy) delete(path string) error {
-	return nil
-}
-
 func (b BackendDummy) UpdateUser(v UserGroup) error {
 	return nil
 }
 
 func (b BackendDummy) UpdateGroup(v UserGroup) error {
-	return nil
-}
-
-func (b BackendDummy) update(path string, v UserGroup) error {
 	return nil
 }

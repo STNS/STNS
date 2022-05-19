@@ -34,73 +34,65 @@ type Backend interface {
 
 func SyncConfig(resourceName string, b Backend, configResources, backendResources map[string]UserGroup) error {
 	var backendResource UserGroup
-	if configResources != nil {
-		for _, cu := range configResources {
-			found := false
+	for _, cu := range configResources {
+		found := false
 
-			if backendResources != nil {
-				for _, eu := range backendResources {
-					if cu.GetID() == eu.GetID() {
-						backendResource = eu
-						found = true
-						break
-					}
-				}
+		for _, eu := range backendResources {
+			if cu.GetID() == eu.GetID() {
+				backendResource = eu
+				found = true
+				break
 			}
+		}
 
-			if found {
-				if resourceName == "users" {
-					// not overwrite password
-					cu.(*User).Password = backendResource.(*User).Password
+		if found {
+			if resourceName == "users" {
+				// not overwrite password
+				cu.(*User).Password = backendResource.(*User).Password
 
-					if !reflect.DeepEqual(cu.(*User), backendResource.(*User)) {
-						if err := b.UpdateUser(cu); err != nil {
-							return err
-						}
-					}
-				} else {
-					if !reflect.DeepEqual(cu.(*Group), backendResource.(*Group)) {
-						if err := b.UpdateGroup(cu); err != nil {
-							return err
-						}
+				if !reflect.DeepEqual(cu.(*User), backendResource.(*User)) {
+					if err := b.UpdateUser(cu); err != nil {
+						return err
 					}
 				}
 			} else {
-				if resourceName == "users" {
-					if err := b.CreateUser(cu); err != nil {
+				if !reflect.DeepEqual(cu.(*Group), backendResource.(*Group)) {
+					if err := b.UpdateGroup(cu); err != nil {
 						return err
 					}
+				}
+			}
+		} else {
+			if resourceName == "users" {
+				if err := b.CreateUser(cu); err != nil {
+					return err
+				}
 
-				} else {
-					if err := b.CreateGroup(cu); err != nil {
-						return err
-					}
+			} else {
+				if err := b.CreateGroup(cu); err != nil {
+					return err
 				}
 			}
 		}
 	}
 
-	if backendResources != nil {
-		for _, eu := range backendResources {
-			found := false
-			if configResources != nil {
-				for _, cu := range configResources {
-					if cu.GetID() == eu.GetID() {
-						found = true
-						break
-					}
-				}
+	for _, eu := range backendResources {
+		found := false
+		for _, cu := range configResources {
+			if cu.GetID() == eu.GetID() {
+				found = true
+				break
 			}
-			if !found {
-				if resourceName == "users" {
-					if err := b.DeleteUser(eu.GetID()); err != nil {
-						return err
-					}
+		}
+		if !found {
+			if resourceName == "users" {
+				if err := b.DeleteUser(eu.GetID()); err != nil {
+					return err
+				}
 
-				} else {
-					if err := b.DeleteGroup(eu.GetID()); err != nil {
-						return err
-					}
+			} else {
+				if err := b.DeleteGroup(eu.GetID()); err != nil {
+					return err
 				}
 			}
 		}

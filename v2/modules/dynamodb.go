@@ -41,8 +41,8 @@ func NewBackendDynamodb(c *stns.Config) (model.Backend, error) {
 			groupTable = c.Modules["dynamodb"].(map[string]interface{})["group_table_name"].(string)
 		}
 	}
-
-	db := dynamodb.New(session.New())
+	mySession := session.Must(session.NewSession())
+	db := dynamodb.New(mySession)
 	tables, err := db.ListTables(&dynamodb.ListTablesInput{})
 	if err != nil {
 		return nil, err
@@ -288,6 +288,9 @@ func (b BackendDynamoDB) CreateGroup(v model.UserGroup) error {
 
 func (b BackendDynamoDB) update(table string, v model.UserGroup) error {
 	av, err := dynamodbattribute.MarshalMap(v)
+	if err != nil {
+		return err
+	}
 	input := &dynamodb.PutItemInput{
 		Item:      av,
 		TableName: aws.String(table),

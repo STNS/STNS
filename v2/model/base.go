@@ -27,11 +27,11 @@ type NotFoundError struct {
 
 func NewNotFoundError(r string, v interface{}) NotFoundError {
 	e := NotFoundError{resource: r}
-	switch v.(type) {
+	switch v := v.(type) {
 	case int:
-		e.id = v.(int)
+		e.id = v
 	case string:
-		e.name = v.(string)
+		e.name = v
 	}
 
 	return e
@@ -52,7 +52,7 @@ func errorHandler(res map[string]UserGroup, err error, value interface{}, rtype 
 		return nil, err
 	}
 
-	if res == nil || len(res) == 0 {
+	if len(res) == 0 {
 		return nil, NewNotFoundError(rtype, value)
 	}
 	return res, nil

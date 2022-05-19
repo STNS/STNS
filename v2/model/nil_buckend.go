@@ -31,19 +31,11 @@ func (b BackendNil) Groups() (map[string]UserGroup, error) {
 	return nil, NewNotFoundError("group", "dummy")
 }
 
-func (b BackendNil) highlowUserID(high bool) int {
-	return 0
-}
-
 func (b BackendNil) HighestUserID() int {
 	return 0
 }
 
 func (b BackendNil) LowestUserID() int {
-	return 0
-}
-
-func (b BackendNil) highlowGroupID(high bool) int {
 	return 0
 }
 
@@ -63,10 +55,6 @@ func (b BackendNil) CreateGroup(v UserGroup) error {
 	return nil
 }
 
-func (b BackendNil) create(path string, v UserGroup) error {
-	return nil
-}
-
 func (b BackendNil) DeleteUser(id int) error {
 	return nil
 }
@@ -75,18 +63,10 @@ func (b BackendNil) DeleteGroup(id int) error {
 	return nil
 }
 
-func (b BackendNil) delete(path string) error {
-	return nil
-}
-
 func (b BackendNil) UpdateUser(v UserGroup) error {
 	return nil
 }
 
 func (b BackendNil) UpdateGroup(v UserGroup) error {
-	return nil
-}
-
-func (b BackendNil) update(path string, v UserGroup) error {
 	return nil
 }

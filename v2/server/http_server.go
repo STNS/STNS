@@ -158,7 +158,6 @@ func (s *httpServer) Run() error {
 				ClientAuth:             tls.RequireAndVerifyClientCert,
 			}
 
-			tlsConfig.BuildNameToCertificate()
 			customServer.TLSConfig = tlsConfig
 		}
 	}
@@ -182,7 +181,7 @@ func (s *httpServer) Run() error {
 		}
 
 	}()
-	quit := make(chan os.Signal)
+	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, os.Interrupt, syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGINT)
 	<-quit
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)

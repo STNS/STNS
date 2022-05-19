@@ -95,11 +95,9 @@ func (t BackendTomlFile) LowestGroupID() int {
 
 func tomlFileFindByID(id int, list map[string]UserGroup) (map[string]UserGroup, error) {
 	res := map[string]UserGroup{}
-	if list != nil {
-		for k, v := range list {
-			if id == v.GetID() {
-				res[k] = v
-			}
+	for k, v := range list {
+		if id == v.GetID() {
+			res[k] = v
 		}
 	}
 
@@ -108,21 +106,17 @@ func tomlFileFindByID(id int, list map[string]UserGroup) (map[string]UserGroup, 
 
 func tomlFileFindByName(name string, list map[string]UserGroup) (map[string]UserGroup, error) {
 	res := map[string]UserGroup{}
-	if list != nil {
-		for k, v := range list {
-			if name == v.GetName() {
-				res[k] = v
-			}
+	for k, v := range list {
+		if name == v.GetName() {
+			res[k] = v
 		}
 	}
 	return res, nil
 }
 
 func ensureName(list map[string]UserGroup) {
-	if list != nil {
-		for k, v := range list {
-			v.setName(k)
-		}
+	for k, v := range list {
+		v.setName(k)
 	}
 }
 
@@ -181,14 +175,6 @@ func mergeLinkAttribute(master, current linkAttributers, result map[string][]str
 	return result
 }
 
-func mapSliceToSlice(m map[string][]string) []string {
-	var result []string
-	for _, v := range m {
-		result = append(result, v...)
-	}
-	return result
-}
-
 func isStringsExist(n string, xs []string) bool {
 	for _, x := range xs {
 		if n == x {
@@ -212,11 +198,9 @@ func uniqStrings(xs []string) []string {
 // highest=0 lowest= 1
 func tomlHighLowID(highorlow int, list map[string]UserGroup) int {
 	current := 0
-	if list != nil {
-		for _, v := range list {
-			if current == 0 || (highorlow == 0 && current < v.GetID()) || (highorlow == 1 && current > v.GetID()) {
-				current = v.GetID()
-			}
+	for _, v := range list {
+		if current == 0 || (highorlow == 0 && current < v.GetID()) || (highorlow == 1 && current > v.GetID()) {
+			current = v.GetID()
 		}
 	}
 	return current
@@ -227,7 +211,7 @@ func checkDuplicateID(attr map[string]UserGroup) error {
 
 	for _, a := range attr {
 		if a.GetID() != 0 && b[a.GetID()] {
-			return fmt.Errorf("Duplicate id is not allowed: %d", a.GetID())
+			return fmt.Errorf("duplicate id is not allowed: %d", a.GetID())
 		}
 		b[a.GetID()] = true
 	}
