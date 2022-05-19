@@ -56,11 +56,10 @@ ifeq ($(UNAME_S),Darwin)
 endif
 
 depsdev: ## Installing dependencies for development
-	which staticcheck > /dev/null || $(GO) install honnef.co/go/tools/cmd/staticcheck
-	$(GO) install github.com/tcnksm/ghr
-	$(GO) install golang.org/x/tools/cmd/goimports
-	$(GO) install github.com/git-chglog/git-chglog/cmd/git-chglog
-	$(GO) install github.com/ugorji/go/codec@none
+	which staticcheck > /dev/null || $(GO) install honnef.co/go/tools/cmd/staticcheck@latest
+	which ghr > /dev/null || $(GO) install github.com/tcnksm/ghr@latest
+	which goimports > /dev/null ||$(GO) install golang.org/x/tools/cmd/goimports@latest
+	which git-chglog > /dev/null ||$(GO) install github.com/git-chglog/git-chglog/cmd/git-chglog@latest
 	cd $(PACKAGE_DIR) && $(GO) mod tidy
 
 changelog:
