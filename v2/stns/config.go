@@ -31,11 +31,6 @@ func (t *tomlDecoder) decode(path string, conf *Config) error {
 }
 
 func (y *yamlDecoder) decode(path string, conf *Config) error {
-	_, err := toml.DecodeFile(path, conf)
-	if err != nil {
-		return err
-	}
-
 	buf, err := ioutil.ReadFile(path)
 	if err != nil {
 		return err
