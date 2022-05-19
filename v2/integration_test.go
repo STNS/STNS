@@ -24,9 +24,6 @@ const testHost = "http://localhost:1104"
 // testEndpoint is endpoint for API
 const testEndpoint = testHost + "/v1"
 
-// testMime is request content-type
-const testMime = "application/json"
-
 func TestMain(m *testing.M) {
 	flag.Parse()
 	result := m.Run()
@@ -43,6 +40,9 @@ func TestHTTPGetUserList(t *testing.T) {
 		t.Fatal(err)
 	}
 	body, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		t.Fatal(err)
+	}
 	res.Body.Close()
 
 	if res.StatusCode != http.StatusOK {
@@ -88,6 +88,9 @@ func TestHTTPGetUserByName(t *testing.T) {
 		t.Fatal(err)
 	}
 	body, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		t.Fatal(err)
+	}
 	res.Body.Close()
 
 	if res.StatusCode != http.StatusOK {
@@ -128,6 +131,9 @@ func TestHTTPGetUserByID(t *testing.T) {
 		t.Fatal(err)
 	}
 	body, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		t.Fatal(err)
+	}
 	res.Body.Close()
 
 	if res.StatusCode != http.StatusOK {
@@ -168,6 +174,9 @@ func TestHTTPGetGroupList(t *testing.T) {
 		t.Fatal(err)
 	}
 	body, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		t.Fatal(err)
+	}
 	res.Body.Close()
 
 	if res.StatusCode != http.StatusOK {
@@ -213,6 +222,9 @@ func TestHTTPGetGroupByName(t *testing.T) {
 		t.Fatal(err)
 	}
 	body, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		t.Fatal(err)
+	}
 	res.Body.Close()
 
 	if res.StatusCode != http.StatusOK {
@@ -253,6 +265,9 @@ func TestHTTPGetGroupByID(t *testing.T) {
 		t.Fatal(err)
 	}
 	body, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		t.Fatal(err)
+	}
 	res.Body.Close()
 
 	if res.StatusCode != http.StatusOK {
@@ -293,6 +308,9 @@ func TestHTTPRoot(t *testing.T) {
 		t.Fatal(err)
 	}
 	body, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		t.Fatal(err)
+	}
 	res.Body.Close()
 
 	if res.StatusCode != http.StatusOK {
@@ -311,8 +329,6 @@ var (
 	ldapPort   uint16   = 1104
 	baseDN     string   = "cn=test,dc=stns,dc=local"
 	Attributes []string = []string{""}
-	user       string   = "test"
-	passwd     string   = "test1234"
 	BindDN     string   = "cn=test,dc=stns,dc=local"
 	BindPW     string   = "test1234"
 )

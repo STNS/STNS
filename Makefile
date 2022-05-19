@@ -56,11 +56,10 @@ ifeq ($(UNAME_S),Darwin)
 endif
 
 depsdev: ## Installing dependencies for development
-	$(GO) get -u golang.org/x/lint/golint
-	$(GO) get -u github.com/tcnksm/ghr
-	$(GO) get -u golang.org/x/tools/cmd/goimports
-	$(GO) get -u github.com/git-chglog/git-chglog/cmd/git-chglog
-	$(GO) get -u github.com/ugorji/go/codec@none
+	which staticcheck > /dev/null || $(GO) install honnef.co/go/tools/cmd/staticcheck@latest
+	which ghr > /dev/null || $(GO) install github.com/tcnksm/ghr@latest
+	which goimports > /dev/null ||$(GO) install golang.org/x/tools/cmd/goimports@latest
+	which git-chglog > /dev/null ||$(GO) install github.com/git-chglog/git-chglog/cmd/git-chglog@latest
 	cd $(PACKAGE_DIR) && $(GO) mod tidy
 
 changelog:
@@ -73,7 +72,7 @@ test: ## Run test
 
 lint: ## Exec golint
 	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Linting$(RESET)"
-	cd $(PACKAGE_DIR) && golint -min_confidence 1.1 -set_exit_status
+	cd $(PACKAGE_DIR) && $(GOPATH)/bin/staticcheck ./...
 
 server: ## Run server
 	cd $(PACKAGE_DIR) && $(GO) run github.com/STNS/STNS/v2 --listen 127.0.0.1:1104 --pidfile ./stns.pid --config ./stns/integration.toml --protocol $(STNS_PROTOCOL) server
@@ -93,9 +92,10 @@ integration_ldap: ## Run integration test after Server wakeup
 	./misc/server stop || true
 
 build: ## Build server
-	cd $(PACKAGE_DIR) && $(GO) build -ldflags "-X main.version=$(VERSION) -X main.revision=$(REVISION) -X \"main.goversion=$(GOVERSION)\" -X \"main.builddate=$(BUILDDATE)\" -X \"main.builduser=$(ME)\"" -o $(BUILD)/stns
-	cd $(PACKAGE_DIR) && $(GO) build -buildmode=plugin -o $(BUILD)/mod_stns_etcd.so modules/etcd.go modules/module.go
-	cd $(PACKAGE_DIR) && $(GO) build -buildmode=plugin -o $(BUILD)/mod_stns_dynamodb.so modules/dynamodb.go modules/module.go
+	git config --global --add safe.directory $(GOPATH)/src/github.com/STNS/STNS
+	cd $(PACKAGE_DIR) && $(GO) build -buildvcs=false -ldflags "-X main.version=$(VERSION) -X main.revision=$(REVISION) -X \"main.goversion=$(GOVERSION)\" -X \"main.builddate=$(BUILDDATE)\" -X \"main.builduser=$(ME)\"" -o $(BUILD)/stns
+	cd $(PACKAGE_DIR) && $(GO) build -buildvcs=false -buildmode=plugin -o $(BUILD)/mod_stns_etcd.so modules/etcd.go modules/module.go
+	cd $(PACKAGE_DIR) && $(GO) build -buildvcs=false -buildmode=plugin -o $(BUILD)/mod_stns_dynamodb.so modules/dynamodb.go modules/module.go
 
 install: build ## Install
 	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Installing as Server$(RESET)"
@@ -130,7 +130,7 @@ rpm: source_for_rpm ## Packaging for RPM
 	rpmbuild -ba rpm/stns.spec
 	cp /root/rpmbuild/RPMS/*/*.rpm /go/src/github.com/STNS/STNS/builds
 
-SUPPORTOS=centos7 centos8 ubuntu16 ubuntu18 ubuntu20 debian8 debian9 debian10 debian11
+SUPPORTOS=centos7 centos8 ubuntu18 ubuntu20 ubuntu22 debian10 debian11
 pkg: ## Create some distribution packages
 	rm -rf builds && mkdir builds
 	for i in $(SUPPORTOS); do \

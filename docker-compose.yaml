@@ -5,7 +5,7 @@ services:
       context: .
       dockerfile: dockerfiles/Dockerfile.centos-8
       args:
-        GO_VERSION: 1.17.2
+        GO_VERSION: 1.18.2
     volumes:
       - .:/go/src/github.com/STNS/STNS
       - ~/pkg:/go/pkg
@@ -17,31 +17,19 @@ services:
       context: .
       dockerfile: dockerfiles/Dockerfile.centos-7
       args:
-        GO_VERSION: 1.17.2
+        GO_VERSION: 1.18.2
     volumes:
       - .:/go/src/github.com/STNS/STNS
       - ~/pkg:/go/pkg
     environment:
       DIST: el7
     command: make rpm
-  ubuntu16:
-    build:
-      context: .
-      dockerfile: dockerfiles/Dockerfile.ubuntu-16
-      args:
-        GO_VERSION: 1.17.2
-    volumes:
-      - .:/go/src/github.com/STNS/STNS
-      - ~/pkg:/go/pkg
-    environment:
-      DIST: xenial
-    command: make deb
   ubuntu18:
     build:
       context: .
       dockerfile: dockerfiles/Dockerfile.ubuntu-18
       args:
-        GO_VERSION: 1.17.2
+        GO_VERSION: 1.18.2
     volumes:
       - .:/go/src/github.com/STNS/STNS
       - ~/pkg:/go/pkg
@@ -53,43 +41,31 @@ services:
       context: .
       dockerfile: dockerfiles/Dockerfile.ubuntu-20
       args:
-        GO_VERSION: 1.17.2
+        GO_VERSION: 1.18.2
     volumes:
       - .:/go/src/github.com/STNS/STNS
       - ~/pkg:/go/pkg
     environment:
       DIST: focal
     command: make deb
-  debian8:
+  ubuntu22:
     build:
       context: .
-      dockerfile: dockerfiles/Dockerfile.debian-8
+      dockerfile: dockerfiles/Dockerfile.ubuntu-22
       args:
-        GO_VERSION: 1.17.2
+        GO_VERSION: 1.18.2
     volumes:
       - .:/go/src/github.com/STNS/STNS
       - ~/pkg:/go/pkg
     environment:
-      DIST: jessie
-    command: make deb
-  debian9:
-    build:
-      context: .
-      dockerfile: dockerfiles/Dockerfile.debian-9
-      args:
-        GO_VERSION: 1.17.2
-    volumes:
-      - .:/go/src/github.com/STNS/STNS
-      - ~/pkg:/go/pkg
-    environment:
-      DIST: stretch
+      DIST: jammy
     command: make deb
   debian10:
     build:
       context: .
       dockerfile: dockerfiles/Dockerfile.debian-10
       args:
-        GO_VERSION: 1.17.2
+        GO_VERSION: 1.18.2
     volumes:
       - .:/go/src/github.com/STNS/STNS
       - ~/pkg:/go/pkg
@@ -101,11 +77,10 @@ services:
       context: .
       dockerfile: dockerfiles/Dockerfile.debian-11
       args:
-        GO_VERSION: 1.17.2
+        GO_VERSION: 1.18.2
     volumes:
       - .:/go/src/github.com/STNS/STNS
       - ~/pkg:/go/pkg
     environment:
       DIST: bullseye
     command: make deb
-

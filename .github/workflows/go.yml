@@ -24,6 +24,8 @@ jobs:
 
     - name: Test
       run: make ci
+      env:
+        GOPATH: /home/runner/go
     services:
       etcd:
         image: bitnami/etcd:3.3.15

@@ -22,10 +22,6 @@ type (
 	TokenAuthValidator func(string) bool
 )
 
-const (
-	token = "Token"
-)
-
 // TokenAuthWithConfig returns an TokenAuth middleware with config.
 // See `TokenAuth()`.
 func TokenAuthWithConfig(config TokenAuthConfig) echo.MiddlewareFunc {

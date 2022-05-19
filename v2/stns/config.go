@@ -31,8 +31,6 @@ func (t *tomlDecoder) decode(path string, conf *Config) error {
 }
 
 func (y *yamlDecoder) decode(path string, conf *Config) error {
-	_, err := toml.DecodeFile(path, conf)
-
 	buf, err := ioutil.ReadFile(path)
 	if err != nil {
 		return err
@@ -57,7 +55,7 @@ func downloadFromS3(path, key string) (*os.File, error) {
 	}
 
 	if u.Host == "" || u.Path == "" {
-		return nil, errors.New("Bucket name and path are required to use S3")
+		return nil, errors.New("bucket name and path are required to use S3")
 	}
 	tmpDir := os.TempDir()
 	tmpFile, err := ioutil.TempFile(tmpDir, "stns-")
@@ -197,7 +195,7 @@ func includeConfigFile(config *Config, confPath, include string) error {
 
 	if strings.HasPrefix(confPath, "s3:") {
 		if strings.HasPrefix(include, "/") {
-			return errors.New("Absolute path can not be used when using S3")
+			return errors.New("absolute path can not be used when using S3")
 		}
 
 		f, err := downloadFromS3(confPath, include)
