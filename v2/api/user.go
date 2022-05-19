@@ -21,7 +21,7 @@ func getUsers(c echo.Context) error {
 		for k, v := range c.QueryParams() {
 			switch k {
 			case "id":
-				id, err := strconv.Atoi(v[0])
+				id, err := strconv.Atoi(sanitizeQuery(v[0]))
 				if err != nil {
 					return c.JSON(http.StatusBadRequest, err)
 				}
@@ -31,7 +31,7 @@ func getUsers(c echo.Context) error {
 					return errorResponse(c, err)
 				}
 			case "name":
-				r, err = backend.FindUserByName(v[0])
+				r, err = backend.FindUserByName(sanitizeQuery(v[0]))
 				if err != nil {
 					return errorResponse(c, err)
 				}
@@ -55,7 +55,7 @@ type PasswordChangeParams struct {
 
 func updateUserPassword(c echo.Context) (ret error) {
 	backend := c.Get(middleware.BackendKey).(model.Backend)
-	name := c.Param("name")
+	name := sanitizeQuery(c.Param("name"))
 
 	params := PasswordChangeParams{}
 	if err := c.Bind(&params); err != nil {

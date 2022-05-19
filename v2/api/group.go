@@ -18,7 +18,7 @@ func getGroups(c echo.Context) error {
 		for k, v := range c.QueryParams() {
 			switch k {
 			case "id":
-				id, err := strconv.Atoi(v[0])
+				id, err := strconv.Atoi(sanitizeQuery(v[0]))
 				if err != nil {
 					return c.JSON(http.StatusBadRequest, err)
 				}
@@ -28,7 +28,7 @@ func getGroups(c echo.Context) error {
 					return errorResponse(c, err)
 				}
 			case "name":
-				r, err = backend.FindGroupByName(v[0])
+				r, err = backend.FindGroupByName(sanitizeQuery(v[0]))
 				if err != nil {
 					return errorResponse(c, err)
 				}
