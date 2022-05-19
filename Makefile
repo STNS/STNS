@@ -56,7 +56,7 @@ ifeq ($(UNAME_S),Darwin)
 endif
 
 depsdev: ## Installing dependencies for development
-	$(GO) get -u golang.org/x/lint/golint
+	which staticcheck > /dev/null || $(GO) get honnef.co/go/tools/cmd/staticcheck
 	$(GO) get -u github.com/tcnksm/ghr
 	$(GO) get -u golang.org/x/tools/cmd/goimports
 	$(GO) get -u github.com/git-chglog/git-chglog/cmd/git-chglog
@@ -73,7 +73,7 @@ test: ## Run test
 
 lint: ## Exec golint
 	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Linting$(RESET)"
-	cd $(PACKAGE_DIR) && golint -min_confidence 1.1 -set_exit_status
+	cd $(PACKAGE_DIR) && $(GOPATH)/bin/staticcheck ./...
 
 server: ## Run server
 	cd $(PACKAGE_DIR) && $(GO) run github.com/STNS/STNS/v2 --listen 127.0.0.1:1104 --pidfile ./stns.pid --config ./stns/integration.toml --protocol $(STNS_PROTOCOL) server
@@ -93,9 +93,10 @@ integration_ldap: ## Run integration test after Server wakeup
 	./misc/server stop || true
 
 build: ## Build server
-	cd $(PACKAGE_DIR) && $(GO) build -ldflags "-X main.version=$(VERSION) -X main.revision=$(REVISION) -X \"main.goversion=$(GOVERSION)\" -X \"main.builddate=$(BUILDDATE)\" -X \"main.builduser=$(ME)\"" -o $(BUILD)/stns
-	cd $(PACKAGE_DIR) && $(GO) build -buildmode=plugin -o $(BUILD)/mod_stns_etcd.so modules/etcd.go modules/module.go
-	cd $(PACKAGE_DIR) && $(GO) build -buildmode=plugin -o $(BUILD)/mod_stns_dynamodb.so modules/dynamodb.go modules/module.go
+	git config --global --add safe.directory $(GOPATH)/src/github.com/STNS/STNS
+	cd $(PACKAGE_DIR) && $(GO) build -buildvcs=false -ldflags "-X main.version=$(VERSION) -X main.revision=$(REVISION) -X \"main.goversion=$(GOVERSION)\" -X \"main.builddate=$(BUILDDATE)\" -X \"main.builduser=$(ME)\"" -o $(BUILD)/stns
+	cd $(PACKAGE_DIR) && $(GO) build -buildvcs=false -buildmode=plugin -o $(BUILD)/mod_stns_etcd.so modules/etcd.go modules/module.go
+	cd $(PACKAGE_DIR) && $(GO) build -buildvcs=false -buildmode=plugin -o $(BUILD)/mod_stns_dynamodb.so modules/dynamodb.go modules/module.go
 
 install: build ## Install
 	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Installing as Server$(RESET)"
