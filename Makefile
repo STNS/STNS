@@ -72,7 +72,6 @@ test: ## Run test
 
 lint: ## Exec golint
 	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Linting$(RESET)"
-	find / -name staticcheck
 	cd $(PACKAGE_DIR) && $(GOPATH)/bin/staticcheck ./...
 
 server: ## Run server
