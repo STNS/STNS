@@ -6,7 +6,7 @@ import (
 
 	"github.com/STNS/STNS/v2/middleware"
 	"github.com/STNS/STNS/v2/model"
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
 )
 
 func getGroups(c echo.Context) error {

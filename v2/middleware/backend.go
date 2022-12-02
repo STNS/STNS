@@ -2,7 +2,7 @@ package middleware
 
 import (
 	"github.com/STNS/STNS/v2/model"
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
 )
 
 const (

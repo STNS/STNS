@@ -11,7 +11,7 @@ import (
 	"github.com/STNS/STNS/v2/middleware"
 	"github.com/STNS/STNS/v2/model"
 	"github.com/STNS/STNS/v2/stns"
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
 )
 
