@@ -18,8 +18,8 @@ import (
 	"github.com/STNS/STNS/v2/model"
 	"github.com/STNS/STNS/v2/stns"
 	"github.com/facebookgo/pidfile"
-	"github.com/labstack/echo"
-	emiddleware "github.com/labstack/echo/middleware"
+	"github.com/labstack/echo/v4"
+	emiddleware "github.com/labstack/echo/v4/middleware"
 
 	"github.com/labstack/gommon/log"
 
