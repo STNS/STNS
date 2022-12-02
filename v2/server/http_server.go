@@ -4,7 +4,6 @@ import (
 	"context"
 	"crypto/tls"
 	"crypto/x509"
-	"io/ioutil"
 	stdLog "log"
 	"net/http"
 	"os"
@@ -145,7 +144,7 @@ func (s *httpServer) Run() error {
 	// tls client authentication
 	if s.config.TLS != nil {
 		if _, err := os.Stat(s.config.TLS.CA); err == nil {
-			ca, err := ioutil.ReadFile(s.config.TLS.CA)
+			ca, err := os.ReadFile(s.config.TLS.CA)
 			if err != nil {
 				return err
 			}

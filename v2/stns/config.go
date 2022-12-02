@@ -3,7 +3,6 @@ package stns
 import (
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -31,7 +30,7 @@ func (t *tomlDecoder) decode(path string, conf *Config) error {
 }
 
 func (y *yamlDecoder) decode(path string, conf *Config) error {
-	buf, err := ioutil.ReadFile(path)
+	buf, err := os.ReadFile(path)
 	if err != nil {
 		return err
 	}
@@ -58,7 +57,7 @@ func downloadFromS3(path, key string) (*os.File, error) {
 		return nil, errors.New("bucket name and path are required to use S3")
 	}
 	tmpDir := os.TempDir()
-	tmpFile, err := ioutil.TempFile(tmpDir, "stns-")
+	tmpFile, err := os.CreateTemp(tmpDir, "stns-")
 	if err != nil {
 		return nil, err
 	}
