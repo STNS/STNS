@@ -1,6 +1,6 @@
 module github.com/STNS/STNS/v2
 
-go 1.17
+go 1.19
 
 replace github.com/dgrijalva/jwt-go => github.com/golang-jwt/jwt v3.2.0+incompatible
 
