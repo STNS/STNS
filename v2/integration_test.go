@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"os"
 	"testing"
@@ -39,7 +39,7 @@ func TestHTTPGetUserList(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	body, err := ioutil.ReadAll(res.Body)
+	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -87,7 +87,7 @@ func TestHTTPGetUserByName(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	body, err := ioutil.ReadAll(res.Body)
+	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -130,7 +130,7 @@ func TestHTTPGetUserByID(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	body, err := ioutil.ReadAll(res.Body)
+	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -173,7 +173,7 @@ func TestHTTPGetGroupList(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	body, err := ioutil.ReadAll(res.Body)
+	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -221,7 +221,7 @@ func TestHTTPGetGroupByName(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	body, err := ioutil.ReadAll(res.Body)
+	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -264,7 +264,7 @@ func TestHTTPGetGroupByID(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	body, err := ioutil.ReadAll(res.Body)
+	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -307,7 +307,7 @@ func TestHTTPRoot(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	body, err := ioutil.ReadAll(res.Body)
+	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		t.Fatal(err)
 	}
