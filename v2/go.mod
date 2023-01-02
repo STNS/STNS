@@ -11,12 +11,12 @@ require (
 	github.com/go-yaml/yaml v2.1.0+incompatible
 	github.com/iancoleman/strcase v0.2.0
 	github.com/jpillora/ipfilter v1.2.8
-	github.com/labstack/echo/v4 v4.9.1
+	github.com/labstack/echo/v4 v4.10.0
 	github.com/labstack/gommon v0.4.0
 	github.com/lestrrat/go-server-starter v0.0.0-20180220115249-6ac0b358431b
 	github.com/lib/pq v1.10.7
 	github.com/nmcclain/ldap v0.0.0-20210720162743-7f8d1e44eeba
-	github.com/stretchr/testify v1.8.0
+	github.com/stretchr/testify v1.8.1
 	github.com/tredoe/osutil/v2 v2.0.0-rc.16
 	github.com/urfave/cli v1.22.10
 	go.etcd.io/etcd/client/v2 v2.305.0
@@ -55,7 +55,7 @@ require (
 	golang.org/x/crypto v0.3.0 // indirect
 	golang.org/x/sys v0.3.0 // indirect
 	golang.org/x/text v0.5.0 // indirect
-	golang.org/x/time v0.0.0-20201208040808-7e3f01d25324 // indirect
+	golang.org/x/time v0.2.0 // indirect
 	gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15 // indirect
 	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
