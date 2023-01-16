@@ -18,7 +18,7 @@ require (
 	github.com/nmcclain/ldap v0.0.0-20210720162743-7f8d1e44eeba
 	github.com/stretchr/testify v1.8.1
 	github.com/tredoe/osutil/v2 v2.0.0-rc.16
-	github.com/urfave/cli v1.22.10
+	github.com/urfave/cli v1.22.11
 	go.etcd.io/etcd/client/v2 v2.305.0
 	golang.org/x/net v0.5.0
 	gopkg.in/go-playground/validator.v9 v9.31.0
