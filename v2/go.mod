@@ -20,7 +20,7 @@ require (
 	github.com/tredoe/osutil/v2 v2.0.0-rc.16
 	github.com/urfave/cli v1.22.12
 	go.etcd.io/etcd/client/v2 v2.305.7
-	golang.org/x/net v0.6.0
+	golang.org/x/net v0.7.0
 	gopkg.in/go-playground/validator.v9 v9.31.0
 	gopkg.in/redis.v5 v5.2.9
 )
