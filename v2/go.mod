@@ -19,7 +19,7 @@ require (
 	github.com/stretchr/testify v1.8.2
 	github.com/tredoe/osutil/v2 v2.0.0-rc.16
 	github.com/urfave/cli v1.22.13
-	go.etcd.io/etcd/client/v2 v2.305.8
+	go.etcd.io/etcd/client/v2 v2.305.9
 	golang.org/x/net v0.9.0
 	gopkg.in/go-playground/validator.v9 v9.31.0
 	gopkg.in/redis.v5 v5.2.9
@@ -50,8 +50,8 @@ require (
 	github.com/tomasen/realip v0.0.0-20180522021738-f0c99a92ddce // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasttemplate v1.2.2 // indirect
-	go.etcd.io/etcd/api/v3 v3.5.8 // indirect
-	go.etcd.io/etcd/client/pkg/v3 v3.5.8 // indirect
+	go.etcd.io/etcd/api/v3 v3.5.9 // indirect
+	go.etcd.io/etcd/client/pkg/v3 v3.5.9 // indirect
 	golang.org/x/crypto v0.6.0 // indirect
 	golang.org/x/sys v0.7.0 // indirect
 	golang.org/x/text v0.9.0 // indirect
