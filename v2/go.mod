@@ -5,7 +5,7 @@ go 1.19
 replace github.com/dgrijalva/jwt-go => github.com/golang-jwt/jwt v3.2.0+incompatible
 
 require (
-	github.com/BurntSushi/toml v1.2.1
+	github.com/BurntSushi/toml v1.3.0
 	github.com/aws/aws-sdk-go v1.44.275
 	github.com/facebookgo/pidfile v0.0.0-20150612191647-f242e2999868
 	github.com/go-yaml/yaml v2.1.0+incompatible
