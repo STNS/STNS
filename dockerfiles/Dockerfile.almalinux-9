@@ -1,0 +1,8 @@
+FROM almalinux:9
+MAINTAINER pyama86 <www.kazu.com@gmail.com>
+RUN dnf install -y epel-release rpmdevtools make git
+
+COPY . /go/src/github.com/STNS/STNS
+WORKDIR /go/src/github.com/STNS/STNS
+RUN mkdir -p /root/rpmbuild/{BUILD,RPMS,SOURCES,SPECS,SRPMS}
+RUN sed -i "s;%_build_name_fmt.*;%_build_name_fmt\t%%{ARCH}/%%{NAME}-%%{VERSION}-%%{RELEASE}.%%{ARCH}.el9.rpm;" /usr/lib/rpm/macros

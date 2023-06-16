@@ -28,6 +28,8 @@ BINDIR=$(PREFIX)/sbin
 #override_dh_auto_configure:
 #       dh_auto_configure -- #  -DCMAKE_LIBRARY_PATH=$(DEB_HOST_MULTIARCH)
 
+override_dh_auto_build:
+	echo "skip build"
 override_dh_auto_install:
 	mkdir -p $(BINDIR) $(CONFDIR)/init.d
 	dh_auto_install -- PREFIX=$(PREFIX) BINDIR=$(BINDIR)

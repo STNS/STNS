@@ -2,7 +2,6 @@ VERSION = $(shell cat version)
 REVISION = $(shell git describe --always)
 TEST_LIST = $(shell cd v2 && go list ./...)
 
-GO ?= GO111MODULE=on go
 INFO_COLOR=\033[1;34m
 RESET=\033[0m
 BOLD=\033[1m
@@ -13,7 +12,6 @@ PREFIX=/usr
 BINDIR=$(PREFIX)/sbin
 MODDIR ?= $(PREFIX)/local/stns/modules.d
 SOURCES=Makefile v2/go.mod v2/go.sum version v2 package/
-DISTS=centos7 centos6 ubuntu16
 ETCD_VER=3.3.10
 REDIS_VER=5.0.4
 BUILD:=$(shell pwd)/tmp/bin
@@ -24,6 +22,10 @@ REVISION=$(shell git describe --always)
 GOVERSION=$(shell go version)
 BUILDDATE=$(shell date '+%Y/%m/%d %H:%M:%S %Z')
 STNS_PROTOCOL ?= "http"
+GOPATH ?= /go
+GOOS=linux
+GOARCH=amd64
+GO=GO111MODULE=on GOOS=$(GOOS) GOARCH=$(GOARCH) go
 
 ME=$(shell whoami)
 default: build
@@ -97,7 +99,7 @@ build: ## Build server
 	cd $(PACKAGE_DIR) && $(GO) build -buildvcs=false -buildmode=plugin -o $(BUILD)/mod_stns_etcd.so modules/etcd.go modules/module.go
 	cd $(PACKAGE_DIR) && $(GO) build -buildvcs=false -buildmode=plugin -o $(BUILD)/mod_stns_dynamodb.so modules/dynamodb.go modules/module.go
 
-install: build ## Install
+install: ## Install
 	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Installing as Server$(RESET)"
 	cp $(BUILD)/stns $(BINDIR)/stns
 	mkdir -p $(MODDIR)/
@@ -117,6 +119,8 @@ source_for_rpm: ## Create source for RPM
 	rm -rf tmp.$(DIST) stns-v2-$(VERSION).tar.gz
 	mkdir -p tmp.$(DIST)/stns-v2-$(VERSION)
 	cp -r $(SOURCES) tmp.$(DIST)/stns-v2-$(VERSION)
+	mkdir -p tmp.$(DIST)/stns-v2-$(VERSION)/tmp/bin
+	cp -r tmp/bin/* tmp.$(DIST)/stns-v2-$(VERSION)/tmp/bin
 	cd tmp.$(DIST) && \
 		tar cf stns-v2-$(VERSION).tar stns-v2-$(VERSION) && \
 		gzip -9 stns-v2-$(VERSION).tar
@@ -130,8 +134,8 @@ rpm: source_for_rpm ## Packaging for RPM
 	rpmbuild -ba rpm/stns.spec
 	cp /root/rpmbuild/RPMS/*/*.rpm /go/src/github.com/STNS/STNS/builds
 
-SUPPORTOS=centos7 centos8 ubuntu18 ubuntu20 ubuntu22 debian10 debian11
-pkg: ## Create some distribution packages
+SUPPORTOS=centos7 almalinux9 ubuntu20 ubuntu22 debian10 debian11
+pkg: build ## Create some distribution packages
 	rm -rf builds && mkdir builds
 	for i in $(SUPPORTOS); do \
 	  docker-compose build $$i; \
@@ -143,6 +147,8 @@ source_for_deb: ## Create source for DEB
 	rm -rf tmp.$(DIST) stns-v2-$(VERSION).orig.tar.gz
 	mkdir -p tmp.$(DIST)/stns-v2-$(VERSION)
 	cp -r $(SOURCES) tmp.$(DIST)/stns-v2-$(VERSION)
+	mkdir -p tmp.$(DIST)/stns-v2-$(VERSION)/tmp/bin
+	cp -r tmp/bin/* tmp.$(DIST)/stns-v2-$(VERSION)/tmp/bin
 	cd tmp.$(DIST) && \
 	tar zcf stns-v2-$(VERSION).tar.gz stns-v2-$(VERSION)
 	mv tmp.$(DIST)/stns-v2-$(VERSION).tar.gz tmp.$(DIST)/stns-v2-$(VERSION).orig.tar.gz

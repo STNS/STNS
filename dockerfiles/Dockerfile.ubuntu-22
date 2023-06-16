@@ -1,24 +1,9 @@
 FROM ubuntu:jammy
 MAINTAINER pyama86 <www.kazu.com@gmail.com>
 
+ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get -qqy update && \
-    apt-get install -qqy tzdata && \
-    apt-get install -qqy gcc make debhelper dh-make clang git curl devscripts
-ARG GO_VERSION
-
-ENV FILE go$GO_VERSION.linux-amd64.tar.gz
-ENV URL https://storage.googleapis.com/golang/$FILE
-
-ENV GOPATH /go
-ENV PATH $GOPATH/bin:/usr/local/go/bin:$PATH
-
-RUN set -eux &&\
-  curl -OL $URL &&\
-	tar -C /usr/local -xzf $FILE &&\
-	rm $FILE &&\
-  mkdir -p "$GOPATH/src" "$GOPATH/bin" && chmod -R 777 "$GOPATH"
-RUN ln -s /usr/local/go/bin/go /bin/go
-
+    apt-get install -qqy gcc make debhelper dh-make devscripts git
 ENV USER root
-ADD . /go/src/github.com/STNS/STNS
+COPY . /go/src/github.com/STNS/STNS
 WORKDIR /go/src/github.com/STNS/STNS

@@ -32,9 +32,6 @@ This server can easily manage Linux user group with TOML format setting file.
 %setup -q -n %{name}-%{version}
 
 %build
-export GOOS=linux
-export GOARCH=%{gohostarch}
-make
 
 %install
 %{__rm} -rf %{buildroot}

@@ -1,47 +1,29 @@
 version: '3'
 services:
-  centos8:
+  almalinux9:
     build:
       context: .
-      dockerfile: dockerfiles/Dockerfile.centos-8
-      args:
-        GO_VERSION: 1.18.2
+      dockerfile: dockerfiles/Dockerfile.almalinux-9
     volumes:
       - .:/go/src/github.com/STNS/STNS
       - ~/pkg:/go/pkg
     environment:
-      DIST: el8
+      DIST: el9
     command: make rpm
   centos7:
     build:
       context: .
       dockerfile: dockerfiles/Dockerfile.centos-7
-      args:
-        GO_VERSION: 1.18.2
     volumes:
       - .:/go/src/github.com/STNS/STNS
       - ~/pkg:/go/pkg
     environment:
       DIST: el7
     command: make rpm
-  ubuntu18:
-    build:
-      context: .
-      dockerfile: dockerfiles/Dockerfile.ubuntu-18
-      args:
-        GO_VERSION: 1.18.2
-    volumes:
-      - .:/go/src/github.com/STNS/STNS
-      - ~/pkg:/go/pkg
-    environment:
-      DIST: bionic
-    command: make deb
   ubuntu20:
     build:
       context: .
       dockerfile: dockerfiles/Dockerfile.ubuntu-20
-      args:
-        GO_VERSION: 1.18.2
     volumes:
       - .:/go/src/github.com/STNS/STNS
       - ~/pkg:/go/pkg
@@ -52,8 +34,6 @@ services:
     build:
       context: .
       dockerfile: dockerfiles/Dockerfile.ubuntu-22
-      args:
-        GO_VERSION: 1.18.2
     volumes:
       - .:/go/src/github.com/STNS/STNS
       - ~/pkg:/go/pkg
@@ -64,8 +44,6 @@ services:
     build:
       context: .
       dockerfile: dockerfiles/Dockerfile.debian-10
-      args:
-        GO_VERSION: 1.18.2
     volumes:
       - .:/go/src/github.com/STNS/STNS
       - ~/pkg:/go/pkg
@@ -76,8 +54,6 @@ services:
     build:
       context: .
       dockerfile: dockerfiles/Dockerfile.debian-11
-      args:
-        GO_VERSION: 1.18.2
     volumes:
       - .:/go/src/github.com/STNS/STNS
       - ~/pkg:/go/pkg
