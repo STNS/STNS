@@ -25,7 +25,7 @@ STNS_PROTOCOL ?= "http"
 GOPATH ?= /go
 GOOS=linux
 GOARCH=amd64
-GO=GO111MODULE=on GOOS=$(GOOS) GOARCH=$(GOARCH) go
+GO=GO111MODULE=on CGO_ENABLED=0 GOOS=$(GOOS) GOARCH=$(GOARCH) go
 
 ME=$(shell whoami)
 default: build
