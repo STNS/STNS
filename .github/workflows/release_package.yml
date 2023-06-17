@@ -1,0 +1,24 @@
+on:
+  push:
+    tags:
+      - 'v*'
+name: Release
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v1
+      - name: build
+        run: make pkg
+      - name: donwload ghr
+        run: |
+          curl -L -O -s https://github.com/tcnksm/ghr/releases/download/v0.16.0/ghr_v0.16.0_linux_amd64.tar.gz
+          tar zxf ghr_v0.16.0_linux_amd64.tar.gz
+          sudo mv ghr_v0.16.0_linux_amd64/ghr /usr/bin
+      - name: release
+        run: make github_release

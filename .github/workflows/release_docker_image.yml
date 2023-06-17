@@ -25,3 +25,6 @@ jobs:
         username: pyama86
         password: ${{ secrets.PTA }}
     - run: make push_image
+
+
+

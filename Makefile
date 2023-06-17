@@ -1,4 +1,4 @@
-VERSION = $(shell cat version)
+VERSION = $(git describe --tags --abbrev=0|sed -e 's/v//g')
 REVISION = $(shell git describe --always)
 TEST_LIST = $(shell cd v2 && go list ./...)
 
