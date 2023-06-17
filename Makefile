@@ -70,7 +70,7 @@ changelog:
 test: ## Run test
 	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Testing$(RESET) (require: etcd,redis)"
 	cd $(PACKAGE_DIR) && $(GO) test $(TEST_LIST) -v -timeout=30s -parallel=4
-	cd $(PACKAGE_DIR) && $(GO) test $(TEST_LIST) -race
+	cd $(PACKAGE_DIR) && $(GO) CGO_ENABLE=1 test $(TEST_LIST) -race
 
 lint: ## Exec golint
 	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Linting$(RESET)"
