@@ -25,7 +25,7 @@ STNS_PROTOCOL ?= "http"
 GOPATH ?= /go
 GOOS=linux
 GOARCH=amd64
-GO=GO111MODULE=on GOOS=$(GOOS) GOARCH=$(GOARCH) go
+GO=GO111MODULE=on CGO_ENABLED=0 GOOS=$(GOOS) GOARCH=$(GOARCH) go
 
 ME=$(shell whoami)
 default: build
@@ -70,7 +70,7 @@ changelog:
 test: ## Run test
 	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Testing$(RESET) (require: etcd,redis)"
 	cd $(PACKAGE_DIR) && $(GO) test $(TEST_LIST) -v -timeout=30s -parallel=4
-	cd $(PACKAGE_DIR) && $(GO) test $(TEST_LIST) -race
+	cd $(PACKAGE_DIR) && CGO_ENABLE=1 go test $(TEST_LIST) -race
 
 lint: ## Exec golint
 	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Linting$(RESET)"
