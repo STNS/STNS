@@ -139,7 +139,7 @@ version:
 	@git describe --tags --abbrev=0|sed -e 's/v//g' > version
 
 SUPPORTOS=centos7 almalinux9 ubuntu20 ubuntu22 debian10 debian11
-pkg: version build ## Create some distribution packages
+pkg: build ## Create some distribution packages
 	rm -rf builds && mkdir builds
 	for i in $(SUPPORTOS); do \
 	  docker-compose build $$i || exit 1; \
