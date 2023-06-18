@@ -7,3 +7,4 @@ RUN apt-get -qqy update && \
 ENV USER root
 COPY . /go/src/github.com/STNS/STNS
 WORKDIR /go/src/github.com/STNS/STNS
+RUN git config --global --add safe.directory `pwd`

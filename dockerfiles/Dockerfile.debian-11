@@ -7,3 +7,4 @@ RUN ln -s /usr/local/go/bin/go /bin/go
 ENV USER root
 COPY . /go/src/github.com/STNS/STNS
 WORKDIR /go/src/github.com/STNS/STNS
+RUN git config --global --add safe.directory `pwd`
