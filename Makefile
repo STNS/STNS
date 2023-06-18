@@ -142,8 +142,8 @@ SUPPORTOS=centos7 almalinux9 ubuntu20 ubuntu22 debian10 debian11
 pkg: build ## Create some distribution packages
 	rm -rf builds && mkdir builds
 	for i in $(SUPPORTOS); do \
-	  docker-compose build $$i; \
-	  docker-compose run -v `pwd`:/go/src/github.com/STNS/STNS -v ~/pkg:/go/pkg --rm $$i; \
+	  docker-compose build $$i || exit 1; \
+	  docker-compose run -v `pwd`:/go/src/github.com/STNS/STNS -v ~/pkg:/go/pkg --rm $$i || exit 1; \
 	done
 
 source_for_deb: ## Create source for DEB
