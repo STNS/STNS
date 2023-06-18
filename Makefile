@@ -105,7 +105,7 @@ install: ## Install
 	mkdir -p $(MODDIR)/
 	cp $(BUILD)/*so $(MODDIR)/
 
-build_image:
+build_image: version
 	docker build -t stns/stns:$(VERSION) -t stns/stns:latest -t ghcr.io/stns/stns:$(VERSION) -t ghcr.io/stns/stns:latest .
 
 push_image:
