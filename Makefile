@@ -1,4 +1,4 @@
-VERSION = $(shell cat version)
+VERSION = $(shell git tag | sed 's/v//g' |sort --version-sort | tail -n1)
 REVISION = $(shell git describe --always)
 TEST_LIST = $(shell cd v2 && go list ./...)
 
@@ -11,7 +11,7 @@ DIST ?= unknown
 PREFIX=/usr
 BINDIR=$(PREFIX)/sbin
 MODDIR ?= $(PREFIX)/local/stns/modules.d
-SOURCES=Makefile v2/go.mod v2/go.sum version v2 package/
+SOURCES=Makefile v2/go.mod v2/go.sum v2 package/
 ETCD_VER=3.3.10
 REDIS_VER=5.0.4
 BUILD:=$(shell pwd)/tmp/bin
@@ -93,7 +93,7 @@ integration_ldap: ## Run integration test after Server wakeup
 	cd $(PACKAGE_DIR) && $(GO) test $(VERBOSE) -integration-ldap $(TEST_OPTIONS)
 	./misc/server stop || true
 
-build: version ## Build server
+build: ## Build server
 	git config --global --add safe.directory $(GOPATH)/src/github.com/STNS/STNS
 	cd $(PACKAGE_DIR) && $(GO) build -buildvcs=false -ldflags "-X main.version=$(VERSION) -X main.revision=$(REVISION) -X \"main.goversion=$(GOVERSION)\" -X \"main.builddate=$(BUILDDATE)\" -X \"main.builduser=$(ME)\"" -o $(BUILD)/stns
 	cd $(PACKAGE_DIR) && $(GO) build -buildvcs=false -buildmode=plugin -o $(BUILD)/mod_stns_etcd.so modules/etcd.go modules/module.go
@@ -105,7 +105,7 @@ install: ## Install
 	mkdir -p $(MODDIR)/
 	cp $(BUILD)/*so $(MODDIR)/
 
-build_image: version
+build_image:
 	docker build -t stns/stns:$(VERSION) -t stns/stns:latest -t ghcr.io/stns/stns:$(VERSION) -t ghcr.io/stns/stns:latest .
 
 push_image:
@@ -133,10 +133,6 @@ rpm: source_for_rpm ## Packaging for RPM
 	spectool -g -R rpm/stns.spec
 	rpmbuild -ba rpm/stns.spec
 	cp /root/rpmbuild/RPMS/*/*.rpm /go/src/github.com/STNS/STNS/builds
-
-.PHONY: version
-version:
-	@git describe --tags --abbrev=0|sed -e 's/v//g' > version
 
 SUPPORTOS=centos7 almalinux9 ubuntu20 ubuntu22 debian10 debian11
 pkg: build ## Create some distribution packages
