@@ -12,7 +12,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          depth: 0
+          fetch-depth: 0
       - name: Set up Docker Buildx
         id: buildx
         uses: docker/setup-buildx-action@v1
