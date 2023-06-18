@@ -23,4 +23,3 @@ misc/*crt
 misc/*csr
 misc/*key
 misc/demoCA
-version
