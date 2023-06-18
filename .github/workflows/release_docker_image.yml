@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
 jobs:
   release:
     runs-on: ubuntu-latest
@@ -28,6 +29,3 @@ jobs:
         username: pyama86
         password: ${{ secrets.PTA }}
     - run: make push_image
-
-
-
