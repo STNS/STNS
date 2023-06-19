@@ -20,7 +20,7 @@ require (
 	github.com/tredoe/osutil/v2 v2.0.0-rc.16
 	github.com/urfave/cli v1.22.14
 	go.etcd.io/etcd/client/v2 v2.305.9
-	golang.org/x/net v0.10.0
+	golang.org/x/net v0.11.0
 	gopkg.in/go-playground/validator.v9 v9.31.0
 	gopkg.in/redis.v5 v5.2.9
 )
@@ -52,9 +52,9 @@ require (
 	github.com/valyala/fasttemplate v1.2.2 // indirect
 	go.etcd.io/etcd/api/v3 v3.5.9 // indirect
 	go.etcd.io/etcd/client/pkg/v3 v3.5.9 // indirect
-	golang.org/x/crypto v0.6.0 // indirect
-	golang.org/x/sys v0.8.0 // indirect
-	golang.org/x/text v0.9.0 // indirect
+	golang.org/x/crypto v0.10.0 // indirect
+	golang.org/x/sys v0.9.0 // indirect
+	golang.org/x/text v0.10.0 // indirect
 	golang.org/x/time v0.3.0 // indirect
 	gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15 // indirect
 	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
