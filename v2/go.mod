@@ -9,7 +9,7 @@ require (
 	github.com/aws/aws-sdk-go v1.44.298
 	github.com/facebookgo/pidfile v0.0.0-20150612191647-f242e2999868
 	github.com/go-yaml/yaml v2.1.0+incompatible
-	github.com/iancoleman/strcase v0.2.0
+	github.com/iancoleman/strcase v0.3.0
 	github.com/jpillora/ipfilter v1.2.9
 	github.com/labstack/echo/v4 v4.10.2
 	github.com/labstack/gommon v0.4.0
