@@ -12,7 +12,7 @@ require (
 	github.com/iancoleman/strcase v0.3.0
 	github.com/jpillora/ipfilter v1.2.9
 	github.com/labstack/echo/v4 v4.11.3
-	github.com/labstack/gommon v0.4.1
+	github.com/labstack/gommon v0.4.2
 	github.com/lestrrat/go-server-starter v0.0.0-20180220115249-6ac0b358431b
 	github.com/lib/pq v1.10.9
 	github.com/nmcclain/ldap v0.0.0-20210720162743-7f8d1e44eeba
