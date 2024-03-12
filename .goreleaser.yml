@@ -1,0 +1,48 @@
+builds:
+  - id: "stns"
+    main: stns.go
+    dir: v2
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+    goarch:
+      - amd64
+      - arm64
+    binary: "stns"
+    ldflags:
+      - -s -w -X github.com/stns/stns/cmd.version={{.Version}}
+
+nfpms:
+  -
+    id: stns-nfpms
+    file_name_template: "{{ .ProjectName }}_{{ .Version }}-1_{{ .Arch }}"
+    builds:
+    - stns
+    homepage: https://github.com/STNS/stns
+    maintainer: pyama86 <www.kazu.com@gmail.com>
+    description: cache daemon for STNS
+    license: MIT
+    formats:
+      - deb
+      - rpm
+    bindir: /usr/sbin
+    contents:
+      - src: ./package/stns.service
+        dst: /etc/systemd/system/stns.service
+        type: config
+      - src: ./package/stns.logrotate
+        dst: /etc/logrotate.d/stns
+        type: config
+      - dst: /etc/stns/server
+        type: dir
+        file_info:
+          mode: 0700
+      - src: ./package/stns.conf
+        dst: /etc/stns/server/stns.conf
+        type: config
+    epoch: 1
+release:
+  github:
+    owner: STNS
+    name: STNS
