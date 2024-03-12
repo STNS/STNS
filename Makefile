@@ -23,9 +23,7 @@ GOVERSION=$(shell go version)
 BUILDDATE=$(shell date '+%Y/%m/%d %H:%M:%S %Z')
 STNS_PROTOCOL ?= "http"
 GOPATH ?= /go
-GOOS=linux
-GOARCH=amd64
-GO=GO111MODULE=on CGO_ENABLED=0 GOOS=$(GOOS) GOARCH=$(GOARCH) go
+GO=GO111MODULE=on go
 
 ME=$(shell whoami)
 default: build
@@ -114,65 +112,13 @@ push_image:
 	docker push ghcr.io/stns/stns:$(VERSION)
 	docker push ghcr.io/stns/stns:latest
 
-source_for_rpm: ## Create source for RPM
-	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Distributing$(RESET)"
-	rm -rf tmp.$(DIST) stns-v2-$(VERSION).tar.gz
-	mkdir -p tmp.$(DIST)/stns-v2-$(VERSION)
-	cp -r $(SOURCES) tmp.$(DIST)/stns-v2-$(VERSION)
-	mkdir -p tmp.$(DIST)/stns-v2-$(VERSION)/tmp/bin
-	cp -r tmp/bin/* tmp.$(DIST)/stns-v2-$(VERSION)/tmp/bin
-	cd tmp.$(DIST) && \
-		tar cf stns-v2-$(VERSION).tar stns-v2-$(VERSION) && \
-		gzip -9 stns-v2-$(VERSION).tar
-	cp tmp.$(DIST)/stns-v2-$(VERSION).tar.gz ./builds
-	rm -rf tmp.$(DIST)
-
-rpm: source_for_rpm ## Packaging for RPM
-	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Packaging for RPM$(RESET)"
-	cp builds/stns-v2-$(VERSION).tar.gz /root/rpmbuild/SOURCES
-	spectool -g -R rpm/stns.spec
-	rpmbuild -ba rpm/stns.spec
-	cp /root/rpmbuild/RPMS/*/*.rpm /go/src/github.com/STNS/STNS/builds
-
-SUPPORTOS=centos7 almalinux9 ubuntu20 ubuntu22 debian10 debian11
-pkg: build ## Create some distribution packages
-	rm -rf builds && mkdir builds
-	for i in $(SUPPORTOS); do \
-	  docker-compose build $$i || exit 1; \
-	  docker-compose run -v `pwd`:/go/src/github.com/STNS/STNS -v ~/pkg:/go/pkg --rm $$i || exit 1; \
-	done
-
-source_for_deb: ## Create source for DEB
-	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Distributing$(RESET)"
-	rm -rf tmp.$(DIST) stns-v2-$(VERSION).orig.tar.gz
-	mkdir -p tmp.$(DIST)/stns-v2-$(VERSION)
-	cp -r $(SOURCES) tmp.$(DIST)/stns-v2-$(VERSION)
-	mkdir -p tmp.$(DIST)/stns-v2-$(VERSION)/tmp/bin
-	cp -r tmp/bin/* tmp.$(DIST)/stns-v2-$(VERSION)/tmp/bin
-	cd tmp.$(DIST) && \
-	tar zcf stns-v2-$(VERSION).tar.gz stns-v2-$(VERSION)
-	mv tmp.$(DIST)/stns-v2-$(VERSION).tar.gz tmp.$(DIST)/stns-v2-$(VERSION).orig.tar.gz
-
-deb: source_for_deb ## Packaging for DEB
-	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Packaging for DEB$(RESET)"
-	cd tmp.$(DIST) && \
-		tar xf stns-v2-$(VERSION).orig.tar.gz && \
-		cd stns-v2-$(VERSION) && \
-		dh_make --single --createorig -y && \
-		rm -rf debian/*.ex debian/*.EX debian/README.Debian && \
-		cp -r $(GOPATH)/src/github.com/STNS/STNS/debian/* debian/ && \
-		sed -i -e 's/xenial/$(DIST)/g' debian/changelog && \
-		debuild -uc -us
-	cd tmp.$(DIST) && \
-		find . -name "*.deb" | sed -e 's/\(\(.*stns-v2.*\).deb\)/mv \1 \2.$(DIST).deb/g' | sh && \
-		cp *.deb $(GOPATH)/src/github.com/STNS/STNS/builds
-	rm -rf tmp.$(DIST)
-
-github_release: ## Create some distribution packages
-	ghr -u STNS --replace v$(VERSION) builds/
-
 generate:
 	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Generate From ERB$(RESET)"
 	ruby model/make_backends.rb
 
-.PHONY: default test docker rpm source_for_rpm pkg source_for_deb deb server
+.PHONY: release
+## release: release nke (tagging and exec goreleaser)
+release:
+	curl -sfL https://goreleaser.com/static/run | bash
+
+.PHONY: default test docker server
