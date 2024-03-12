@@ -23,7 +23,7 @@ GOVERSION=$(shell go version)
 BUILDDATE=$(shell date '+%Y/%m/%d %H:%M:%S %Z')
 STNS_PROTOCOL ?= "http"
 GOPATH ?= /go
-GO=GO111MODULE=on go
+GO=CGO_ENABLE=0 go
 
 ME=$(shell whoami)
 default: build
@@ -96,12 +96,6 @@ build: ## Build server
 	cd $(PACKAGE_DIR) && $(GO) build -buildvcs=false -ldflags "-X main.version=$(VERSION) -X main.revision=$(REVISION) -X \"main.goversion=$(GOVERSION)\" -X \"main.builddate=$(BUILDDATE)\" -X \"main.builduser=$(ME)\"" -o $(BUILD)/stns
 	cd $(PACKAGE_DIR) && $(GO) build -buildvcs=false -buildmode=plugin -o $(BUILD)/mod_stns_etcd.so modules/etcd.go modules/module.go
 	cd $(PACKAGE_DIR) && $(GO) build -buildvcs=false -buildmode=plugin -o $(BUILD)/mod_stns_dynamodb.so modules/dynamodb.go modules/module.go
-
-install: ## Install
-	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Installing as Server$(RESET)"
-	cp $(BUILD)/stns $(BINDIR)/stns
-	mkdir -p $(MODDIR)/
-	cp $(BUILD)/*so $(MODDIR)/
 
 build_image:
 	docker build -t stns/stns:$(VERSION) -t stns/stns:latest -t ghcr.io/stns/stns:$(VERSION) -t ghcr.io/stns/stns:latest .

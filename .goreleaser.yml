@@ -1,3 +1,4 @@
+project_name: stns-v2
 builds:
   - id: "stns"
     main: stns.go
