@@ -1,7 +1,7 @@
 FROM golang:latest as builder
 ADD . /opt/stns
 WORKDIR /opt/stns/
-RUN GOOS=linux CGO_ENABLED=0 make build
+RUN GOOS=linux make build
 
 FROM scratch
 COPY --from=builder /opt/stns/tmp/bin/stns /bin/stns
