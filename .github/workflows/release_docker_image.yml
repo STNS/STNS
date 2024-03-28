@@ -50,5 +50,5 @@ jobs:
       with:
         platforms: linux/amd64,linux/arm64
         push: ${{ github.event_name != 'pull_request' }}
-        tags: ${{ steps.meta.outputs.tags }}
-        labels: ${{ steps.meta.outputs.labels }},stns/stns:latest,ghcr.io/stns/stns:latest
+        tags: ${{ steps.meta.outputs.tags }},stns/stns:latest,ghcr.io/stns/stns:latest
+        labels: ${{ steps.meta.outputs.labels }}
