@@ -23,7 +23,7 @@ GOVERSION=$(shell go version)
 BUILDDATE=$(shell date '+%Y/%m/%d %H:%M:%S %Z')
 STNS_PROTOCOL ?= "http"
 GOPATH ?= /go
-GO=CGO_ENABLE=0 go
+GO=go
 
 ME=$(shell whoami)
 default: build
@@ -68,7 +68,7 @@ changelog:
 test: ## Run test
 	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Testing$(RESET) (require: etcd,redis)"
 	cd $(PACKAGE_DIR) && $(GO) test $(TEST_LIST) -v -timeout=30s -parallel=4
-	cd $(PACKAGE_DIR) && CGO_ENABLE=1 go test $(TEST_LIST) -race
+	cd $(PACKAGE_DIR) && CGO_ENABLED=1 go test $(TEST_LIST) -race
 
 lint: ## Exec golint
 	@echo "$(INFO_COLOR)==> $(RESET)$(BOLD)Linting$(RESET)"
@@ -93,7 +93,7 @@ integration_ldap: ## Run integration test after Server wakeup
 
 build: ## Build server
 	git config --global --add safe.directory $(GOPATH)/src/github.com/STNS/STNS
-	cd $(PACKAGE_DIR) && $(GO) build -buildvcs=false -ldflags "-X main.version=$(VERSION) -X main.revision=$(REVISION) -X \"main.goversion=$(GOVERSION)\" -X \"main.builddate=$(BUILDDATE)\" -X \"main.builduser=$(ME)\"" -o $(BUILD)/stns
+	cd $(PACKAGE_DIR) && CGO_ENABLED=0 $(GO) build -buildvcs=false -ldflags "-X main.version=$(VERSION) -X main.revision=$(REVISION) -X \"main.goversion=$(GOVERSION)\" -X \"main.builddate=$(BUILDDATE)\" -X \"main.builduser=$(ME)\"" -o $(BUILD)/stns
 	cd $(PACKAGE_DIR) && $(GO) build -buildvcs=false -buildmode=plugin -o $(BUILD)/mod_stns_etcd.so modules/etcd.go modules/module.go
 	cd $(PACKAGE_DIR) && $(GO) build -buildvcs=false -buildmode=plugin -o $(BUILD)/mod_stns_dynamodb.so modules/dynamodb.go modules/module.go
 

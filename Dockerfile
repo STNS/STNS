@@ -3,7 +3,7 @@ ADD . /opt/stns
 WORKDIR /opt/stns/
 RUN GOOS=linux make build
 
-FROM alpine:latest
+FROM scratch
 COPY --from=builder /opt/stns/tmp/bin/stns /bin/stns
 COPY --from=builder /opt/stns/tmp/bin/mod_stns_etcd.so /usr/local/stns/modules.d
 COPY --from=builder /opt/stns/tmp/bin/mod_stns_dynamodb.so /usr/local/stns/modules.d
