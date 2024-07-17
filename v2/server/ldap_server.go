@@ -16,7 +16,7 @@ import (
 	"github.com/labstack/gommon/log"
 	"github.com/lestrrat/go-server-starter/listener"
 	"github.com/nmcclain/ldap"
-	"github.com/tredoe/osutil/v2/userutil/crypt"
+	"github.com/tredoe/osutil/user/crypt"
 )
 
 type ldapServer struct {
