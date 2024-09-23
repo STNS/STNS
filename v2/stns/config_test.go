@@ -7,7 +7,7 @@ import (
 func TestNewConfig(t *testing.T) {
 	c, err := NewConfig("test.toml")
 	if err != nil {
-		t.Fatalf(err.Error())
+		t.Fatal(err)
 	}
 
 	u := (*c.Users)["test"]
@@ -44,7 +44,7 @@ func TestNewConfig(t *testing.T) {
 
 	yc, err := NewConfig("test.yaml")
 	if err != nil {
-		t.Fatalf(err.Error())
+		t.Fatal(err)
 	}
 	yu := (*yc.Users)["test"]
 	if yu.ID != 20000 {
