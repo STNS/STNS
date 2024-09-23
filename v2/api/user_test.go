@@ -93,7 +93,7 @@ func Test_getUsers(t *testing.T) {
 			if tt.wantID != 0 {
 				users := []model.User{}
 				if err := json.Unmarshal(rec.Body.Bytes(), &users); err != nil {
-					t.Errorf(err.Error())
+					t.Error(err)
 				}
 
 				if len(users) != tt.wantRecords {

@@ -92,7 +92,7 @@ func Test_getGroups(t *testing.T) {
 			if tt.wantID != 0 {
 				groups := []model.Group{}
 				if err := json.Unmarshal(rec.Body.Bytes(), &groups); err != nil {
-					t.Errorf(err.Error())
+					t.Error(err)
 				}
 
 				if len(groups) != tt.wantRecords {
