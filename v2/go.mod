@@ -18,7 +18,7 @@ require (
 	github.com/nmcclain/ldap v0.0.0-20210720162743-7f8d1e44eeba
 	github.com/stretchr/testify v1.9.0
 	github.com/tredoe/osutil v1.5.0
-	github.com/urfave/cli v1.22.15
+	github.com/urfave/cli v1.22.16
 	go.etcd.io/etcd/client/v2 v2.305.16
 	golang.org/x/net v0.30.0
 	gopkg.in/go-playground/validator.v9 v9.31.0
@@ -27,7 +27,7 @@ require (
 
 require (
 	github.com/coreos/go-semver v0.3.0 // indirect
-	github.com/cpuguy83/go-md2man/v2 v2.0.4 // indirect
+	github.com/cpuguy83/go-md2man/v2 v2.0.5 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/facebookgo/atomicfile v0.0.0-20151019160806-2de1f203e7d5 // indirect
 	github.com/go-playground/locales v0.14.0 // indirect
