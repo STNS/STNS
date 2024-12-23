@@ -11,7 +11,7 @@ require (
 	github.com/go-yaml/yaml v2.1.0+incompatible
 	github.com/iancoleman/strcase v0.3.0
 	github.com/jpillora/ipfilter v1.2.9
-	github.com/labstack/echo/v4 v4.13.2
+	github.com/labstack/echo/v4 v4.13.3
 	github.com/labstack/gommon v0.4.2
 	github.com/lestrrat/go-server-starter v0.0.0-20180220115249-6ac0b358431b
 	github.com/lib/pq v1.10.9
@@ -20,7 +20,7 @@ require (
 	github.com/tredoe/osutil v1.5.0
 	github.com/urfave/cli v1.22.16
 	go.etcd.io/etcd/client/v2 v2.305.17
-	golang.org/x/net v0.32.0
+	golang.org/x/net v0.33.0
 	gopkg.in/go-playground/validator.v9 v9.31.0
 	gopkg.in/redis.v5 v5.2.9
 )
