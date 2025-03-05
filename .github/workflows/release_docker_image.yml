@@ -1,6 +1,8 @@
 name: Release Docker Image
 on:
   push:
+    branch:
+      - main
   workflow_dispatch:
 jobs:
   release:
