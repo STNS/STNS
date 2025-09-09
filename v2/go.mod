@@ -16,7 +16,7 @@ require (
 	github.com/lestrrat/go-server-starter v0.0.0-20180220115249-6ac0b358431b
 	github.com/lib/pq v1.10.9
 	github.com/nmcclain/ldap v0.0.0-20210720162743-7f8d1e44eeba
-	github.com/stretchr/testify v1.10.0
+	github.com/stretchr/testify v1.11.1
 	github.com/tredoe/osutil v1.5.0
 	github.com/urfave/cli v1.22.16
 	go.etcd.io/etcd/client/v2 v2.305.21
