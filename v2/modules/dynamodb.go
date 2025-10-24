@@ -1,19 +1,20 @@
 package main
 
 import (
+	"context"
 	"strconv"
 
 	"github.com/STNS/STNS/v2/model"
 	"github.com/STNS/STNS/v2/stns"
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/dynamodb"
-	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
+	"github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
+	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
+	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 )
 
 type BackendDynamoDB struct {
 	config     *stns.Config
-	db         *dynamodb.DynamoDB
+	db         *dynamodb.Client
 	userTable  string
 	groupTable string
 }
@@ -41,9 +42,12 @@ func NewBackendDynamodb(c *stns.Config) (model.Backend, error) {
 			groupTable = c.Modules["dynamodb"].(map[string]interface{})["group_table_name"].(string)
 		}
 	}
-	mySession := session.Must(session.NewSession())
-	db := dynamodb.New(mySession)
-	tables, err := db.ListTables(&dynamodb.ListTablesInput{})
+	cfg, err := config.LoadDefaultConfig(context.Background())
+	if err != nil {
+		return nil, err
+	}
+	db := dynamodb.NewFromConfig(cfg)
+	tables, err := db.ListTables(context.Background(), &dynamodb.ListTablesInput{})
 	if err != nil {
 		return nil, err
 	}
@@ -51,32 +55,34 @@ func NewBackendDynamodb(c *stns.Config) (model.Backend, error) {
 CREATE_TABLE:
 	for _, tname := range []string{userTable, groupTable} {
 		for _, n := range tables.TableNames {
-			if *n == tname {
+			if n == tname {
 				continue CREATE_TABLE
 			}
 		}
 
+		tnameValue := tname
+		idAttr := "id"
 		input := &dynamodb.CreateTableInput{
-			AttributeDefinitions: []*dynamodb.AttributeDefinition{
+			AttributeDefinitions: []types.AttributeDefinition{
 				{
-					AttributeName: aws.String("id"),
-					AttributeType: aws.String("N"),
+					AttributeName: &idAttr,
+					AttributeType: types.ScalarAttributeTypeN,
 				},
 			},
-			KeySchema: []*dynamodb.KeySchemaElement{
+			KeySchema: []types.KeySchemaElement{
 				{
-					AttributeName: aws.String("id"),
-					KeyType:       aws.String("HASH"),
+					AttributeName: &idAttr,
+					KeyType:       types.KeyTypeHash,
 				},
 			},
-			ProvisionedThroughput: &dynamodb.ProvisionedThroughput{
-				ReadCapacityUnits:  aws.Int64(readCapacityUnits),
-				WriteCapacityUnits: aws.Int64(writeCapacityUnits),
+			ProvisionedThroughput: &types.ProvisionedThroughput{
+				ReadCapacityUnits:  &readCapacityUnits,
+				WriteCapacityUnits: &writeCapacityUnits,
 			},
-			TableName: aws.String(tname),
+			TableName: &tnameValue,
 		}
 
-		_, err := db.CreateTable(input)
+		_, err := db.CreateTable(context.Background(), input)
 		if err != nil {
 			return nil, err
 		}
@@ -98,12 +104,12 @@ CREATE_TABLE:
 	return b, nil
 }
 
-func (b BackendDynamoDB) findAll(table, resource string) ([]map[string]*dynamodb.AttributeValue, error) {
+func (b BackendDynamoDB) findAll(table, resource string) ([]map[string]types.AttributeValue, error) {
 	input := &dynamodb.ScanInput{
-		TableName: aws.String(table),
+		TableName: &table,
 	}
 
-	result, err := b.db.Scan(input)
+	result, err := b.db.Scan(context.Background(), input)
 	if err != nil {
 		return nil, err
 	}
@@ -114,21 +120,23 @@ func (b BackendDynamoDB) findAll(table, resource string) ([]map[string]*dynamodb
 	return result.Items, nil
 }
 
-func (b BackendDynamoDB) findByName(table, resource, value string) (map[string]*dynamodb.AttributeValue, error) {
+func (b BackendDynamoDB) findByName(table, resource, value string) (map[string]types.AttributeValue, error) {
+	nameAttr := "name"
+	filterExpr := "#name = :value"
 	input := &dynamodb.ScanInput{
-		ExpressionAttributeNames: map[string]*string{
-			"#name": aws.String("name"),
+		ExpressionAttributeNames: map[string]string{
+			"#name": nameAttr,
 		},
-		ExpressionAttributeValues: map[string]*dynamodb.AttributeValue{
-			":value": {
-				S: aws.String(value),
+		ExpressionAttributeValues: map[string]types.AttributeValue{
+			":value": &types.AttributeValueMemberS{
+				Value: value,
 			},
 		},
-		FilterExpression: aws.String("#name = :value"),
-		TableName:        aws.String(table),
+		FilterExpression: &filterExpr,
+		TableName:        &table,
 	}
 
-	result, err := b.db.Scan(input)
+	result, err := b.db.Scan(context.Background(), input)
 	if err != nil {
 		return nil, err
 	}
@@ -139,17 +147,17 @@ func (b BackendDynamoDB) findByName(table, resource, value string) (map[string]*
 	return result.Items[0], nil
 }
 
-func (b BackendDynamoDB) findByID(table, resource, id string) (map[string]*dynamodb.AttributeValue, error) {
+func (b BackendDynamoDB) findByID(table, resource, id string) (map[string]types.AttributeValue, error) {
 	input := &dynamodb.GetItemInput{
-		Key: map[string]*dynamodb.AttributeValue{
-			"id": {
-				N: aws.String(id),
+		Key: map[string]types.AttributeValue{
+			"id": &types.AttributeValueMemberN{
+				Value: id,
 			},
 		},
-		TableName: aws.String(table),
+		TableName: &table,
 	}
 
-	result, err := b.db.GetItem(input)
+	result, err := b.db.GetItem(context.Background(), input)
 	if err != nil {
 		return nil, err
 	}
@@ -159,8 +167,8 @@ func (b BackendDynamoDB) findByID(table, resource, id string) (map[string]*dynam
 	return result.Item, nil
 }
 
-func (b BackendDynamoDB) unmarshalUserGroup(userGroup model.UserGroup, userGroups map[string]model.UserGroup, item map[string]*dynamodb.AttributeValue) (map[string]model.UserGroup, error) {
-	if err := dynamodbattribute.UnmarshalMap(item, userGroup); err != nil {
+func (b BackendDynamoDB) unmarshalUserGroup(userGroup model.UserGroup, userGroups map[string]model.UserGroup, item map[string]types.AttributeValue) (map[string]model.UserGroup, error) {
+	if err := attributevalue.UnmarshalMap(item, userGroup); err != nil {
 		return nil, err
 	}
 	userGroups[userGroup.GetName()] = userGroup
@@ -235,15 +243,17 @@ func (b BackendDynamoDB) Groups() (map[string]model.UserGroup, error) {
 
 func (b BackendDynamoDB) highlowID(table string, high bool) int {
 	ret := 0
+	idAttr := "id"
+	projExpr := "#ID"
 	input := &dynamodb.ScanInput{
-		ExpressionAttributeNames: map[string]*string{
-			"#ID": aws.String("id"),
+		ExpressionAttributeNames: map[string]string{
+			"#ID": idAttr,
 		},
-		ProjectionExpression: aws.String("#ID"),
-		TableName:            aws.String(table),
+		ProjectionExpression: &projExpr,
+		TableName:            &table,
 	}
 
-	result, err := b.db.Scan(input)
+	result, err := b.db.Scan(context.Background(), input)
 	if err != nil {
 		return ret
 	}
@@ -251,12 +261,14 @@ func (b BackendDynamoDB) highlowID(table string, high bool) int {
 		return ret
 	}
 	for _, item := range result.Items {
-		id, err := strconv.Atoi(*item["id"].N)
-		if err != nil {
-			return 0
-		}
-		if ret == 0 || (high && id > ret) || (!high && id < ret) {
-			ret = id
+		if idVal, ok := item["id"].(*types.AttributeValueMemberN); ok {
+			id, err := strconv.Atoi(idVal.Value)
+			if err != nil {
+				return 0
+			}
+			if ret == 0 || (high && id > ret) || (!high && id < ret) {
+				ret = id
+			}
 		}
 	}
 	return ret
@@ -287,16 +299,16 @@ func (b BackendDynamoDB) CreateGroup(v model.UserGroup) error {
 }
 
 func (b BackendDynamoDB) update(table string, v model.UserGroup) error {
-	av, err := dynamodbattribute.MarshalMap(v)
+	av, err := attributevalue.MarshalMap(v)
 	if err != nil {
 		return err
 	}
 	input := &dynamodb.PutItemInput{
 		Item:      av,
-		TableName: aws.String(table),
+		TableName: &table,
 	}
 
-	_, err = b.db.PutItem(input)
+	_, err = b.db.PutItem(context.Background(), input)
 	if err != nil {
 		return err
 	}
@@ -313,15 +325,16 @@ func (b BackendDynamoDB) DeleteGroup(id int) error {
 }
 
 func (b BackendDynamoDB) delete(table string, id int) error {
+	idStr := strconv.Itoa(id)
 	params := &dynamodb.DeleteItemInput{
-		TableName: aws.String(table),
-		Key: map[string]*dynamodb.AttributeValue{
-			"id": {
-				N: aws.String(strconv.Itoa(id)),
+		TableName: &table,
+		Key: map[string]types.AttributeValue{
+			"id": &types.AttributeValueMemberN{
+				Value: idStr,
 			},
 		},
 	}
-	_, err := b.db.DeleteItem(params)
+	_, err := b.db.DeleteItem(context.Background(), params)
 	if err != nil {
 		return err
 	}
