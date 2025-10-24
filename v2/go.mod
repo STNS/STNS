@@ -1,6 +1,6 @@
 module github.com/STNS/STNS/v2
 
-go 1.23.2
+go 1.24
 
 replace github.com/dgrijalva/jwt-go => github.com/golang-jwt/jwt v3.2.0+incompatible
 
@@ -16,18 +16,18 @@ require (
 	github.com/lestrrat/go-server-starter v0.0.0-20180220115249-6ac0b358431b
 	github.com/lib/pq v1.10.9
 	github.com/nmcclain/ldap v0.0.0-20210720162743-7f8d1e44eeba
-	github.com/stretchr/testify v1.10.0
+	github.com/stretchr/testify v1.11.1
 	github.com/tredoe/osutil v1.5.0
-	github.com/urfave/cli v1.22.16
-	go.etcd.io/etcd/client/v2 v2.305.21
-	golang.org/x/net v0.40.0
+	github.com/urfave/cli v1.22.17
+	go.etcd.io/etcd/client/v2 v2.305.23
+	golang.org/x/net v0.43.0
 	gopkg.in/go-playground/validator.v9 v9.31.0
 	gopkg.in/redis.v5 v5.2.9
 )
 
 require (
 	github.com/coreos/go-semver v0.3.0 // indirect
-	github.com/cpuguy83/go-md2man/v2 v2.0.5 // indirect
+	github.com/cpuguy83/go-md2man/v2 v2.0.7 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/facebookgo/atomicfile v0.0.0-20151019160806-2de1f203e7d5 // indirect
 	github.com/go-playground/locales v0.14.0 // indirect
@@ -49,11 +49,11 @@ require (
 	github.com/tomasen/realip v0.0.0-20180522021738-f0c99a92ddce // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasttemplate v1.2.2 // indirect
-	go.etcd.io/etcd/api/v3 v3.5.21 // indirect
-	go.etcd.io/etcd/client/pkg/v3 v3.5.21 // indirect
-	golang.org/x/crypto v0.38.0 // indirect
-	golang.org/x/sys v0.33.0 // indirect
-	golang.org/x/text v0.25.0 // indirect
+	go.etcd.io/etcd/api/v3 v3.5.23 // indirect
+	go.etcd.io/etcd/client/pkg/v3 v3.5.23 // indirect
+	golang.org/x/crypto v0.41.0 // indirect
+	golang.org/x/sys v0.35.0 // indirect
+	golang.org/x/text v0.28.0 // indirect
 	golang.org/x/time v0.11.0 // indirect
 	gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15 // indirect
 	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
