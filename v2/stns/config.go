@@ -1,6 +1,7 @@
 package stns
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"net/url"
@@ -10,10 +11,9 @@ import (
 
 	"github.com/BurntSushi/toml"
 	"github.com/STNS/STNS/v2/model"
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/s3"
-	"github.com/aws/aws-sdk-go/service/s3/s3manager"
+	"github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/feature/s3/manager"
+	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/go-yaml/yaml"
 )
 
@@ -65,11 +65,15 @@ func downloadFromS3(path, key string) (*os.File, error) {
 	if key == "" {
 		key = u.Path
 	}
-	sess := session.Must(session.NewSession())
-	downloader := s3manager.NewDownloader(sess)
-	_, err = downloader.Download(tmpFile, &s3.GetObjectInput{
-		Bucket: aws.String(u.Host),
-		Key:    aws.String(key),
+	cfg, err := config.LoadDefaultConfig(context.Background())
+	if err != nil {
+		return nil, err
+	}
+	client := s3.NewFromConfig(cfg)
+	downloader := manager.NewDownloader(client)
+	_, err = downloader.Download(context.Background(), tmpFile, &s3.GetObjectInput{
+		Bucket: &u.Host,
+		Key:    &key,
 	})
 	if err != nil {
 		return nil, err
