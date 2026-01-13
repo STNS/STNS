@@ -62,10 +62,17 @@ func (s *httpServer) Run() error {
 	e.Use(middleware.AddHeader(s.backend))
 
 	e.Use(emiddleware.Recover())
-	e.Use(emiddleware.LoggerWithConfig(emiddleware.LoggerConfig{
-		Format: `{"time":"${time_rfc3339_nano}","remote_ip":"${remote_ip}","host":"${host}",` +
-			`"method":"${method}","uri":"${uri}","status":${status}}` + "\n",
-		Output: s.logger.Output(),
+	e.Use(emiddleware.RequestLoggerWithConfig(emiddleware.RequestLoggerConfig{
+		LogURI:      true,
+		LogStatus:   true,
+		LogMethod:   true,
+		LogRemoteIP: true,
+		LogHost:     true,
+		LogValuesFunc: func(c echo.Context, v emiddleware.RequestLoggerValues) error {
+			s.logger.Infof(`{"time":"%s","remote_ip":"%s","host":"%s","method":"%s","uri":"%s","status":%d}`,
+				v.StartTime.Format(time.RFC3339Nano), v.RemoteIP, v.Host, v.Method, v.URI, v.Status)
+			return nil
+		},
 	}))
 
 	if s.config.BasicAuth != nil {

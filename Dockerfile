@@ -1,4 +1,4 @@
-FROM golang:latest as builder
+FROM golang:1.25 as builder
 ADD . /opt/stns
 WORKDIR /opt/stns/
 RUN GOOS=linux make build
