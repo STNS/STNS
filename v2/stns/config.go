@@ -12,7 +12,7 @@ import (
 	"github.com/BurntSushi/toml"
 	"github.com/STNS/STNS/v2/model"
 	"github.com/aws/aws-sdk-go-v2/config"
-	"github.com/aws/aws-sdk-go-v2/feature/s3/manager"
+	"github.com/aws/aws-sdk-go-v2/feature/s3/transfermanager"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/go-yaml/yaml"
 )
@@ -70,10 +70,11 @@ func downloadFromS3(path, key string) (*os.File, error) {
 		return nil, err
 	}
 	client := s3.NewFromConfig(cfg)
-	downloader := manager.NewDownloader(client)
-	_, err = downloader.Download(context.Background(), tmpFile, &s3.GetObjectInput{
-		Bucket: &u.Host,
-		Key:    &key,
+	tm := transfermanager.New(client)
+	_, err = tm.DownloadObject(context.Background(), &transfermanager.DownloadObjectInput{
+		Bucket:   &u.Host,
+		Key:      &key,
+		WriterAt: tmpFile,
 	})
 	if err != nil {
 		return nil, err
