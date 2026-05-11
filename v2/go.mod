@@ -14,7 +14,7 @@ require (
 	github.com/facebookgo/pidfile v0.0.0-20150612191647-f242e2999868
 	github.com/go-yaml/yaml v2.1.0+incompatible
 	github.com/iancoleman/strcase v0.3.0
-	github.com/jpillora/ipfilter v1.3.0
+	github.com/jpillora/ipfilter v1.4.0
 	github.com/labstack/echo/v4 v4.15.2
 	github.com/labstack/gommon v0.5.0
 	github.com/lestrrat/go-server-starter v0.0.0-20180220115249-6ac0b358431b
