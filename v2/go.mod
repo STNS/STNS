@@ -23,7 +23,7 @@ require (
 	github.com/stretchr/testify v1.11.1
 	github.com/tredoe/osutil v1.5.0
 	github.com/urfave/cli v1.22.17
-	go.etcd.io/etcd/client/v2 v2.305.26
+	go.etcd.io/etcd/client/v2 v2.305.30
 	gopkg.in/go-playground/validator.v9 v9.31.0
 	gopkg.in/redis.v5 v5.2.9
 )
