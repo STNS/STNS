@@ -8,7 +8,7 @@ require (
 	github.com/BurntSushi/toml v1.6.0
 	github.com/aws/aws-sdk-go-v2/config v1.32.25
 	github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue v1.20.48
-	github.com/aws/aws-sdk-go-v2/feature/s3/transfermanager v0.2.8
+	github.com/aws/aws-sdk-go-v2/feature/s3/transfermanager v0.2.10
 	github.com/aws/aws-sdk-go-v2/service/dynamodb v1.59.0
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.103.3
 	github.com/facebookgo/pidfile v0.0.0-20150612191647-f242e2999868
