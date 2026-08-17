@@ -7,7 +7,7 @@ replace github.com/dgrijalva/jwt-go => github.com/golang-jwt/jwt v3.2.0+incompat
 require (
 	github.com/BurntSushi/toml v1.6.0
 	github.com/aws/aws-sdk-go-v2/config v1.32.35
-	github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue v1.20.59
+	github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue v1.20.60
 	github.com/aws/aws-sdk-go-v2/feature/s3/transfermanager v0.2.13
 	github.com/aws/aws-sdk-go-v2/service/dynamodb v1.63.2
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.104.2
@@ -36,7 +36,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/internal/configsources v1.4.36 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.7.36 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/v4a v1.4.36 // indirect
-	github.com/aws/aws-sdk-go-v2/service/dynamodbstreams v1.36.4 // indirect
+	github.com/aws/aws-sdk-go-v2/service/dynamodbstreams v1.36.5 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding v1.13.16 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/checksum v1.9.23 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/endpoint-discovery v1.12.13 // indirect
