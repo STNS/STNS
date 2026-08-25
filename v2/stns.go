@@ -101,6 +101,7 @@ func main() {
 	app := cli.NewApp()
 	app.Name = "stns"
 	app.Usage = "Simple Toml Name Service"
+	app.Version = version
 	app.Flags = flags
 
 	if len(os.Args) <= 1 {
