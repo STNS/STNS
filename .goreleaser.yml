@@ -1,3 +1,4 @@
+version: 2
 project_name: stns-v2
 builds:
   - id: "stns"
@@ -12,13 +13,13 @@ builds:
       - arm64
     binary: "stns"
     ldflags:
-      - -s -w -X github.com/stns/stns/cmd.version={{.Version}}
+      - -s -w -X main.version={{.Version}} -X main.revision={{.ShortCommit}}
 
 nfpms:
   -
     id: stns-nfpms
     file_name_template: "{{ .ProjectName }}_{{ .Version }}-1_{{ .Arch }}"
-    builds:
+    ids:
     - stns
     homepage: https://github.com/STNS/stns
     maintainer: pyama86 <www.kazu.com@gmail.com>
