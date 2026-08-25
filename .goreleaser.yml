@@ -13,7 +13,7 @@ builds:
       - arm64
     binary: "stns"
     ldflags:
-      - -s -w -X main.version={{.Version}} -X main.revision={{.ShortCommit}}
+      - -s -w -X main.version={{.Version}} -X main.revision={{.ShortCommit}} -X main.builddate={{.Date}} -X main.builduser=goreleaser
 
 nfpms:
   -
