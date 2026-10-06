@@ -12,7 +12,6 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/dynamodb v1.63.4
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.107.3
 	github.com/facebookgo/pidfile v0.0.0-20150612191647-f242e2999868
-	github.com/go-yaml/yaml v2.1.0+incompatible
 	github.com/iancoleman/strcase v0.3.0
 	github.com/jpillora/ipfilter v1.4.6
 	github.com/labstack/echo/v4 v4.15.4
@@ -24,6 +23,7 @@ require (
 	github.com/tredoe/osutil v1.5.0
 	github.com/urfave/cli v1.22.17
 	go.etcd.io/etcd/client/v2 v2.305.33
+	go.yaml.in/yaml/v2 v2.4.4
 	gopkg.in/go-playground/validator.v9 v9.31.0
 	gopkg.in/redis.v5 v5.2.9
 )
