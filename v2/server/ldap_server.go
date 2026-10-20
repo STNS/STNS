@@ -76,12 +76,15 @@ func (h ldapHandler) Bind(bindDN, rawPassword string, conn net.Conn) (ldap.LDAPR
 		}
 
 	}
-	if user.Password != "" {
-		c := crypt.NewFromHash(user.Password)
-		if c.Verify(user.Password, []byte(rawPassword)) != nil {
-			h.logger.Warn(fmt.Sprintf("Bind Error: invalid credentials as %s from %s", bindDN, conn.RemoteAddr().String()))
-			return ldap.LDAPResultInvalidCredentials, nil
-		}
+	if user.Password == "" || rawPassword == "" {
+		h.logger.Warn(fmt.Sprintf("Bind Error: invalid credentials as %s from %s", bindDN, conn.RemoteAddr().String()))
+		return ldap.LDAPResultInvalidCredentials, nil
+	}
+
+	c := crypt.NewFromHash(user.Password)
+	if c.Verify(user.Password, []byte(rawPassword)) != nil {
+		h.logger.Warn(fmt.Sprintf("Bind Error: invalid credentials as %s from %s", bindDN, conn.RemoteAddr().String()))
+		return ldap.LDAPResultInvalidCredentials, nil
 	}
 	return ldap.LDAPResultSuccess, nil
 
@@ -209,6 +212,7 @@ func (s *ldapServer) Run() error {
 	ld.EnforceLDAP = true
 	h := ldapHandler{
 		backend: s.backend,
+		logger:  s.logger,
 		config:  s.config,
 	}
 	ld.BindFunc("", h)
