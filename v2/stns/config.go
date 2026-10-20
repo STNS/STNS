@@ -118,6 +118,7 @@ type Config struct {
 	TokenAuth *TokenAuth `toml:"token_auth" yaml:"token_auth"`
 
 	AllowIPs         []string `toml:"allow_ips" yaml:"allow_ips"`
+	TrustedProxies   []string `toml:"trusted_proxies" yaml:"trusted_proxies"`
 	UseServerStarter bool
 	Users            *model.Users
 	Groups           *model.Groups

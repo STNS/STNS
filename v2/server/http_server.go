@@ -44,6 +44,11 @@ func newHTTPServer(conf *stns.Config, backend model.Backend, logger *log.Logger)
 // Run サーバの起動
 func (s *httpServer) Run() error {
 	e := echo.New()
+	extractor, err := middleware.NewIPExtractor(s.config.TrustedProxies)
+	if err != nil {
+		return err
+	}
+	e.IPExtractor = extractor
 	e.Logger = s.logger
 	e.StdLogger = stdLog.New(s.logger.Output(), "", stdLog.Ldate|stdLog.Ltime|stdLog.Llongfile)
 	e.GET("/status", status)
