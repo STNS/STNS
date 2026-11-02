@@ -1,6 +1,6 @@
 module github.com/STNS/STNS/v2
 
-go 1.25.5
+go 1.26.0
 
 replace github.com/dgrijalva/jwt-go => github.com/golang-jwt/jwt v3.2.0+incompatible
 
@@ -14,7 +14,7 @@ require (
 	github.com/facebookgo/pidfile v0.0.0-20150612191647-f242e2999868
 	github.com/iancoleman/strcase v0.3.0
 	github.com/jpillora/ipfilter v1.5.12
-	github.com/labstack/echo/v4 v4.15.4
+	github.com/labstack/echo/v4 v4.16.3
 	github.com/labstack/gommon v0.5.0
 	github.com/lestrrat/go-server-starter v0.0.0-20180220115249-6ac0b358431b
 	github.com/lib/pq v1.12.3
@@ -68,10 +68,10 @@ require (
 	go.etcd.io/etcd/api/v3 v3.6.7 // indirect
 	go.etcd.io/etcd/client/pkg/v3 v3.6.7 // indirect
 	go.yaml.in/yaml/v3 v3.0.5 // indirect
-	golang.org/x/crypto v0.53.0 // indirect
-	golang.org/x/net v0.56.0 // indirect
-	golang.org/x/sys v0.47.0 // indirect
-	golang.org/x/text v0.38.0 // indirect
+	golang.org/x/crypto v0.57.0 // indirect
+	golang.org/x/net v0.60.0 // indirect
+	golang.org/x/sys v0.48.0 // indirect
+	golang.org/x/text v0.42.0 // indirect
 	golang.org/x/time v0.15.0 // indirect
 	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
 )
