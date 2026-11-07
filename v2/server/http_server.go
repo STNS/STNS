@@ -187,7 +187,7 @@ func (s *httpServer) Run() error {
 
 	go func() {
 		if err := e.StartServer(customServer); err != nil {
-			e.Logger.Error("shutting down the server: %s", err)
+			e.Logger.Errorf("shutting down the server: %s", err)
 			return
 		}
 

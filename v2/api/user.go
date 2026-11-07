@@ -95,7 +95,7 @@ func updateUserPassword(c echo.Context) (ret error) {
 	if err != nil {
 		return errorResponse(c, err)
 	}
-	return c.JSON(http.StatusNoContent, user)
+	return c.NoContent(http.StatusNoContent)
 }
 
 func UserEndpoints(g *echo.Group) {
