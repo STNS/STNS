@@ -9,7 +9,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/config v1.33.15
 	github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue v1.21.1
 	github.com/aws/aws-sdk-go-v2/feature/s3/transfermanager v0.5.4
-	github.com/aws/aws-sdk-go-v2/service/dynamodb v1.72.2
+	github.com/aws/aws-sdk-go-v2/service/dynamodb v1.73.1
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.114.8
 	github.com/facebookgo/pidfile v0.0.0-20150612191647-f242e2999868
 	github.com/iancoleman/strcase v0.3.0
@@ -39,7 +39,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/dynamodbstreams v1.38.1 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding v1.13.24 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/checksum v1.11.11 // indirect
-	github.com/aws/aws-sdk-go-v2/service/internal/endpoint-discovery v1.13.8 // indirect
+	github.com/aws/aws-sdk-go-v2/service/internal/endpoint-discovery v1.13.10 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.14.10 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/s3shared v1.20.10 // indirect
 	github.com/aws/aws-sdk-go-v2/service/signin v1.12.3 // indirect
